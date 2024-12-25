@@ -55,6 +55,9 @@ sudo dnf install intel-media-va-driver vainfo intel-gpu-tools
 #
 # on kodi hosts, install the following
 # apt install kodi-inputstream-adaptive
+
+sudo dnf install git gh stow
+
 echo
 echo Cleaning up...
 echo
