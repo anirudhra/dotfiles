@@ -1,0 +1,181 @@
+## Colorize and categorize the ls output ##
+alias ls='ls --color=auto -FG'
+#export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+
+## Use a long listing format ##
+#alias ll='ls -la --color=auto | less'
+alias ll='ls -la --color | less -R'
+ 
+## Show hidden files ##
+alias ls.='ls --color=auto -d -FG .*'
+
+## get rid of command not found ##
+alias cd..='cd ..'
+ 
+## a quick way to get out of current directory ##
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...='cd ../../../'
+alias ....='cd ../../../../'
+alias .....='cd ../../../../'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+
+## Colorize the grep command output for ease of use (good for log files)##
+alias grep='grep --color=auto'
+alias grepc='grep --color=always'
+alias egrep='egrep --color=auto'
+alias fgrep='fgrep --color=auto'
+
+alias mkdir='mkdir -pv'
+alias md='mkdir'
+alias rd='rmdir'
+
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+alias a='alias'
+
+#console
+alias mkdir='mkdir -p'
+alias please='sudo $( history -p !! )'
+alias gh='history | grep'
+alias count='find . -type f | wc -l'
+alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
+alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
+
+## get top process eating memory
+alias psmem='ps aux | sort -nr -k 4'
+alias psmem10='ps aux | sort -nr -k 4 | head -10'
+
+# network related
+# Stop after sending count ECHO_REQUEST packets #
+alias ping='ping -c 5'
+# Do not wait interval 1 second, go fast #
+alias fastping='ping -c 100 -s.2'
+alias ports='netstat -tulanp'
+
+# become root #
+alias root='sudo -i'
+alias su='sudo -i'
+ 
+## get top process eating cpu ##
+alias pscpu='ps aux | sort -nr -k 3'
+alias pscpu10='ps aux | sort -nr -k 3 | head -10'
+
+## this one saved by butt so many times ##
+alias wget='wget -c'
+
+## disk space clean output ##
+alias df='df -P -h'
+alias du='du -ch'
+
+# editor aliases
+#alias vim='nano'
+#alias vi='nano'
+alias vi='nvim'
+alias vim='nvim'
+alias gvim='vimr'
+#alias sudovi='sudo vim'
+alias sudovi='sudo nvim'
+
+# "dos" aliases
+alias cls='clear'
+alias dir='ls'
+alias md='mkdir'
+alias rd='rmdir'
+
+# Tree
+if [ ! -x "$(which tree 2>/dev/null)" ]
+then
+  alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+fi
+
+# Get rid of .DS_Store files recursiveloy in current directory tree
+alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._.DS_Store -delete'
+#alias shuf='gshuf'
+alias dotclean='find . -name ._\* -delete'
+
+#cleanup caches
+alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
+alias fullupdate='sudo apt update && sudo apt dist-upgrade' 
+
+# on PVE host
+alias gomedia='cd /mnt/server/ssd-media/media'
+alias godata='cd /mnt/server/ssd-data'
+alias gopvedocker='cd /mnt/server/ssd-data/dockerapps'
+#alias godocker='cd /opt/dockerapps'
+#alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
+
+# on LXC
+#alias godocker='cd /mnt/ssd-data/dockerapps'
+alias dockerup='docker compose up -d'
+alias dockerdown='docker compose down'
+alias dockerrestart='docker compose down && docker compose up -d'
+alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune'
+alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/ssd-data/dockerapps'
+alias dockerclean='docker system prune --volumes'
+
+# Enable syntax-highlighting in less/cat
+# Note: needs source-highlight and highlight brew packages for these to work
+#export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
+#export LESS=" -R "
+#alias less='less -m -N -g -i -J --underline-special --SILENT'
+alias lessc='less -R'
+alias more='less'
+#alias cat='less'
+
+alias sshrouter='ssh admin@10.100.100.1'
+alias pingrouter='ping 10.100.100.1'
+alias pingserverwifi='ping 10.100.100.50'
+alias pingserver='ping 10.100.100.50'
+
+alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65'
+alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70'
+alias sshjf='ssh -o MACs=hmac-sha2-256 root@10.100.100.80'
+#alias sshkodi='ssh -o MACs=hmac-sha2-256 root@10.100.100.80'
+#alias sshnextcloud='ssh -o MACs=hmac-sha2-256 root@10.100.100.85'
+#alias sshplex='ssh -o MACs=hmac-sha2-256 root@10.100.100.75'
+alias sshsagat='ssh -o MACs=hmac-sha2-256 root@10.100.100.75'
+alias sshrouter='ssh admin@10.100.100.1 -p 12372'
+alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
+alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
+#alias sshserverwifi='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
+alias sshvega='ssh -o MACs=hmac-sha2-256 root@10.100.100.60'
+alias sshventoy='ssh -o MACs=hmac-sha2-256 root@10.100.100.51'
+alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55'
+alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
+
+alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
+alias booterrors='journalctl  -b 0 -p 3'
+
+######## functions ######################
+
+mkcd()
+{
+    case $# in
+    1)
+        mkdir -p "$1"
+        cd "$1"
+        ;;
+    *)
+        echo "USAGE : mkcd <directory>"
+        ;;
+    esac
+}
+
+movemovie()
+{
+    case $# in
+    1)
+        chmod 777 "$1"
+        chown -R nobody:nogroup "$1"
+        mv "$1" /mnt/sata-ssd/ssd-media/media/video/MyMovies
+        ;;
+    *)
+        echo "USAGE : movemovie <movie_dir>"
+        ;;
+    esac
+}
+
