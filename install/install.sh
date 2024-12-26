@@ -116,6 +116,8 @@ corepackages=(
     'gcc'
     'inxi'
     'code'
+    'gem'
+    'luarocks'
 )
 
 # Nerd fonts list to be installed
