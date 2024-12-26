@@ -1,0 +1,2 @@
+fastfetch
+source ~/.aliases

@@ -21,10 +21,10 @@ echo ===========================================================================
 echo
 
 # check if running from the right directory
-current_dir=$(pwd)
-if [[ $current_dir != *"/dotfiles/install"* ]]; then
+install_dir=$(pwd)
+if [[ $install_dir != *"/dotfiles/install"* ]]; then
   echo "Script invoked from incorrect directory!"
-  echo "The current directory is: $current_dir"
+  echo "The current directory is: $install_dir"
   echo "Please run this script from .../dotfiles/install directory"
   echo
   exit -1
@@ -111,6 +111,9 @@ corepackages=(
     'gimp'
     'gparted'
     'microsoft-edge-stable'
+    'golang'
+    'cmake'
+    'gcc'
 )
 
 # Nerd fonts list to be installed
@@ -178,39 +181,40 @@ sudo $installer install "${corepackages[@]}" "${ospackages[@]}"
 ####################################################################################
 # Install useful aliases
 ####################################################################################
+#defines both actual and stow compatibles files, stow is enabled for now
 local_aliases="$HOME/.aliases"
 local_profile="$HOME/.profile"
 local_zshrc="$HOME/.zshrc"
 local_bashrc="$HOME/.bashrc"
+local_stow_aliases="$HOME/.aliases"
+local_stow_profile="$HOME/.profile"
+local_stow_zshrc="$HOME/.zshrc"
+local_stow_bashrc="$HOME/.bashrc"
 aliases_source_file="./"$ID"/"$ID"_dot_aliases"
 
-if [ -e "$local_aliases" ]; then
-  echo "local_aliases file exists, nothing to do!"
-else
+if [ ! -e "$local_stow_aliases" ]; then
   echo "Installing useful aliases"
-  if [ $ID == "fedora" ]; then
-      echo "Fedora aliases: $aliases_source_file"
-      cp ./install/fedora/fedora_dot_aliases $local_aliases
-  else
-      echo "Debian aliases: $aliases_source_file"
-      cp ./install/debian/debian_dot_aliases $local_aliases
-  fi
-  cp $aliases_source_file $local_aliases
+  cp $aliases_source_file $local_stow_aliases
 fi
 
-if grep -wq "source ~/.aliases" $local_profile; then 
-  echo "$local_aliases already sourced in $local_profile, nothing to do!" 
+if grep -wq "source ~/.aliases" $local_stow_profile; then 
+  echo "$local_stow_aliases already sourced in $local_stow_profile, nothing to do!" 
 else 
-  echo "Updating $local_profile to source $local_aliases"
-  echo "source ~/.aliases" >> $local_profile
+  echo "Updating $local_stow_profile to source $local_stow_aliases"
+  echo "source ~/.aliases" >> $local_stow_profile
 fi
 
-if grep -wq "source ~/.profile" $local_zshrc; then 
-  echo "$local_profile already sourced in $local_zshrc, nothing to do!" 
+if grep -wq "source ~/.profile" $local_stow_zshrc; then 
+  echo "$local_stow_profile already sourced in $local_stow_zshrc, nothing to do!" 
 else 
-  echo "Updating $local_zshrc to source $local_profile"
-  echo "source ~/.profile" >> $local_zshrc
+  echo "Updating $local_stow_zshrc to source $local_stow_profile"
+  echo "source ~/.profile" >> $local_stow_zshrc
 fi
+
+# activate stow
+cd $install_dir/../home
+stow .
+cd $install_dir
 
 ####################################################################################
 # Install /etc config files
@@ -250,7 +254,7 @@ sys_throttled_file="/etc/throttled.conf"
 # Install UI/Customizations
 ####################################################################################
 
-echo "Current directory: $current_dir"
+echo "Current directory: $install_dir"
 
 # Replace audio alert file
 audio_alert_bak_file=/usr/share/sounds/gnome/default/alerts/hum_og.ogg
@@ -341,7 +345,24 @@ gsettings set org.gnome.desktop.interface clock-format "'12h'"
 #gsettings set org.gnome.desktop.interface clock-show-weekday 1
 
 # change back to original installation directory
-cd $current_dir
+cd $install_dir
+
+####################################################################################
+# ZSH and customizations
+####################################################################################
+chsh -s $(which zsh)
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+echo "ZSH_THEME="powerlevel10k/powerlevel10k"" >> $local_zshrc
+
+####################################################################################
+# Lazyvim
+####################################################################################
+# commenting this ouw now as .config/nvim with lazygit is now backed up and "stowed"
+#mv ~/.config/nvim{,.bak}
+#git clone https://github.com/LazyVim/starter ~/.config/nvim
+#rm -rf ~/.config/nvim/.git
+
 ####################################################################################
 # Enable various services
 ####################################################################################
