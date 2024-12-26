@@ -30,6 +30,8 @@ alias mkdir='mkdir -pv'
 alias md='mkdir'
 alias rd='rmdir'
 
+alias unstow='stow --delete'
+
 alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
 alias nowtime=now
@@ -113,6 +115,8 @@ alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && su
 alias checkfw='sudo fwupdmgr get-devices'
 
 alias sysinfo='sudo inxi -Fzx'
+
+alias godot='cd $HOME/dotfiles'
 
 # docker files on server mount
 alias gomedia='cd /mnt/server/sata-ssd/ssd-media/media'
