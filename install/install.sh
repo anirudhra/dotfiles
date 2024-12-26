@@ -10,9 +10,9 @@
 # Detect Linux Distribution and update repos
 ####################################################################################
 source /etc/os-release
-#echo $PRETTY_NAME $ID
+#echo $PRETTY_NAME $ID #debug
 # ID will have fedora or debian
-#ID="debian" #override for testing
+#ID="debian" #override for debug
 
 echo
 echo ====================================================================================
@@ -30,7 +30,7 @@ if [[ $current_dir != *"/dotfiles/install"* ]]; then
   exit -1
 fi
 
-installer="dnf" #default
+installer="dnf" #default Fedora
 if [ $ID == "fedora" ];
 then
     echo "Fedora detected!"
@@ -38,19 +38,15 @@ then
     # don't change installer variable, use default, but keep this block for future use
     
     # add repos and keys
-    #FIXME: temporary disable
-    #sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
+    sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
     
     #microsoft repos
     sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
-    # disable dnf4 as it may go away, create file manually instead
-    #sudo dnf4 config-manager --add-repo https://packages.microsoft.com/yumrepos/edge
     echo -e "[code]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/microsoft-edge.repo > /dev/null
     sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
     echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
 
-    #FIXME: temporary disable
-    #sudo dnf group upgrade core -y
+    sudo dnf group upgrade core -y
 elif [ $ID == "debian" ] || [ $ID == "ubuntu" ];
 then
     echo "Debian or derivative detected!"
@@ -76,9 +72,8 @@ else
     exit -1
 fi
 
-#FIXME: temporary disable
 # refresh again to be sure
-#sudo $installer update && sudo $installer upgrade
+sudo $installer update && sudo $installer upgrade
 
 ####################################################################################
 # Install packages
@@ -160,10 +155,9 @@ if [ $ID == "fedora" ]; then
         'libheif'
     )
 
-    #FIXME: temporary disable
     echo "Fedora installer..."
-    #sudo dnf remove thermald -y
-    #sudo dnf copr enable abn/throttled -y
+    sudo dnf remove thermald -y
+    sudo dnf copr enable abn/throttled -y
 else
     # Debian/Ubuntu specific packages
     echo "Debian installer..."
@@ -179,12 +173,7 @@ else
 fi
 
 # install all packages
-#FIXME: temporary disable
-###sudo $installer install "${corepackages[@]}" "${ospackages[@]}"
-
-####################################################################################
-# Install MS Edge and VS Code, clean up -dev repos
-####################################################################################
+sudo $installer install "${corepackages[@]}" "${ospackages[@]}"
 
 ####################################################################################
 # Install useful aliases
@@ -201,10 +190,10 @@ else
   echo "Installing useful aliases"
   if [ $ID == "fedora" ]; then
       echo "Fedora aliases: $aliases_source_file"
-      #cp ./install/fedora/fedora_dot_aliases $local_aliases
+      cp ./install/fedora/fedora_dot_aliases $local_aliases
   else
       echo "Debian aliases: $aliases_source_file"
-      #cp ./install/debian/debian_dot_aliases $local_aliases
+      cp ./install/debian/debian_dot_aliases $local_aliases
   fi
   cp $aliases_source_file $local_aliases
 fi
@@ -214,6 +203,13 @@ if grep -wq "source ~/.aliases" $local_profile; then
 else 
   echo "Updating $local_profile to source $local_aliases"
   echo "source ~/.aliases" >> $local_profile
+fi
+
+if grep -wq "source ~/.profile" $local_zshrc; then 
+  echo "$local_profile already sourced in $local_zshrc, nothing to do!" 
+else 
+  echo "Updating $local_zshrc to source $local_profile"
+  echo "source ~/.profile" >> $local_zshrc
 fi
 
 ####################################################################################
@@ -227,7 +223,6 @@ source_throttled_file="./etc/throttled.conf"
 sys_throttled_file="/etc/throttled.conf"
 
 # comment out checking files for now, force install the new files to overwrite default ones
-
 #if [ -e "$sys_autofs_share_file" ]; then
 #    echo "$sys_autofs_share_file /etc config file exists, nothing to do!"
 #else
@@ -250,7 +245,6 @@ sys_throttled_file="/etc/throttled.conf"
     echo "Installing /etc config file: $source_throttled_file to $sys_throttled_file"
     sudo cp $source_throttled_file $sys_throttled_file
 #fi
-
 
 ####################################################################################
 # Install UI/Customizations
@@ -310,20 +304,20 @@ fi
 # execute install.sh script from each directory for all above, if at least one was sync'd
 if [ $install_ui -eq 1 ]; then
     echo "Executing UI installation scripts"
-    #FIXME: disabled for testing
-    #find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && pwd && ./install.sh" \;
+    find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && pwd && ./install.sh" \;
 fi
 
 # Install Nerd fonts, cleanup and update font cache
 cd $pkg_install_dir
-mkdir -p nerd_font_install
-cd nerd_font_install
+mkdir -p ./nerd_font_install
+cd ./nerd_font_install
 
 fonts_dir="${HOME}/.local/share/fonts"
 if [[ ! -d "$fonts_dir" ]]; then
 	mkdir -p "$fonts_dir"
 fi
 
+#array defined at the top of the file, change list and version there
 for font in "${fonts[@]}"; do
 	zip_file="${font}.zip"
 	download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${nerd_font_ver}/${zip_file}"
@@ -338,6 +332,7 @@ fc-cache -fv
 # set GTK and icon themes
 echo "Setting GTK and Icon themes..."
 gsettings set org.gnome.desktop.interface gtk-theme "'Orchis-Dark-Compact'"
+# following fails and needs to be manually enabled in GNOME Tweaks
 gsettings set org.gnome.shell.extensions user-theme "'Orchis-Dark-Compact'"
 gsettings set org.gnome.desktop.interface icon-theme "'Tela-dark'"
 gsettings set org.gnome.desktop.interface color-scheme "'prefer-dark'"
@@ -351,22 +346,21 @@ cd $current_dir
 # Enable various services
 ####################################################################################
 
-#FIXME: Section disabled for testing
-#sudo systemctl daemon-reload
+sudo systemctl daemon-reload
 
-#sudo systemctl enable tlp
-#sudo systemctl start tlp
-#sudo tlp start
+sudo systemctl enable tlp
+sudo systemctl start tlp
+sudo tlp start
 
-#sudo systemctl enable autofs
-#sudo systemctl start autofs
+sudo systemctl enable autofs
+sudo systemctl start autofs
 
-#sudo systemctl enable throttled
-#sudo systemctl start throttled
+sudo systemctl enable throttled
+sudo systemctl start throttled
 
 # Disable services: thermald conflicts with throttled
-#sudo systemctl disable thermald
-#sudo systemctl mask thermald
+sudo systemctl disable thermald
+sudo systemctl mask thermald
 
 ####################################################################################
 # Manual install notice
@@ -401,4 +395,3 @@ echo
 echo
 echo "Done! Logout and log back in for changes."
 echo
-
