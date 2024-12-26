@@ -36,6 +36,9 @@ alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
 alias a='alias'
 
+#git
+alias gitpush="git add * && git commit && git push"
+
 #console
 alias mkdir='mkdir -p'
 alias please='sudo $( history -p !! )'
