@@ -142,8 +142,6 @@ fonts=(
 	#'UbuntuMono'
 )
 
-
-
 # OS specific packages are listed in this block
 if [ $ID == "fedora" ]; then
     # Fedora specific packages
@@ -258,8 +256,18 @@ sys_throttled_file="/etc/throttled.conf"
 # Install UI/Customizations
 ####################################################################################
 
-# Install GTK and Icon themes
 echo "Current directory: $current_dir"
+
+# Replace audio alert file
+audio_alert_bak_file=/usr/share/sounds/gnome/default/alerts/hum_og.ogg
+if [ ! -e $audio_alert_bak_file ]; then
+    echo "Installing audio alert file replacement"
+    echo
+    sudo cp /usr/share/sounds/gnome/default/alerts/hum.ogg /usr/share/sounds/gnome/default/alerts/hum_og.ogg
+    sudo cp ./sounds/hum.ogg /usr/share/sounds/gnome/default/alerts/hum.ogg 
+fi
+
+# Install GTK and Icon themes
 pkg_install_dir="$HOME/packages/install"
 mkdir -p $pkg_install_dir
 cd $pkg_install_dir
@@ -372,9 +380,9 @@ echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Doc
 echo
 echo Manually install Ulauncher plugins, supersonic audio player
 echo
-echo Manually set FiraCode Mono Nerd Font in: Terminal, Gnome Tweaks and VSCode
+echo Manually set Nerd Font in: Terminal, Gnome Tweaks and VSCode
 echo
-echo UI customizations have been cloned in $pkg_install_dir, for future git pulls and updates or can be manually removed to save space. Manually set GNOME Shell theme
+echo UI customizations have been cloned in $pkg_install_dir, for future git pulls and updates or can be manually removed to save space. Manually set GNOME Shell theme and Hum alert sound
 echo
 if grep -wq "/- /etc/auto.pveshare" $sys_auto_master_file; then 
   echo "$sys_auto_master_file already has PVE share NFS entry, restart autofs service if server isn't mounted" 
