@@ -119,8 +119,8 @@ alias sysinfo='sudo inxi -Fzx'
 alias godot='cd $HOME/dotfiles'
 
 # docker files on server mount
-alias gomedia='cd /mnt/server/sata-ssd/ssd-media/media'
-alias godata='cd /mnt/server/sata-ssd/ssd-data'
+alias gomedia='cd /mnt/server/ssd-media/media'
+alias godata='cd /mnt/server/ssd-data'
 #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
 alias godocker='cd /mnt/server/ssd-data/dockerapps'
 alias dockerup='docker compose up -d'
@@ -181,7 +181,7 @@ movemovie()
     1)
         chmod 777 "$1"
         chown -R nobody:nogroup "$1"
-        mv "$1" /mnt/sata-ssd/ssd-media/media/video/MyMovies
+        mv "$1" /mnt/server/ssd-media/media/video/MyMovies
         ;;
     *)
         echo "USAGE : movemovie <movie_dir>"
