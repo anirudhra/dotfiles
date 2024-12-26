@@ -187,10 +187,10 @@ local_aliases="$HOME/.aliases"
 local_profile="$HOME/.profile"
 local_zshrc="$HOME/.zshrc"
 local_bashrc="$HOME/.bashrc"
-local_stow_aliases="$HOME/.aliases"
-local_stow_profile="$HOME/.profile"
-local_stow_zshrc="$HOME/.zshrc"
-local_stow_bashrc="$HOME/.bashrc"
+local_stow_aliases="../home/.aliases"
+local_stow_profile="../home/.profile"
+local_stow_zshrc="../home/.zshrc"
+local_stow_bashrc="../home/.bashrc"
 aliases_source_file="./"$ID"/"$ID"_dot_aliases"
 
 if [ ! -e "$local_stow_aliases" ]; then
@@ -349,14 +349,6 @@ gsettings set org.gnome.desktop.interface clock-format "'12h'"
 cd $install_dir
 
 ####################################################################################
-# ZSH and customizations
-####################################################################################
-chsh -s $(which zsh)
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-echo "ZSH_THEME="powerlevel10k/powerlevel10k"" >> $local_zshrc
-
-####################################################################################
 # Lazyvim
 ####################################################################################
 # commenting this ouw now as .config/nvim with lazygit is now backed up and "stowed"
@@ -384,6 +376,7 @@ sudo systemctl start throttled
 sudo systemctl disable thermald
 sudo systemctl mask thermald
 
+chsh -s $(which zsh)
 ####################################################################################
 # Manual install notice
 ####################################################################################
@@ -417,3 +410,14 @@ echo
 echo
 echo "Done! Logout and log back in for changes."
 echo
+
+####################################################################################
+# ZSH and customizations
+####################################################################################
+echo "ZSH_THEME=\"powerlevel10k/powerlevel10k\"" >> $local_zshrc
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+echo ===========================================================================================
+#git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+echo "Run git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k manually after configuring oh-my-zsh"
+echo ===========================================================================================
+
