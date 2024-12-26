@@ -122,6 +122,7 @@ corepackages=(
     'fd-find'
     'python3-pip'
     'rdfind'
+    'menulibre'
 )
 
 # Nerd fonts list to be installed
