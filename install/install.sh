@@ -118,6 +118,10 @@ corepackages=(
     'code'
     'gem'
     'luarocks'
+    'fzf'
+    'fd-find'
+    'python3-pip'
+    'rdfind'
 )
 
 # Nerd fonts list to be installed
