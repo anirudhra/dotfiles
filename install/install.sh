@@ -115,6 +115,7 @@ corepackages=(
     'cmake'
     'gcc'
     'inxi'
+    'code'
 )
 
 # Nerd fonts list to be installed
@@ -214,7 +215,8 @@ fi
 
 # activate stow
 cd $install_dir/../home
-stow .
+stow --target=/home/anirudh --adopt .
+git restore .
 cd $install_dir
 
 ####################################################################################
