@@ -114,6 +114,7 @@ corepackages=(
     'golang'
     'cmake'
     'gcc'
+    'inxi'
 )
 
 # Nerd fonts list to be installed
