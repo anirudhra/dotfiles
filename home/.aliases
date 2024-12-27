@@ -149,6 +149,7 @@ alias ren_dat="rename 's/.dat/.jpg/g' *.dat && rename 's/.DAT/.jpg/g' *.DAT"
 
 alias sysinfo='sudo inxi -Fzx'
 alias godot='cd $HOME/dotfiles'
+alias gocode='cd $HOME/code'
 
 # docker files on server mount
 alias gomedia='cd /mnt/server/ssd-media/media'

@@ -165,6 +165,7 @@ if [ $ID == "fedora" ]; then
         'heif-pixbuf-loader'
         'libheif-freeworld'
         'libheif'
+        'easyeffects'
     )
 
     echo "Fedora installer..."
@@ -400,3 +401,5 @@ echo ===========================================================================
 echo "Run git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k manually after configuring oh-my-zsh"
 echo ===========================================================================================
 
+# manually install easy effects press
+# bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
