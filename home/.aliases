@@ -40,7 +40,7 @@ alias nowdate='date +"%d-%m-%Y"'
 alias a='alias'
 
 #git
-alias gitpush="git add * && git commit && git push"
+alias gitpush="git pull && git add * && git commit && git push"
 
 #console
 alias mkdir='mkdir -p'
