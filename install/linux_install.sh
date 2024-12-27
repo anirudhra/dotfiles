@@ -124,6 +124,11 @@ corepackages=(
     'rdfind'
     'lolcat'
     'menulibre'
+    'p7zip'
+    'p7zip-plugins'
+    'unzip'
+    'unrar'
+    'nmap'
 )
 
 # Nerd fonts list to be installed
@@ -332,20 +337,25 @@ gsettings set org.gnome.desktop.interface gtk-theme "'Orchis-Dark-Compact'"
 gsettings set org.gnome.shell.extensions user-theme "'Orchis-Dark-Compact'"
 gsettings set org.gnome.desktop.interface icon-theme "'Tela-dark'"
 gsettings set org.gnome.desktop.interface color-scheme "'prefer-dark'"
-gsettings set org.gnome.desktop.interface monospace-font-name "'FiraMono Nerd Font 10'"
+
+# enable minimize and maximize buttons and center windows
+gsettings set org.gnome.desktop.wm.preferences button-layout ":minimize,maximize,close"
+gsettings set org.gnome.mutter center-new-windows true
+
+#customize clock on top bar
 gsettings set org.gnome.desktop.interface clock-format "'12h'"
-#gsettings set org.gnome.desktop.interface clock-show-weekday 1
+gsettings set org.gnome.desktop.interface clock-show-date true
+gsettings set org.gnome.desktop.interface clock-show-seconds false
+gsettings set org.gnome.desktop.interface clock-show-weekday true
+
+#set fonts
+gsettings set org.gnome.desktop.interface document-font-name 'Cantarell 11'
+gsettings set org.gnome.desktop.interface font-name 'Cantarell 10'
+gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 10'
+gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Cantarell 10'
 
 # change back to original installation directory
 cd $install_dir
-
-####################################################################################
-# Lazyvim
-####################################################################################
-# commenting this ouw now as .config/nvim with lazyvim is now backed up and "stowed"
-#mv ~/.config/nvim{,.bak}
-#git clone https://github.com/LazyVim/starter ~/.config/nvim
-#rm -rf ~/.config/nvim/.git
 
 ####################################################################################
 # Enable various services
