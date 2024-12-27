@@ -1,0 +1,98 @@
+## Colorize the ls output ##
+alias ls='ls -F'
+#export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+
+## Use a long listing format ##
+alias ll='ls -la | less'
+ 
+## Show hidden files ##
+alias ls.='ls -d -F .*'
+
+## get rid of command not found ##
+alias cd..='cd ..'
+ 
+## a quick way to get out of current directory ##
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...='cd ../../../'
+alias ....='cd ../../../../'
+alias .....='cd ../../../../'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+
+## Colorize the grep command output for ease of use (good for log files)##
+alias grep='grep --color=auto'
+
+alias mkdir='mkdir -pv'
+alias md='mkdir'
+alias rd='rmdir'
+
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowtime=now
+alias nowdate='date +"%d-%m-%Y"'
+alias a='alias'
+
+# Stop after sending count ECHO_REQUEST packets #
+alias ping='ping -c 5'
+# Do not wait interval 1 second, go fast #
+alias fastping='ping -c 100 -s.2'
+
+alias ports='netstat -tulanp'
+
+## get top process eating memory
+alias psmem='ps aux | sort -nr -k 4'
+alias psmem10='ps aux | sort -nr -k 4 | head -10'
+ 
+## get top process eating cpu ##
+alias pscpu='ps aux | sort -nr -k 3'
+alias pscpu10='ps aux | sort -nr -k 3 | head -10'
+
+## this one saved by butt so many times ##
+alias wget='wget -c'
+alias wgetnc='wget -c --no-check-certificate'
+
+## set some other defaults ##
+alias df='df -P -h'
+alias du='du -ch'
+
+alias vim='vi'
+alias edit="vim"
+alias cdf='open .'
+alias cls='clear'
+alias c='clear'
+alias dir='ls'
+
+# Enable syntax-highlighting in less/cat
+#export LESS=" -R "
+alias more='less'
+alias cat='less'
+
+# Tree
+if [ ! -x "$(which tree 2>/dev/null)" ]
+then
+  alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+fi 
+
+alias greph='history | grep'
+alias count='find . -type f | wc -l'
+alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
+
+alias sshserver='ssh admin@10.100.100.99'
+alias pingserver='ping 10.100.100.99'
+
+############# Functions #######################
+mkcd()
+{
+    case $# in
+    1)
+        mkdir -p $1
+        cd $1
+        ;;
+    *)
+        echo "USAGE : mkcd rep"
+        ;;
+    esac
+}
+###############################################
+
