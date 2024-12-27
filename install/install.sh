@@ -188,38 +188,8 @@ fi
 sudo $installer install "${corepackages[@]}" "${ospackages[@]}"
 
 ####################################################################################
-# Install useful aliases
+# Install dotfiles with stow under /dotfiles/home directory
 ####################################################################################
-#defines both actual and stow compatibles files, stow is enabled for now
-local_aliases="$HOME/.aliases"
-local_profile="$HOME/.profile"
-local_zshrc="$HOME/.zshrc"
-local_bashrc="$HOME/.bashrc"
-local_stow_aliases="../home/.aliases"
-local_stow_profile="../home/.profile"
-local_stow_zshrc="../home/.zshrc"
-local_stow_bashrc="../home/.bashrc"
-aliases_source_file="./"$ID"/"$ID"_dot_aliases"
-
-if [ ! -e "$local_stow_aliases" ]; then
-  echo "Installing useful aliases"
-  cp $aliases_source_file $local_stow_aliases
-fi
-
-if grep -wq "source ~/.aliases" $local_stow_profile; then 
-  echo "$local_stow_aliases already sourced in $local_stow_profile, nothing to do!" 
-else 
-  echo "Updating $local_stow_profile to source $local_stow_aliases"
-  echo "source ~/.aliases" >> $local_stow_profile
-fi
-
-if grep -wq "source ~/.profile" $local_stow_zshrc; then 
-  echo "$local_stow_profile already sourced in $local_stow_zshrc, nothing to do!" 
-else 
-  echo "Updating $local_stow_zshrc to source $local_stow_profile"
-  echo "source ~/.profile" >> $local_stow_zshrc
-fi
-
 # activate stow
 cd $install_dir/../home
 stow --target=/home/anirudh --adopt .

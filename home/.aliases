@@ -31,10 +31,11 @@ alias md='mkdir'
 alias rd='rmdir'
 
 alias unstow='stow --delete'
+alias restow='cd ~/dotfiles/home && stow --target=$HOME --adopt . && cd -'
 
 alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
-alias nowtime=now
+alias nowtime='now'
 alias nowdate='date +"%d-%m-%Y"'
 alias a='alias'
 
@@ -86,7 +87,9 @@ alias vi='nvim'
 alias vim='nvim'
 alias gvim='nvim'
 alias sudovi='sudo nvim'
-
+#alias edit="$EDITOR"
+alias edit="vim"
+alias pager="$PAGER"
 
 # "dos" aliases
 alias cls='clear'
@@ -102,26 +105,54 @@ fi
 
 # Get rid of .DS_Store files recursiveloy in current directory tree
 alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._.DS_Store -delete'
-#alias shuf='gshuf'
 alias dotclean='find . -name ._\* -delete'
 
+
 #cleanup caches,fedora and debian
-#alias fullclean='apt clean && apt autoclean && apt autoremove'
-alias fullclean='sudo dnf clean all && sudo dnf autoremove'
-#alias fullupdate='apt update && apt dist-upgrade' 
-alias fullupdate='sudo dnf update --refresh && sudo dnf upgrade'
-alias distupgrade='sudo dnf update --refresh && sudo dnf distro-sync'
-alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
-alias checkfw='sudo fwupdmgr get-devices'
+if (( ${+commands[apt]} )); then 
+    # add condition for debian/derivatives specific command here
+    alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
+    alias fullupdate='sudo apt update && sudo apt dist-upgrade' 
+elif (( ${+commands[dnf]} )); then 
+    # add condition for fedora specific command here
+    alias fullclean='sudo dnf clean all && sudo dnf autoremove'
+    alias fullupdate='sudo dnf update --refresh && sudo dnf upgrade'
+    alias distupgrade='sudo dnf update --refresh && sudo dnf distro-sync'
+    alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
+    alias checkfw='sudo fwupdmgr get-devices'
+    alias showkernel='sudo rpm -q kernel-core && uname -a'
+elif (( ${+commands[open]} )); then 
+    # add condition for macos specific commmand here
+    alias brew_update='brew tap homebrew/cask && brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+    alias fix_wireshark='cd /dev && sudo chown aacharya:admin bp*; cd -'
+    alias flushdns='dscacheutil -flushcache'
+    alias lscleanup='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder'
+    alias cdf='open .'
+    alias shuf='gshuf'
+    #finder aliases
+    alias finder='open'
+    #cleanup caches
+    alias cleanup='sudo update_dyld_shared_cache -force'
+    #finder hidden files
+    alias hidden_show='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
+    alias hidden_hide='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder /System/Library/CoreServices/Finder.app'
+fi
+
+alias ipy="jupyter lab ~/code/jupyter"
+
+#rename
+alias ren_jpg="rename 's/.JPG/.pndat/g' *.JPG && rename 's/.jpg/.pndat/g' *.jpg"
+alias ren_jpeg="rename 's/.JPEG/.pndat/g' *.JPEG && rename 's/.jpeg/.pndat/g' *.jpeg"
+alias ren_png="rename 's/.PNG/.pndat/g' *.PNG && rename 's/.png/.pndat/g' *.png"
+alias ren_pndat="rename 's/.PNDAT/.png/g' *.PNDAT && rename 's/.pndat/.png/g' *.pndat"
+alias ren_dat="rename 's/.dat/.jpg/g' *.dat && rename 's/.DAT/.jpg/g' *.DAT"
 
 alias sysinfo='sudo inxi -Fzx'
-
 alias godot='cd $HOME/dotfiles'
 
 # docker files on server mount
 alias gomedia='cd /mnt/server/ssd-media/media'
 alias godata='cd /mnt/server/ssd-data'
-#alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
 alias godocker='cd /mnt/server/ssd-data/dockerapps'
 alias dockerup='docker compose up -d'
 alias dockerdown='docker compose down'
@@ -129,6 +160,7 @@ alias dockerrestart='docker compose down && docker compose up -d'
 alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
 alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
 alias dockerclean='docker system prune --volumes'
+#alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
 
 # Enable syntax-highlighting in less/cat
 # Note: needs source-highlight and highlight brew packages for these to work
@@ -157,8 +189,6 @@ alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
 alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias booterrors='sudo journalctl  -b 0 -p 3'
 alias reservice='sudo systemctl daemon-reload'
-
-alias showkernel='sudo rpm -q kernel-core && uname -a'
 
 ######## functions ######################
 
