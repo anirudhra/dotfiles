@@ -15,9 +15,9 @@ source /etc/os-release
 #ID="debian" #override for debug
 
 echo
-echo ====================================================================================
-echo Starting automated installer...
-echo ====================================================================================
+echo "===================================================================================="
+echo "Starting automated installer..."
+echo "===================================================================================="
 echo
 
 # check if running from the right directory
@@ -27,7 +27,7 @@ if [[ $install_dir != *"/dotfiles/install"* ]]; then
   echo "The current directory is: $install_dir"
   echo "Please run this script from .../dotfiles/install directory"
   echo
-  exit -1
+  exit
 fi
 
 installer="dnf" #default Fedora
@@ -60,16 +60,16 @@ then
     sudo add-apt-repository universe -y && sudo add-apt-repository ppa:agornostal/ulauncher -y
     
     # Configure console font and size, esp. usefull for hidpi displays (select Combined Latin, Terminus, 16x32 for legibility
-    echo Configuring Console...
+    echo "Configuring Console..."
     sudo dpkg-reconfigure console-setup
     # Configure timezone and locale for en/UTF-8
-    echo Configuring Timezone...
+    echo "Configuring Timezone..."
     sudo dpkg-reconfigure tzdata
-    echo Configuring Locales...
+    echo "Configuring Locales..."
     sudo dpkg-reconfigure locales
 else
     echo "Unknown OS, cannot proceed; exiting"
-    exit -1
+    exit
 fi
 
 # refresh again to be sure
@@ -122,6 +122,7 @@ corepackages=(
     'fd-find'
     'python3-pip'
     'rdfind'
+    'lolcat'
     'menulibre'
 )
 
@@ -191,11 +192,7 @@ sudo $installer install "${corepackages[@]}" "${ospackages[@]}"
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory
 ####################################################################################
-# activate stow
-cd $install_dir/../home
-stow --target=/home/anirudh --adopt .
-git restore .
-cd $install_dir
+# dotfiles installation with stow is now done in the post installer script
 
 ####################################################################################
 # Install /etc config files
@@ -207,29 +204,43 @@ sys_tlp_file="/etc/tlp.conf"
 source_throttled_file="./etc/throttled.conf"
 sys_throttled_file="/etc/throttled.conf"
 
-# comment out checking files for now, force install the new files to overwrite default ones
-#if [ -e "$sys_autofs_share_file" ]; then
-#    echo "$sys_autofs_share_file /etc config file exists, nothing to do!"
-#else
-    echo "Installing /etc config file: $source_autofs_share_file to $sys_autofs_share_file"
-    sudo cp $source_autofs_share_file $sys_autofs_share_file
-    sudo mkdir -p /mnt/share
-    sudo chmod 777 /mnt/share
-#fi
+# install autofs pve share file
+if [ -e "$sys_autofs_share_file" ]; then
+    echo "$sys_autofs_share_file /etc config file exists, creating backup!"
+    # \\cp should use the unaliased version of cp (\cp, with \ for escape), else cp is usually aliases to cp -i and below will fail
+    sudo \\cp -rf $sys_autofs_share_file "$sys_autofs_share_file.bak"
+fi
+echo "Installing /etc config file: $source_autofs_share_file to $sys_autofs_share_file"
+sudo \\cp -rf $source_autofs_share_file $sys_autofs_share_file
+sudo mkdir -p /mnt/server
+sudo chmod 777 /mnt/server
 
-#if [ -e "$sys_tlp_file" ]; then
-#    echo "$sys_tlp_file /etc config file exists, nothing to do!"
-#else
-    echo "Installing /etc config file: $source_tlp_file to $sys_tlp_file"
-    sudo cp $source_tlp_file $sys_tlp_file
-#fi
+# add auto mount pve to auto.master file
+if grep -wq "/- /etc/auto.pveshare" "$sys_auto_master_file"; then 
+  echo "$sys_auto_master_file already has PVE share NFS entry, restart autofs service if server isn't mounted" 
+else 
+  echo "Appending PVE entry to /etc/auto.master file"
+  echo "# Adding PVE server NFS entry mount" | sudo tee -a /etc/auto.master
+  echo "/- /etc/auto.pveshare" | sudo tee -a /etc/auto.master
+fi
 
-#if [ -e "$sys_throttled_file" ]; then
-#    echo "$sys_throttled_file /etc config file exists, nothing to do!"
-#else
-    echo "Installing /etc config file: $source_throttled_file to $sys_throttled_file"
-    sudo cp $source_throttled_file $sys_throttled_file
-#fi
+# install tlp config file
+if [ -e "$sys_tlp_file" ]; then
+    echo "$sys_tlp_file /etc config file exists, creating backup"
+    sudo \\cp -rf $sys_tlp_file "$sys_tlp_file.bak"
+fi
+echo "Installing /etc config file: $source_tlp_file to $sys_tlp_file"
+sudo \\cp -rf $source_tlp_file $sys_tlp_file
+
+# install throttled and UV config file
+if [ -e "$sys_throttled_file" ]; then
+    echo "$sys_throttled_file /etc config file exists, creating backup"
+    sudo \\cp -rf $sys_tlp_file "$sys_tlp_file.bak"
+fi
+echo "Installing /etc config file: $source_throttled_file to $sys_throttled_file"
+sudo \\cp -rf $source_throttled_file $sys_throttled_file
+
+
 
 ####################################################################################
 # Install UI/Customizations
@@ -248,7 +259,7 @@ fi
 
 # Install GTK and Icon themes
 pkg_install_dir="$HOME/packages/install"
-mkdir -p $pkg_install_dir
+mkdir -p "$pkg_install_dir"
 cd $pkg_install_dir
 install_ui=0 #default flag, if at least one is pulled, set this below
 
@@ -331,7 +342,7 @@ cd $install_dir
 ####################################################################################
 # Lazyvim
 ####################################################################################
-# commenting this ouw now as .config/nvim with lazygit is now backed up and "stowed"
+# commenting this ouw now as .config/nvim with lazyvim is now backed up and "stowed"
 #mv ~/.config/nvim{,.bak}
 #git clone https://github.com/LazyVim/starter ~/.config/nvim
 #rm -rf ~/.config/nvim/.git
@@ -356,6 +367,7 @@ sudo systemctl start throttled
 sudo systemctl disable thermald
 sudo systemctl mask thermald
 
+# change shell to zsh, need to logout and back in to take effect
 chsh -s $(which zsh)
 ####################################################################################
 # Manual install notice
@@ -363,44 +375,28 @@ chsh -s $(which zsh)
 sys_auto_master_file="/etc/auto.master"
 
 echo
-echo ===========================================================================================
+echo "==========================================================================================="
+echo
 echo "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
-echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Linux Update Notifier, Just Perfection, Removable Drive Menu, Transparent Window Moving, User Themes, Vitals, Weather O Clock"
+echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Linux Update Notifier, Just Perfection,"
+echo "Removable Drive Menu, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
 echo
-echo Manually install Ulauncher plugins, supersonic audio player
+echo "Manually set Nerd Font in: Terminal, Gnome Tweaks and VSCode"
 echo
-echo Manually set Nerd Font in: Terminal, Gnome Tweaks and VSCode
+echo "UI customizations have been cloned in $pkg_install_dir, for future git pulls and updates or can be manually removed to save space. Manually set GNOME Shell theme and Hum alert sound in settings"
 echo
-echo UI customizations have been cloned in $pkg_install_dir, for future git pulls and updates or can be manually removed to save space. Manually set GNOME Shell theme and Hum alert sound
-echo
-if grep -wq "/- /etc/auto.pveshare" $sys_auto_master_file; then 
-  echo "$sys_auto_master_file already has PVE share NFS entry, restart autofs service if server isn't mounted" 
-else 
-  echo "Add the following line at the end of /etc/auto.mount and restart autofs service"
-  echo "/- /etc/auto.pveshare"
-fi
-echo
-echo ===========================================================================================
-echo
-
-####################################################################################
-# End
-####################################################################################
-
-echo
-echo "Done! Logout and log back in for changes."
+echo "==========================================================================================="
 echo
 
 ####################################################################################
 # ZSH and customizations
 ####################################################################################
-echo "ZSH_THEME=\"powerlevel10k/powerlevel10k\"" >> $local_zshrc
+echo "==========================================================================================="
+read -p "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script. Installing oh-my-zsh as the last software. Press Enter to continue." -n1 -s
+echo "==========================================================================================="
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-echo ===========================================================================================
-#git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
-echo "Run git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k manually after configuring oh-my-zsh"
-echo ===========================================================================================
 
-# manually install easy effects presets and gnome extensions for easy control (optional)
-# bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
-# https://extensions.gnome.org/extension/4907/easyeffects-preset-selector/
+# installing oh-my-zsh will exit this script, so keep it as the last item to be installed
+####################################################################################
+# END of script
+####################################################################################
