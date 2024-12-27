@@ -401,5 +401,6 @@ echo ===========================================================================
 echo "Run git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k manually after configuring oh-my-zsh"
 echo ===========================================================================================
 
-# manually install easy effects press
+# manually install easy effects presets and gnome extensions for easy control (optional)
 # bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
+# https://extensions.gnome.org/extension/4907/easyeffects-preset-selector/
