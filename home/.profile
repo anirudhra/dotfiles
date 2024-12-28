@@ -29,5 +29,5 @@ if (( ${+commands[open]} )); then
 fi
 
 # common for all
-fastfetch
+fastfetch --config groups
 echo
