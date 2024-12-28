@@ -1,9 +1,13 @@
-source ~/.aliases
+# . is POSIX version of "source"
+. ~/.aliases
 
 #macos only
 if (( ${+commands[open]} )); then 
     source <(fzf --zsh)
     test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+
+    echo
+    eval "$(/usr/local/bin/brew shellenv)"
 
     export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
     export HOMEBREW_NO_ANALYTICS=1
@@ -12,7 +16,7 @@ if (( ${+commands[open]} )); then
     export EDITOR='nvim'
 
     if [ -f $(brew --prefix)/etc/bash_completion ]; then
-    . $(brew --prefix)/etc/bash_completion
+        . $(brew --prefix)/etc/bash_completion
     fi
 
     export GTK_PATH=/usr/local/lib/gtk-2.0

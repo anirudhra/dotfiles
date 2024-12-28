@@ -143,7 +143,7 @@ alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._
 alias dotclean='find . -name ._\* -delete'
 
 #cleanup caches,fedora and debian
-if (( ${+commands[apt]} )); then 
+if (( ${+commands[apt-get]} )); then 
     # add condition for debian/derivatives specific command here
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
