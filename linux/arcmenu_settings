@@ -1,14 +1,14 @@
 [/]
 application-shortcuts=[{'id': 'ArcMenu_Software', 'name': 'Software'}, {'id': 'org.gnome.Settings.desktop'}, {'id': 'org.gnome.tweaks.desktop'}, {'id': 'org.gnome.Extensions.desktop'}, {'name': 'ArcMenu Settings', 'icon': '/home/anirudh/.local/share/gnome-shell/extensions/arcmenu@arcmenu.com//icons/arcmenu-logo-symbolic.svg', 'id': 'gnome-extensions prefs arcmenu@arcmenu.com'}, {'id': 'ArcMenu_ActivitiesOverview', 'name': 'Activities Overview', 'icon': 'view-fullscreen-symbolic'}]
 arc-menu-icon=67
-arcmenu-extra-categories-links=[(0, false), (1, false), (2, false), (3, false), (4, true)]
+arcmenu-extra-categories-links=[(0, false), (1, true), (2, false), (3, false), (4, true)]
 button-item-icon-size='Default'
 button-padding=2
 context-menu-items=[{'id': 'org.gnome.Settings.desktop'}, {'id': 'org.gnome.tweaks.desktop'}, {'id': 'org.gnome.Extensions.desktop'}, {'id': 'ArcMenu_Settings', 'name': 'ArcMenu Settings', 'icon': 'ArcMenu_ArcMenuIcon'}, {'id': 'ArcMenu_PanelExtensionSettings', 'name': 'Panel Extension Settings', 'icon': 'application-x-addon-symbolic'}, {'id': 'ArcMenu_Separator', 'name': 'Separator', 'icon': 'list-remove-symbolic'}, {'id': 'ArcMenu_ActivitiesOverview', 'name': 'Activities Overview', 'icon': 'view-fullscreen-symbolic'}, {'id': 'ArcMenu_ShowDesktop', 'name': 'Show Desktop', 'icon': 'computer-symbolic'}, {'id': 'ArcMenu_PowerOptions', 'name': 'Power Options', 'icon': 'system-shutdown-symbolic'}]
 custom-menu-button-icon-size=22.0
 dash-to-panel-standalone=true
 directory-shortcuts=[{'id': 'ArcMenu_Home', 'name': 'Home', 'icon': 'ArcMenu_Home'}, {'id': 'ArcMenu_Downloads', 'name': 'Downloads', 'icon': 'ArcMenu_Downloads'}, {'id': 'ArcMenu_Documents', 'name': 'Documents', 'icon': 'ArcMenu_Documents'}, {'id': 'ArcMenu_Pictures', 'name': 'Pictures', 'icon': 'ArcMenu_Pictures'}]
-extra-categories=[(0, true), (1, true), (2, false), (3, false), (4, true)]
+extra-categories=[(0, false), (1, true), (2, false), (3, false), (4, true)]
 hide-overview-on-startup=true
 left-panel-width=275
 menu-button-icon='Menu_Icon'
