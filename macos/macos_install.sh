@@ -82,6 +82,8 @@ guipackages=(
 
 echo "Installing command line apps..."
 brew install "${corepackages[@]}"
+#install itemr2 shell integration
+curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh
 echo "Installing command line apps... done!"
 
 echo "Installing nerd fonts..."

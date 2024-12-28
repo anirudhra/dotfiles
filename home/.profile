@@ -1,10 +1,10 @@
 # . is POSIX version of "source"
 . ~/.aliases
 
-#macos only
+#macos only, test by checking if "open" command exists (macos-only)
 if (( ${+commands[open]} )); then 
     source <(fzf --zsh)
-    test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shell_integration.bash"
+    test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
     echo
     eval "$(/usr/local/bin/brew shellenv)"
@@ -14,10 +14,6 @@ if (( ${+commands[open]} )); then
     export HOMEBREW_CASK_OPTS="--appdir=/Applications"
     export VISUAL='vimr'
     export EDITOR='nvim'
-
-    if [ -f $(brew --prefix)/etc/bash_completion ]; then
-        . $(brew --prefix)/etc/bash_completion
-    fi
 
     export GTK_PATH=/usr/local/lib/gtk-2.0
     export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
@@ -32,5 +28,6 @@ if (( ${+commands[open]} )); then
     echo
 fi
 
+# common for all
 fastfetch
 echo
