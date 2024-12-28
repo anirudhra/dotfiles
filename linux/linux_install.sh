@@ -390,7 +390,7 @@ echo
 echo "==========================================================================================="
 echo
 echo "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
-echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Linux Update Notifier, Just Perfection,"
+echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
 echo "Removable Drive Menu, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
 echo
 echo "Manually set Nerd Font in: Terminal, Gnome Tweaks and VSCode"
