@@ -1,4 +1,7 @@
 #!/bin/sh
+# (c) Anirudh Acharya 2024
+# macOS installer script
+# Run this script as non-root user
 
 # installs homebrew, oh-my-zsh, powerlevel10k
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"

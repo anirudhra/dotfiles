@@ -1,4 +1,7 @@
 #!/bin/sh
+# (c) Anirudh Acharya 2024
+# macOS post installer script
+# Run this script as non-root user
 
 # This is the post install script and MUST be run after macos_install.sh script
 echo
