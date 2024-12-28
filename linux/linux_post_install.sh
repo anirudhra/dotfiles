@@ -26,6 +26,7 @@ fi
 
 #git login
 gh auth login #for browser based git login instead of token
+git config --global core.editor "nano"
 
 ####################################################################################
 # Zsh/oh-my-zsh plugins, all these are enabled in "stowed zshrc" already
@@ -51,10 +52,34 @@ bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory - should be last in this file
 ####################################################################################
+
+#backup existing files
+local_profile="$HOME/.profile"
+local_zshrc="$HOME/.zshrc"
+local_aliases="$HOME/.aliases"
+local_p10k="$HOME/.p10k.zsh"
+local_nvim_dir="$HOME/.config/nvim"
+
+if [ -e "$local_profile" ]; then
+    cp -rf $local_profile "$local_profile.bak"
+fi
+if [ -e "$local_zshrc" ]; then
+    cp -rf $local_zshrc "$local_zshrc.bak"
+fi
+if [ -e "$local_aliases" ]; then
+    cp -rf $local_aliases "$local_aliases.bak"
+fi
+if [ -e "$local_p10k" ]; then
+    cp -rf $local_p10k "$local_p10k.bak"
+fi
+if [ -d $local_nvim_dir ]; then
+    mv $local_nvim_dir "$local_nvim_dir.bak"
+fi
+
 # activate stow
 echo "Stowing dotfiles..."
 cd $install_dir/../home
-stow --target=/home/anirudh --adopt .
+stow --target=$HOME --adopt .
 # above will overwrite git repo if files already exist in $HOME,
 # git restore . will restore with the correct versions, this is a trick to overwrite with repo files
 git restore .

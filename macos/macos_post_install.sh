@@ -19,8 +19,8 @@ if [[ $install_dir != *"/dotfiles/macos"* ]]; then
 fi
 
 #git login, choose browser based for easy auth
-#FIXME: remove before committing
-#gh auth login
+gh auth login
+git config --global core.editor "nano"
 
 ####################################################################################
 # Zsh/oh-my-zsh plugins, all these are enabled in "stowed zshrc" already
@@ -38,10 +38,34 @@ git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory - should be last in this file
 ####################################################################################
+
+#backup existing files
+local_profile="$HOME/.profile"
+local_zshrc="$HOME/.zshrc"
+local_aliases="$HOME/.aliases"
+local_p10k="$HOME/.p10k.zsh"
+local_nvim_dir="$HOME/.config/nvim"
+
+if [ -e "$local_profile" ]; then
+    cp -rf $local_profile "$local_profile.bak"
+fi
+if [ -e "$local_zshrc" ]; then
+    cp -rf $local_zshrc "$local_zshrc.bak"
+fi
+if [ -e "$local_aliases" ]; then
+    cp -rf $local_aliases "$local_aliases.bak"
+fi
+if [ -e "$local_p10k" ]; then
+    cp -rf $local_p10k "$local_p10k.bak"
+fi
+if [ -d $local_nvim_dir ]; then
+    mv $local_nvim_dir "$local_nvim_dir.bak"
+fi
+
 # activate stow
 echo "Stowing dotfiles..."
 cd $install_dir/../home
-stow --target=/Users/anirudh --adopt .
+stow --target=$HOME --adopt .
 # above will overwrite git repo if files already exist in $HOME,
 # git restore . will restore with the correct versions, this is a trick to overwrite with repo files
 git restore .
