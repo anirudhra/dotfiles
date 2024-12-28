@@ -58,7 +58,7 @@ alias nowdate='date +"%d-%m-%Y"'
 alias a='alias'
 
 #git
-alias gitpush="git pull && git add * && git commit && git push"
+alias gitpush="git pull && git add * && git commit -a && git push"
 
 #console
 alias please='sudo $( history -p !! )'
@@ -285,7 +285,7 @@ movemovie()
 dockerupdateall()
 {
     cd /mnt/server/ssd-data/dockerapps
-    cd `hostname`
+    cd $(hostname) || exit
     find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
     docker image prune -a -f
     docker system prune --volumes -f
@@ -293,6 +293,10 @@ dockerupdateall()
 
 cleanlocales()
 {
-     sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {}
+    if (( ${+commands[open]} )); then 
+       echo "Can only run on Linux!"
+       exit
+    fi
+    sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {}
 }
 

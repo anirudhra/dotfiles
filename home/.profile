@@ -1,5 +1,5 @@
 # . is POSIX version of "source"
-. ~/.aliases
+. ${HOME}/.aliases
 
 #macos only, test by checking if "open" command exists (macos-only)
 if (( ${+commands[open]} )); then 
