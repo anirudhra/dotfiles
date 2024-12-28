@@ -5,6 +5,7 @@ alias ls='ls --color=auto -FG'
 ## Use a long listing format ##
 alias ll='ls -la --color | less -R'
 ## Show hidden files ##
+alias ll.='ls -l -d -FG --color=auto .* | less'
 alias ls.='ls -d -FG --color=auto .*'
 alias l='ls -lFh'     #size,show type,human readable
 alias la='ls -lAFh'   #long list,show almost all,show type,human readable
@@ -47,8 +48,8 @@ alias md='mkdir'
 alias rd='rmdir'
 
 #stow aliases
-alias unstow='stow --delete'
-alias restow='cd ~/dotfiles/home && stow --target=$HOME --adopt . && cd -'
+alias unstow='cd $HOME/dotfiles/home && stow --verbose=2 --target=$HOME --delete . && cd -'
+alias restow='cd $HOME/dotfiles/home && stow --verbose=1 --target=$HOME --stow --adopt . && cd -'
 
 alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
