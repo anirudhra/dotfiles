@@ -92,17 +92,9 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-
 ## get top process eating memory
 alias psmem='ps aux | sort -nr -k 4'
 alias psmem10='ps aux | sort -nr -k 4 | head -10'
-
-# network related
-# Stop after sending count ECHO_REQUEST packets #
-alias ping='ping -c 5'
-# Do not wait interval 1 second, go fast #
-alias fastping='ping -c 100 -s.2'
-alias ports='netstat -tulanp'
 
 # become root #
 alias root='sudo -i'
@@ -127,13 +119,12 @@ alias du='du -ch'
 #alias sudovi='sudo vi'
 alias vi='nvim'
 alias vim='nvim'
-alias gvim='nvim'
+alias vis='nvim "+set si"'
 alias sudovi='sudo nvim'
 #alias edit="$EDITOR"
 alias edit="vim"
 alias pager="$PAGER"
 alias readme="cat README.md | less"
-
 
 # "dos" aliases
 alias cls='clear'
@@ -151,12 +142,12 @@ fi
 alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._.DS_Store -delete'
 alias dotclean='find . -name ._\* -delete'
 
-
 #cleanup caches,fedora and debian
 if (( ${+commands[apt]} )); then 
     # add condition for debian/derivatives specific command here
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
-    alias fullupdate='sudo apt update && sudo apt dist-upgrade' 
+    alias fullupdate='sudo apt update && sudo apt dist-upgrade'
+    alias gvim='nvim'
 elif (( ${+commands[dnf]} )); then 
     # add condition for fedora specific command here
     alias fullclean='sudo dnf clean all && sudo dnf autoremove'
@@ -164,22 +155,38 @@ elif (( ${+commands[dnf]} )); then
     alias distupgrade='sudo dnf update --refresh && sudo dnf distro-sync'
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
+    alias gvim='nvim'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
 elif (( ${+commands[open]} )); then 
     # add condition for macos specific commmand here
-    alias brew_update='brew tap homebrew/cask && brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+    alias brew_update='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+    alias fullupdate='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
     alias fix_wireshark='cd /dev && sudo chown aacharya:admin bp*; cd -'
     alias flushdns='dscacheutil -flushcache'
     alias lscleanup='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder'
     alias cdf='open .'
     alias shuf='gshuf'
+    alias gvim='vimr'
     #finder aliases
     alias finder='open'
     #cleanup caches
     alias cleanup='sudo update_dyld_shared_cache -force'
     #finder hidden files
-    alias hidden_show='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
-    alias hidden_hide='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder /System/Library/CoreServices/Finder.app'
+    alias showhidden='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
+    alias hidehidden='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder /System/Library/CoreServices/Finder.app'
+    alias gooc='cd ~/Downloads/OpenCore'
+    # Desktop Programs
+    alias preview="open -a '$PREVIEW'"
+    alias xcode="open -a '/Applications/XCode.app'"
+    alias filemerge="open -a '/Developer/Applications/Utilities/FileMerge.app'"
+    alias safari="open -a safari"
+    alias firefox="open -a firefox"
+    alias chrome="open -a google\ chrome"
+    alias textedit='open -a TextEdit'
+    #finder aliases
+    alias finder='open'
+    #monitor cpu clock
+    alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
 fi
 
 alias ipy="jupyter lab ~/code/jupyter"
@@ -215,6 +222,16 @@ alias dockerclean='docker system prune --volumes'
 alias lessc='less -R'
 alias more='less'
 #alias cat='less'
+
+# network related
+# Stop after sending count ECHO_REQUEST packets #
+alias ping='ping -c 5'
+# Do not wait interval 1 second, go fast #
+alias fastping='ping -c 100 -s.2'
+alias ports='netstat -tulanp'
+
+alias iperfdown='iperf3 -Rc 10.100.100.50'
+alias iperfup='iperf3 -c 10.100.100.50'
 
 alias pingrouter='ping 10.100.100.1'
 alias pingserver='ping 10.100.100.50'
