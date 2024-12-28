@@ -8,7 +8,7 @@ Repo for dotfiles and other configs and installation scripts (macOS and Linux)
 ## How to
 Clone this repo and change directory to .../dotfiles/linux and run linux_install.sh and linux_post_install.sh for Linux (Fedora/Debian/Ubuntu) or .../dotfiles/mac/macos_install.sh and macos_post_install.sh for macOS in that order
 
-###Linux
+### Linux
 
 Installation script:
 
@@ -26,7 +26,7 @@ cd $HOME/dotfiles/linux
 ./linux_post_install.sh
 ```
 
-###macOS
+### macOS
 
 Installation script:
 
