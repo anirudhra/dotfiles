@@ -40,6 +40,7 @@ corepackages=(
     'lolcat'
     'luarocks'
     'unzip'
+    'iperf3'
 )
 
 nerdfonts=(
