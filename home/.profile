@@ -29,5 +29,6 @@ if (( ${+commands[open]} )); then
 fi
 
 # common for all
-fastfetch --config groups
+#fastfetch --config groups #enable only if presets are correctly installed both macos/linux, else failsafe below
+fastfetch
 echo
