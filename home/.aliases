@@ -125,7 +125,8 @@ alias sudovi='sudo nvim'
 #alias edit="$EDITOR"
 alias edit="vim"
 alias pager="$PAGER"
-alias readme="cat README.md | less"
+#alias readme="cat README.md | less"
+alias readme="find . -maxdepth 1 -iname \"README.md\" -exec less {} \;"
 
 # "dos" aliases
 alias cls='clear'
