@@ -307,6 +307,6 @@ cleanlocales()
        echo "Can only run on Linux!"
        exit
     fi
-    sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {}
+    sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
 }
 
