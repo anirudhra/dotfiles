@@ -249,6 +249,7 @@ alias sshvega='ssh -o MACs=hmac-sha2-256 root@10.100.100.60'
 alias sshventoy='ssh -o MACs=hmac-sha2-256 root@10.100.100.51'
 alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55'
 alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
+alias tmuxpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tmux new"'
 
 alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias booterrors='sudo journalctl  -b 0 -p 3'
