@@ -149,6 +149,7 @@ if (( ${+commands[apt-get]} )); then
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
     alias gvim='nvim'
+    alias fm='nautilus . &'
 elif (( ${+commands[dnf]} )); then 
     # add condition for fedora specific command here
     alias fullclean='sudo dnf clean all && sudo dnf autoremove'
@@ -157,6 +158,7 @@ elif (( ${+commands[dnf]} )); then
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
     alias gvim='nvim'
+    alias fm='nautilus . &'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
 elif (( ${+commands[open]} )); then 
     # add condition for macos specific commmand here
@@ -305,6 +307,6 @@ cleanlocales()
        echo "Can only run on Linux!"
        exit
     fi
-    sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {}
+    sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
 }
 
