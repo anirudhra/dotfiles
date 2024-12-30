@@ -19,6 +19,7 @@ alias lsr='ls -lARFh' #Recursive list of files and directories
 alias lsn='ls -1'     #A column contains name of files and directories
 
 alias zshrc='${=EDITOR} ${ZDOTDIR:-$HOME}/.zshrc' # Quick access to the .zshrc file
+alias bashrc='${=EDITOR} ${$HOME}/.bashrc' # Quick access to the .bashrc file
 
 ## get rid of command not found ##
 alias cd..='cd ..'
