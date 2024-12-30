@@ -19,6 +19,7 @@ alias lsr='ls -lARFh' #Recursive list of files and directories
 alias lsn='ls -1'     #A column contains name of files and directories
 
 alias zshrc='${=EDITOR} ${ZDOTDIR:-$HOME}/.zshrc' # Quick access to the .zshrc file
+alias bashrc='${=EDITOR} ${$HOME}/.bashrc' # Quick access to the .bashrc file
 
 ## get rid of command not found ##
 alias cd..='cd ..'
@@ -192,7 +193,7 @@ elif (( ${+commands[open]} )); then
     alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
 fi
 
-alias ipy="jupyter lab ~/code/jupyter"
+alias ipy="jupyter lab ~/code/github/jupyternb"
 
 #rename
 alias ren_jpg="rename 's/.JPG/.pndat/g' *.JPG && rename 's/.jpg/.pndat/g' *.jpg"
