@@ -131,6 +131,7 @@ corepackages=(
     'unrar'
     'nmap'
     'iperf3'
+    'ncdu'
 )
 
 # Nerd fonts list to be installed
