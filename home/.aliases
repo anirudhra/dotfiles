@@ -190,7 +190,7 @@ elif (( ${+commands[open]} )); then
     alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
 fi
 
-alias ipy="jupyter lab ~/code/jupyter"
+alias ipy="jupyter lab ~/code/github/jupyternb"
 
 #rename
 alias ren_jpg="rename 's/.JPG/.pndat/g' *.JPG && rename 's/.jpg/.pndat/g' *.jpg"
