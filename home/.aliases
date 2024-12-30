@@ -238,18 +238,24 @@ alias iperfup='iperf3 -c 10.100.100.50'
 alias pingrouter='ping 10.100.100.1'
 alias pingserver='ping 10.100.100.50'
 
+#ssh to LXC/VMs
 alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65'
 alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70'
 alias sshjf='ssh -o MACs=hmac-sha2-256 root@10.100.100.80'
 alias sshsagat='ssh -o MACs=hmac-sha2-256 root@10.100.100.75'
-alias sshrouter='ssh admin@10.100.100.1 -p 12372'
-alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
-alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
 alias sshvega='ssh -o MACs=hmac-sha2-256 root@10.100.100.60'
 alias sshventoy='ssh -o MACs=hmac-sha2-256 root@10.100.100.51'
 alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55'
 alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
-alias tmuxpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tmux new"'
+# alias sshpaperless=''
+# alias sshnc=''
+# alias sshkodi=''
+# alias sshfrigate=''
+
+# by default always open a tmux session for PVE server, use sshserver for non-tmux version
+alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tmux new"'
+alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
+alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
 alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias booterrors='sudo journalctl  -b 0 -p 3'
