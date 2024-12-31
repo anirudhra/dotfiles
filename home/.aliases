@@ -62,15 +62,9 @@ alias nowtime='now'
 alias nowdate='date +"%d-%m-%Y"'
 alias a='alias'
 
-#console
-alias please='sudo $( history -p !! )'
-alias count='find . -type f | wc -l'
-alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
-alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
-alias free='free -h'
-
 # find aliases
 alias fdir='find . -type d -name'
+alias count='find . -type f | wc -l'
 alias ffile='find . -type f -name'
 
 ## disk space clean output ##
@@ -79,6 +73,7 @@ alias df='df -P -h'
 alias du='du -ch'
 alias duf='duf -hide special'
 alias dirsize='du -sh'
+alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
 
 # sort, unset etc.
 alias help='man'
@@ -93,14 +88,19 @@ alias mv='mv -i'
 ## get top process eating memory
 alias psmem='ps aux | sort -nr -k 4'
 alias psmem10='ps aux | sort -nr -k 4 | head -10'
+alias free='free -h'
 
 ## get top process eating cpu ##
 alias pscpu='ps aux | sort -nr -k 3'
 alias pscpu10='ps aux | sort -nr -k 3 | head -10'
 
+alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
+alias proc='ps aux | grep -i '
+
 # become root #
 alias root='sudo -i'
 alias su='sudo -i'
+alias please='sudo $( history -p !! )'
  
 # editor aliases
 #alias vim='nano'
@@ -108,6 +108,7 @@ alias su='sudo -i'
 #alias vi='vim'
 #alias gvim='vim'
 #alias sudovi='sudo vi'
+# ensure neovim is insstalled
 alias vi='nvim'
 alias vim='nvim'
 alias vis='nvim "+set si"'
@@ -132,9 +133,6 @@ if [ -x "$(command -v apt-get)" ]; then
     # add condition for debian/derivatives specific command here
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
-    alias gvim='nvim'
-    alias fm='nautilus . &'
-    alias gopvescripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
 #elif (( ${+commands[dnf]} )); then 
 elif [ -x "$(command -v dnf)" ]; then 
     # add condition for fedora specific command here
@@ -143,8 +141,6 @@ elif [ -x "$(command -v dnf)" ]; then
     alias distupgrade='sudo dnf update --refresh && sudo dnf distro-sync'
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
-    alias gvim='nvim'
-    alias fm='nautilus . &'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
 #elif (( ${+commands[open]} )); then 
 elif [ -x "$(command -v diskutil)" ]; then 
@@ -177,31 +173,18 @@ elif [ -x "$(command -v diskutil)" ]; then
     alias finder='open'
     #monitor cpu clock
     alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
-fi
 
-# jupyterlab aliases
-alias ipy="jupyter lab ~/code/github/jupyternb"
+    # jupyterlab aliases
+    alias ipy="jupyter lab ~/code/github/jupyternb"
+fi
 
 #git
 alias gitpush="git pull && git add * && git commit -a && git push"
 
 # other goto aliases
-alias sysinfo='sudo inxi -Fzx'
 alias godot='cd $HOME/dotfiles'
 alias gocode='cd $HOME/code'
 alias gogit='cd $HOME/code/github'
-
-# docker files on server mount
-alias gomedia='cd /mnt/server/ssd-media/media'
-alias godata='cd /mnt/server/ssd-data'
-alias godocker='cd /mnt/server/ssd-data/dockerapps'
-alias dockerup='docker compose up -d'
-alias dockerdown='docker compose down'
-alias dockerrestart='docker compose down && docker compose up -d'
-alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
-alias dockerclean='docker system prune --volumes'
-#alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
 
 # Enable syntax-highlighting in less/cat
 # Note: needs source-highlight and highlight brew packages for these to work
@@ -249,7 +232,7 @@ alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tm
 alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
 alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
-# macos and linux services
+# macos and linux services, aliases (use this section for common linux aliases instead of distro specific)
 #if (( ${+commands[open]} )); then
 if [ -x "$(command -v diskutil)" ]; then 
     # macos services here, use diskutil to test if running on mac
@@ -257,10 +240,29 @@ if [ -x "$(command -v diskutil)" ]; then
 else
     # linux services
     alias booterrors='sudo journalctl  -b 0 -p 3'
+    alias sysinfo='sudo inxi -Fzx'
     alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
     alias reservice='sudo systemctl daemon-reload'
     #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
     alias refresh='watch --interval=3'
+    
+    alias fm='nautilus . &'
+
+    alias gvim='nvim'
+    # docker files on server mount
+    alias gomedia='cd /mnt/server/ssd-media/media'
+    alias godata='cd /mnt/server/ssd-data'
+    alias godocker='cd /mnt/server/ssd-data/dockerapps'
+    alias gopvedocker='cd /mnt/ssd-data/dockerapps'
+    alias gopvescripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
+    alias dockerup='docker compose up -d'
+    alias dockerdown='docker compose down'
+    alias dockerrestart='docker compose down && docker compose up -d'
+    alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+    alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
+    alias dockerclean='docker system prune --volumes'
+    #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
+
 fi
 ######## functions ######################
 
