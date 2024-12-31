@@ -103,17 +103,27 @@ alias su='sudo -i'
 alias please='sudo $( history -p !! )'
  
 # editor aliases
-#alias vim='nano'
-#alias vi='nano'
-#alias vi='vim'
-#alias gvim='vim'
-#alias sudovi='sudo vi'
-# ensure neovim is insstalled
-alias vi='nvim'
-alias vim='nvim'
-alias vis='nvim "+set si"'
-alias sudovi='sudo nvim'
-alias edit="vim"
+if [ -x "$(command -v nvim)" ]; then
+  alias vi='nvim'
+  alias vim='nvim'
+  alias vis='nvim "+set si"'
+  alias sudovi='sudo nvim'
+  alias edit="nvim"
+elif [ -x "$(command -v vim)" ]; then
+  alias vi='vim'
+  alias vis='vim "+set si"'
+  alias sudovi='sudo vim'
+  alias edit="vim"
+else
+  #failsafe, in almost every OS
+  alias vi='nano'
+  alias vim='nano'
+  alias vis='nvim "+set si"'
+  alias sudovi='sudo nano'
+  alias edit="nano"
+fi
+
+# pager and readme aliases
 alias pager="$PAGER"
 alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less {} \;"
 
@@ -127,11 +137,39 @@ fi
 alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._.DS_Store -delete'
 alias dotclean='find . -name ._\* -delete'
 
-#cleanup caches,fedora and debian
+############### OS Assumptions #################
+# Debian/Ubuntu: PVE Server and PVE LXCs and VMs
+# Fedora: Laptop
+# macOS: Desktop 
+################################################
+
+# OS specific macros, all other generalized linux/distro agnostic is later
+# Debian/Ubuntu and derivatives only below
 if [ -x "$(command -v apt-get)" ]; then
     # add condition for debian/derivatives specific command here
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
+
+    # LXC/VM go shortcuts
+    alias gomedia='cd /mnt/server/ssd-media/media'
+    alias godata='cd /mnt/server/ssd-data'
+    alias godocker='cd /mnt/server/ssd-data/dockerapps'
+
+    # PVE go shortcuts
+    alias gopvemedia='cd /mnt/sata-ssd/ssd-media/media'
+    alias gopvedata='cd /mnt/sata-ssd/ssd-data'
+    alias gopvedocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
+    alias gopvescripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
+    
+    # following to be run on LXC/VM guests only, not server
+    alias dockerup='docker compose up -d'
+    alias dockerdown='docker compose down'
+    alias dockerrestart='docker compose down && docker compose up -d'
+    alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+    alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
+    alias dockerclean='docker system prune --volumes'
+    #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
+#Fedora Linux only below
 elif [ -x "$(command -v dnf)" ]; then 
     # add condition for fedora specific command here
     alias fullclean='sudo dnf clean all && sudo dnf autoremove'
@@ -140,24 +178,25 @@ elif [ -x "$(command -v dnf)" ]; then
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
+#macOS specific only below
 elif [ -x "$(command -v diskutil)" ]; then 
     # add condition for macos specific commmand here - diskutil not available on linux
     alias brew_update='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
-    alias fullupdate='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+    alias fullupdate='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'    
     
+    # all other macos aliases/macros
+    alias showkext="kextstat | grep -E"
+    alias gvim='vimr'
     alias fix_wireshark='cd /dev && sudo chown aacharya:admin bp*; cd -'
     alias flushdns='dscacheutil -flushcache'
     alias lscleanup='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder'
     alias cleanup='sudo update_dyld_shared_cache -force'
-    
-    alias cdf='open .'P='2>&1| pygmentize -l pytb'
-    alias shuf='gshuf'
-    alias finder='open'
-    
+        
     #finder hidden files
     alias showhidden='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
     alias hidehidden='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder /System/Library/CoreServices/Finder.app'
-    alias gooc='cd ~/Downloads/OpenCore'
+    alias finder='open'
+    alias shuf='gshuf'
     
     # Desktop Programs
     alias preview="open -a '$PREVIEW'"
@@ -167,11 +206,13 @@ elif [ -x "$(command -v diskutil)" ]; then
     alias firefox="open -a firefox"
     alias chrome="open -a google\ chrome"
     alias textedit='open -a TextEdit'
+
     #monitor cpu clock
     alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
 
     # jupyterlab aliases
     alias ipy="jupyter lab ~/code/github/jupyternb"
+    alias gooc='cd ~/code/OpenCore'
 fi
 
 #git
@@ -229,12 +270,8 @@ alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tm
 alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
 alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
-# macos and linux services, aliases (use this section for common linux aliases instead of distro specific)
-if [ -x "$(command -v diskutil)" ]; then 
-    # macos services here, use diskutil to test if running on mac
-    alias showkext="kextstat | grep -E"
-    alias gvim='vimr'
-else
+# generic linux-only, distro agnostic; not applicable to macOS
+if [ ! -x "$(command -v diskutil)" ]; then
     # linux services
     alias booterrors='sudo journalctl  -b 0 -p 3'
     alias sysinfo='sudo inxi -Fzx'
@@ -242,21 +279,7 @@ else
     alias reservice='sudo systemctl daemon-reload'
     
     alias fm='nautilus . &'
-    alias gvim='nvim'
-
-    # docker files on server mount
-    alias gomedia='cd /mnt/server/ssd-media/media'
-    alias godata='cd /mnt/server/ssd-data'
-    alias godocker='cd /mnt/server/ssd-data/dockerapps'
-    alias gopvedocker='cd /mnt/ssd-data/dockerapps'
-    alias gopvescripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
-    alias dockerup='docker compose up -d'
-    alias dockerdown='docker compose down'
-    alias dockerrestart='docker compose down && docker compose up -d'
-    alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-    alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
-    alias dockerclean='docker system prune --volumes'
-    #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
+    alias gvim='vim'
 fi
 ######## functions ######################
 
@@ -273,7 +296,7 @@ mkcd()
     esac
 }
 
-#intended to be run on guests only
+#intended to be run on PVE guests only
 movemovie()
 {
     case $# in
@@ -288,7 +311,7 @@ movemovie()
     esac
 }
 
-#intended to be run on guests only
+#intended to be run on PVE guests only
 dockerupdateall()
 {
     cd /mnt/server/ssd-data/dockerapps
@@ -298,12 +321,11 @@ dockerupdateall()
     docker system prune --volumes -f
 }
 
+#intended to be run on linux only
 cleanlocales()
 {
-    if (( ${+commands[open]} )); then 
-       echo "Can only run on Linux!"
-       exit
+    if [ ! -x "$(command -v diskutil)" ]; then
+      sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
     fi
-    sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
 }
 
