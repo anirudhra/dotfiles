@@ -22,8 +22,8 @@ alias lsr='ls -lARFh' #Recursive list of files and directories
 alias lsn='ls -1'     #A column contains name of files and directories
 
 #quick access to zshrc and bashrc files
-alias zshrc='${=EDITOR} ${ZDOTDIR:-$HOME}/.zshrc'
-alias bashrc='${=EDITOR} ${$HOME}/.bashrc'
+alias zshrc='vim ${HOME}/.zshrc'
+alias bashrc='vim ${HOME}/.bashrc'
 
 ## a quick way to get out of current directory ##
 alias cd..='cd ..'
