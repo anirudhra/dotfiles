@@ -147,8 +147,8 @@ elif [ -x "$(command -v dnf)" ]; then
     alias fm='nautilus . &'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
 #elif (( ${+commands[open]} )); then 
-elif [ -x "$(command -v open)" ]; then 
-    # add condition for macos specific commmand here
+elif [ -x "$(command -v diskutil)" ]; then 
+    # add condition for macos specific commmand here - diskutil not available on linux
     alias brew_update='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
     alias fullupdate='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
     alias fix_wireshark='cd /dev && sudo chown aacharya:admin bp*; cd -'
@@ -251,8 +251,8 @@ alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
 # macos and linux services
 #if (( ${+commands[open]} )); then
-if [ -x "$(command -v open)" ]; then 
-    # macos services here
+if [ -x "$(command -v diskutil)" ]; then 
+    # macos services here, use diskutil to test if running on mac
     alias kext="kext" #FIXME
 else
     # linux services
