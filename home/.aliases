@@ -129,11 +129,9 @@ alias dotclean='find . -name ._\* -delete'
 
 #cleanup caches,fedora and debian
 if [ -x "$(command -v apt-get)" ]; then
-#if (( ${+commands[apt-get]} )); then 
     # add condition for debian/derivatives specific command here
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
-#elif (( ${+commands[dnf]} )); then 
 elif [ -x "$(command -v dnf)" ]; then 
     # add condition for fedora specific command here
     alias fullclean='sudo dnf clean all && sudo dnf autoremove'
@@ -142,25 +140,25 @@ elif [ -x "$(command -v dnf)" ]; then
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
-#elif (( ${+commands[open]} )); then 
 elif [ -x "$(command -v diskutil)" ]; then 
     # add condition for macos specific commmand here - diskutil not available on linux
     alias brew_update='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
     alias fullupdate='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+    
     alias fix_wireshark='cd /dev && sudo chown aacharya:admin bp*; cd -'
     alias flushdns='dscacheutil -flushcache'
     alias lscleanup='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder'
+    alias cleanup='sudo update_dyld_shared_cache -force'
+    
     alias cdf='open .'P='2>&1| pygmentize -l pytb'
     alias shuf='gshuf'
-    alias gvim='vimr'
-    #finder aliases
     alias finder='open'
-    #cleanup caches
-    alias cleanup='sudo update_dyld_shared_cache -force'
+    
     #finder hidden files
     alias showhidden='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
     alias hidehidden='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder /System/Library/CoreServices/Finder.app'
     alias gooc='cd ~/Downloads/OpenCore'
+    
     # Desktop Programs
     alias preview="open -a '$PREVIEW'"
     alias xcode="open -a '/Applications/XCode.app'"
@@ -169,8 +167,6 @@ elif [ -x "$(command -v diskutil)" ]; then
     alias firefox="open -a firefox"
     alias chrome="open -a google\ chrome"
     alias textedit='open -a TextEdit'
-    #finder aliases
-    alias finder='open'
     #monitor cpu clock
     alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
 
@@ -195,14 +191,15 @@ alias lessc='less -R'
 alias more='less'
 #alias cat='less'
 
+#use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
+alias refresh='watch --interval=3'
+
 # network related
 # Stop after sending count ECHO_REQUEST packets #
 alias ping='ping -c 5'
 # Do not wait interval 1 second, go fast #
 alias fastping='ping -c 100 -s.2'
 alias ports='netstat -tulanp'
-
-## this one saved by butt so many times ##
 alias wget='wget -c'
 
 # iperf3, uses daemon on pve persever
@@ -233,22 +230,20 @@ alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
 alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
 # macos and linux services, aliases (use this section for common linux aliases instead of distro specific)
-#if (( ${+commands[open]} )); then
 if [ -x "$(command -v diskutil)" ]; then 
     # macos services here, use diskutil to test if running on mac
-    alias kext="kext" #FIXME
+    alias showkext="kextstat | grep -E"
+    alias gvim='vimr'
 else
     # linux services
     alias booterrors='sudo journalctl  -b 0 -p 3'
     alias sysinfo='sudo inxi -Fzx'
     alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
     alias reservice='sudo systemctl daemon-reload'
-    #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
-    alias refresh='watch --interval=3'
     
     alias fm='nautilus . &'
-
     alias gvim='nvim'
+
     # docker files on server mount
     alias gomedia='cd /mnt/server/ssd-media/media'
     alias godata='cd /mnt/server/ssd-data'
@@ -262,7 +257,6 @@ else
     alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
     alias dockerclean='docker system prune --volumes'
     #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
-
 fi
 ######## functions ######################
 
@@ -279,6 +273,7 @@ mkcd()
     esac
 }
 
+#intended to be run on guests only
 movemovie()
 {
     case $# in
@@ -293,6 +288,7 @@ movemovie()
     esac
 }
 
+#intended to be run on guests only
 dockerupdateall()
 {
     cd /mnt/server/ssd-data/dockerapps
