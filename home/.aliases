@@ -127,13 +127,15 @@ alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._
 alias dotclean='find . -name ._\* -delete'
 
 #cleanup caches,fedora and debian
-if (( ${+commands[apt-get]} )); then 
+if [ -x "$(command -v apt-get)" ]; then
+#if (( ${+commands[apt-get]} )); then 
     # add condition for debian/derivatives specific command here
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
     alias gvim='nvim'
     alias fm='nautilus . &'
-elif (( ${+commands[dnf]} )); then 
+#elif (( ${+commands[dnf]} )); then 
+elif [ -x "$(command -v dnf)" ]; then 
     # add condition for fedora specific command here
     alias fullclean='sudo dnf clean all && sudo dnf autoremove'
     alias fullupdate='sudo dnf update --refresh && sudo dnf upgrade -y && sudo flatpak upgrade -y'
@@ -143,7 +145,8 @@ elif (( ${+commands[dnf]} )); then
     alias gvim='nvim'
     alias fm='nautilus . &'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
-elif (( ${+commands[open]} )); then 
+#elif (( ${+commands[open]} )); then 
+elif [ -x "$(command -v open)" ]; then 
     # add condition for macos specific commmand here
     alias brew_update='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
     alias fullupdate='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
@@ -246,9 +249,11 @@ alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
 alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
 # macos and linux services
-if (( ${+commands[open]} )); then
+#if (( ${+commands[open]} )); then
+if [ -x "$(command -v open)" ]; then 
     # macos services here
-else 
+    alias kext="kext" #FIXME
+else
     # linux services
     alias booterrors='sudo journalctl  -b 0 -p 3'
     alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
