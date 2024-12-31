@@ -2,6 +2,9 @@
 # (c) Anirudh Acharya 2024
 # Fedora setup and Fedora/Debian dotfiles repo for thinkpad
 # Run this script as non-root user
+# If this script is not run with an interpreter (bash, zsh and only some sh) that supports arrays this will fail
+
+# git commands for reference 
 # git config --global user.name "name"
 # git config --global user.email "email"
 # gh auth login: for browser based git login instead of token
