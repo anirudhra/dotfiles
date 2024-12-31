@@ -134,6 +134,7 @@ if [ -x "$(command -v apt-get)" ]; then
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
     alias gvim='nvim'
     alias fm='nautilus . &'
+    alias gopvescripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
 #elif (( ${+commands[dnf]} )); then 
 elif [ -x "$(command -v dnf)" ]; then 
     # add condition for fedora specific command here
