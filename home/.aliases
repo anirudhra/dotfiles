@@ -1,12 +1,15 @@
+# (c) Anirudh Acharya 2024
+# useful aliases
+
 ## ls aliases
 ## Colorize the ls output ##
 alias ls='ls --color=auto -FG'
 #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-## Use a long listing format ##
 alias ll='ls -la --color | less -R'
 ## Show hidden files ##
 alias ll.='ls -l -d -FG --color=auto .* | less'
 alias ls.='ls -d -FG --color=auto .*'
+
 alias l='ls -lFh'     #size,show type,human readable
 alias la='ls -lAFh'   #long list,show almost all,show type,human readable
 alias lr='ls -tRFh'   #sorted by date,recursive,show type,human readable
@@ -18,12 +21,10 @@ alias lrt='ls -1Fcrt'
 alias lsr='ls -lARFh' #Recursive list of files and directories
 alias lsn='ls -1'     #A column contains name of files and directories
 
-alias zshrc='${=EDITOR} ${ZDOTDIR:-$HOME}/.zshrc' # Quick access to the .zshrc file
-alias bashrc='${=EDITOR} ${$HOME}/.bashrc' # Quick access to the .bashrc file
+#quick access to zshrc and bashrc files
+alias zshrc='${=EDITOR} ${ZDOTDIR:-$HOME}/.zshrc'
+alias bashrc='${=EDITOR} ${$HOME}/.bashrc'
 
-## get rid of command not found ##
-alias cd..='cd ..'
- 
 ## a quick way to get out of current directory ##
 alias cd..='cd ..'
 alias ..='cd ..'
@@ -41,12 +42,15 @@ alias fgrep='fgrep --color=auto'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 alias hgrep="fc -El 0 | grep"
 alias greph='history | grep'
-alias h='history'
 
 #directory related aliases
 alias mkdir='mkdir -pv'
-alias md='mkdir'
+alias md='mkdir -pv'
 alias rd='rmdir'
+
+# "dos" aliases
+alias cls='clear'
+alias dir='ls'
 
 #stow aliases
 alias unstow='cd $HOME/dotfiles/home && stow --verbose=2 --target=$HOME --delete . && cd -'
@@ -58,9 +62,6 @@ alias nowtime='now'
 alias nowdate='date +"%d-%m-%Y"'
 alias a='alias'
 
-#git
-alias gitpush="git pull && git add * && git commit -a && git push"
-
 #console
 alias please='sudo $( history -p !! )'
 alias count='find . -type f | wc -l'
@@ -68,22 +69,18 @@ alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
 alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
 alias free='free -h'
 
-# Command line head / tail shortcuts
-alias -g H='| head'
-alias -g T='| tail'
-alias -g G='| grep'
-alias -g L="| less"
-alias -g M="| most"
-alias -g LL="2>&1 | less"
-alias -g CA="2>&1 | cat -A"
-alias -g NE="2> /dev/null"
-alias -g NUL="> /dev/null 2>&1"
+# find aliases
+alias fdir='find . -type d -name'
+alias ffile='find . -type f -name'
 
+## disk space clean output ##
 alias dud='du -d 1 -h'
-(( $+commands[duf] )) || alias duf='du -sh *'
-(( $+commands[fd] )) || alias fd='find . -type d -name'
-alias ff='find . -type f -name'
+alias df='df -P -h'
+alias du='du -ch'
+alias duf='duf -hide special'
+alias dirsize='du -sh'
 
+# sort, unset etc.
 alias help='man'
 alias sortnr='sort -n -r'
 alias unexport='unset'
@@ -97,21 +94,14 @@ alias mv='mv -i'
 alias psmem='ps aux | sort -nr -k 4'
 alias psmem10='ps aux | sort -nr -k 4 | head -10'
 
-# become root #
-alias root='sudo -i'
-alias su='sudo -i'
- 
 ## get top process eating cpu ##
 alias pscpu='ps aux | sort -nr -k 3'
 alias pscpu10='ps aux | sort -nr -k 3 | head -10'
 
-## this one saved by butt so many times ##
-alias wget='wget -c'
-
-## disk space clean output ##
-alias df='df -P -h'
-alias du='du -ch'
-
+# become root #
+alias root='sudo -i'
+alias su='sudo -i'
+ 
 # editor aliases
 #alias vim='nano'
 #alias vi='nano'
@@ -122,17 +112,9 @@ alias vi='nvim'
 alias vim='nvim'
 alias vis='nvim "+set si"'
 alias sudovi='sudo nvim'
-#alias edit="$EDITOR"
 alias edit="vim"
 alias pager="$PAGER"
-#alias readme="cat README.md | less"
 alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less {} \;"
-
-# "dos" aliases
-alias cls='clear'
-alias dir='ls'
-alias md='mkdir'
-alias rd='rmdir'
 
 # Tree
 if [ ! -x "$(which tree 2>/dev/null)" ]
@@ -193,8 +175,13 @@ elif (( ${+commands[open]} )); then
     alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
 fi
 
+# jupyterlab aliases
 alias ipy="jupyter lab ~/code/github/jupyternb"
 
+#git
+alias gitpush="git pull && git add * && git commit -a && git push"
+
+# other goto aliases
 alias sysinfo='sudo inxi -Fzx'
 alias godot='cd $HOME/dotfiles'
 alias gocode='cd $HOME/code'
@@ -228,9 +215,14 @@ alias ping='ping -c 5'
 alias fastping='ping -c 100 -s.2'
 alias ports='netstat -tulanp'
 
+## this one saved by butt so many times ##
+alias wget='wget -c'
+
+# iperf3, uses daemon on pve persever
 alias iperfdown='iperf3 -Rc 10.100.100.50'
 alias iperfup='iperf3 -c 10.100.100.50'
 
+# ping aliases
 alias pingrouter='ping 10.100.100.1'
 alias pingserver='ping 10.100.100.50'
 
@@ -253,10 +245,17 @@ alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tm
 alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
 alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
-alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
-alias booterrors='sudo journalctl  -b 0 -p 3'
-alias reservice='sudo systemctl daemon-reload'
-
+# macos and linux services
+if (( ${+commands[open]} )); then
+    # macos services here
+else 
+    # linux services
+    alias booterrors='sudo journalctl  -b 0 -p 3'
+    alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
+    alias reservice='sudo systemctl daemon-reload'
+    #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
+    alias refresh='watch --interval=3'
+fi
 ######## functions ######################
 
 mkcd()
