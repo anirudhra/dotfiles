@@ -58,9 +58,11 @@ echo
 etc_dirs=(
     'udev'
     'systemd'
+    'tlp.d'
 )
 
 etc_files=(
+    'fstab'
     'auto.pveshare'
     'auto.master'
     'throttled.conf'

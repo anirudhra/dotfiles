@@ -27,3 +27,4 @@
 *git*
 *application_state*
 *local/state*
+*telemetry*
