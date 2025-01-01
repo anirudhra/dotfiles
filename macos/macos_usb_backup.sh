@@ -15,6 +15,11 @@ source_media_base_dir=${HOME}/Music
 #confirm external storage/destination is mounted correctly before proceeding
 echo
 echo "==============================================================================="
+echo "Ensure your External USB is mounted correctly before running this script!"
+echo "Home to be backed up to: ${dest_home_base_dir}"
+echo "Meida to be backed up to: ${dest_media_base_dir}"
+echo "==============================================================================="
+echo
 echo "Contents of destination Home: ${dest_home_base_dir}:"
 echo
 ls ${dest_home_base_dir}
@@ -26,15 +31,10 @@ echo "==========================================================================
 echo "Disk space usage of ${dest_home_base_dir} and ${dest_media_base_dir}"
 df -h ${dest_home_base_dir}
 df -h ${dest_media_base_dir}
-echo "==============================================================================="
 echo
-echo "==============================================================================="
-echo "Ensure your External USB is mounted correctly before running this script!"
-echo "Home to be backed up to: ${dest_home_base_dir}"
-echo "Meida to be backed up to: ${dest_media_base_dir}"
-echo
-echo "If not, press Ctrl+C to exit, mount and rerun. Else Press Enter to continue"
-echo "==============================================================================="
+echo "============================================================================================"
+echo "If this is not correct, press Ctrl+C to exit, mount and rerun. Else Press Enter to continue"
+echo "============================================================================================"
 echo
 read ans #dummy variable to pause script
 
