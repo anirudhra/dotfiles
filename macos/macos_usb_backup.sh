@@ -51,8 +51,6 @@ source_media_dir_list=(
       'MusicLibrary'
 )
 
-today=`date -I`
-
 echo "================================================================================"
 echo " Backing up following directories from user's home directory: $HOME"
 echo " Source Directories: ${source_home_dir_list[@]}"
@@ -61,6 +59,8 @@ echo "==========================================================================
 echo
 
 answer="y"
+# timestamp
+today=`date -I`
 
 for i in "${source_home_dir_list[@]}"
 do
