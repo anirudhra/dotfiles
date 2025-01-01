@@ -28,3 +28,4 @@
 *application_state*
 *local/state*
 *telemetry*
+Pictures
