@@ -178,7 +178,7 @@ elif [ -x "$(command -v dnf)" ]; then
     # add condition for fedora specific command here
     alias fullclean='sudo dnf clean all && sudo dnf autoremove'
     alias fullupdate='sudo dnf update --refresh && sudo dnf upgrade -y && sudo flatpak upgrade -y'
-    alias distupgrade='sudo dnf update --refresh && sudo dnf distro-sync'
+    alias fullupgrade='sudo dnf update --refresh && sudo flatpak upgrade -y && sudo dnf distro-sync'
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
     alias showkernel='sudo rpm -q kernel-core && uname -a'
