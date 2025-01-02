@@ -53,8 +53,12 @@ alias cls='clear'
 alias dir='ls'
 
 #stow aliases
-alias unstow='cd $HOME/dotfiles/home && stow --verbose=2 --target=$HOME --delete . && cd -'
-alias restow='cd $HOME/dotfiles/home && stow --verbose=1 --target=$HOME --stow --adopt . && cd -'
+if [  -x "$(command -v stow)" ]; then
+  alias unstow='cd $HOME/dotfiles/home && stow --verbose=2 --target=$HOME --delete . && cd -'
+  alias restow='cd $HOME/dotfiles/home && stow --verbose=1 --target=$HOME --stow --adopt . && cd -'
+else
+  alias restow='rm -rf ~/.aliases.bak && mv ~/.aliases ~/.aliases.bak && cd $HOME/dotfiles/home && cp -f ./.aliases ~/.aliases && cd -'
+fi
 
 alias path='echo -e ${PATH//:/\\n}'
 alias now='date +"%T"'
