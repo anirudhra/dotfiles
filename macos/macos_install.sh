@@ -15,6 +15,7 @@ corepackages=(
     'fortune'
     'cowsay'
     'colordiff'
+    'expect'
     'fastfetch'
     'gawk'
     'gnu-sed'
