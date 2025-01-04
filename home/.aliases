@@ -181,7 +181,7 @@ elif [ -x "$(command -v dnf)" ]; then
     alias fullupgrade='sudo dnf update --refresh && sudo flatpak upgrade -y && sudo dnf distro-sync'
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
-    alias showkernel='sudo rpm -q kernel-core && uname -a'
+    alias showkernel='echo Active && sudo uname -a && echo && echo Installed: && sudo rpm -q kernel-core'
 #macOS specific only below
 elif [ -x "$(command -v diskutil)" ]; then 
     # add condition for macos specific commmand here - diskutil not available on linux
