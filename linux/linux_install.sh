@@ -134,6 +134,8 @@ corepackages=(
     'unrar'
     'nmap'
     'expect'
+    'mencoder'
+    'jhead'
     'iperf3'
     'ncdu'
 )

@@ -327,6 +327,19 @@ dockerupdateall()
     docker system prune --volumes -f
 }
 
+#create timelapse from set of images in a directory
+timelapse()
+{
+   #10fps should be good, but adjust as needed
+   echo "Place all images in current directory sorted in ascending order by file name"
+   ls -1tr | grep -v files.txt > files.txt
+   mencoder -nosound -noskip -oac copy -ovc copy -o output.avi -mf fps=10 'mf://@files.txt'
+   #ffmpeg -i output.avi -vf scale=1920:1440,crop=1920:1080 output-final.avi
+   # adjust res and codec manually
+   ffmpeg -i output.avi output-final.avi
+   echo "Done. You may delete original output.avi and files.txt"
+}
+
 #intended to be run on linux only
 cleanlocales()
 {
