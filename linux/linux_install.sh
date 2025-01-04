@@ -133,6 +133,7 @@ corepackages=(
     'unzip'
     'unrar'
     'nmap'
+    'expect'
     'iperf3'
     'ncdu'
 )

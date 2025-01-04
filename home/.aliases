@@ -129,7 +129,7 @@ fi
 
 # pager and readme aliases
 alias pager="$PAGER"
-alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less {} \;"
+alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less -R {} \;"
 
 # Tree
 if [ ! -x "$(which tree 2>/dev/null)" ]
