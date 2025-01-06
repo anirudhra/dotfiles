@@ -54,10 +54,10 @@ alias dir='ls'
 
 #stow aliases
 if [  -x "$(command -v stow)" ]; then
-  alias unstow='cd $HOME/dotfiles/home && stow --verbose=2 --target=$HOME --delete . && cd -'
-  alias restow='cd $HOME/dotfiles/home && stow --verbose=1 --target=$HOME --stow --adopt . && cd -'
+  alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
+  alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
 else
-  alias restow='rm -rf ~/.aliases.bak && mv ~/.aliases ~/.aliases.bak && cd $HOME/dotfiles/home && cp -f .aliases ~/.aliases && cd -'
+  alias restow='cp -f ${HOME}/.aliases ${HOME}/.aliases.bak && cp -f ${HOME}/dotfiles/home/.aliases ${HOME}/.aliases'
 fi
 
 alias path='echo -e ${PATH//:/\\n}'
@@ -84,7 +84,7 @@ alias help='man'
 alias sortnr='sort -n -r'
 alias unexport='unset'
 
-#file aliases
+#file aliases, always interactive mode
 #alias rm='rm -i'
 #alias cp='cp -i'
 #alias mv='mv -i'
@@ -107,7 +107,7 @@ alias su='sudo -i'
 alias please='sudo $( history -p !! )'
  
 # editor aliases
-if [ -x "$(command -v nvim)" ]; then
+if [ -x "$(command -v nvim)" ]; then #if neovim is  found
   alias vi='nvim'
   alias vim='nvim'
   alias vis='nvim "+set si"'
@@ -128,7 +128,7 @@ else
 fi
 
 # pager and readme aliases
-alias pager="$PAGER"
+alias pager="${PAGER}"
 alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less -R {} \;"
 
 # Tree
@@ -227,9 +227,9 @@ alias gitpullall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd &
 alias gitpushall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull && git add * && git commit -a && git push\" \;"
 
 # other goto aliases
-alias godot='cd $HOME/dotfiles'
-alias gocode='cd $HOME/code'
-alias gogit='cd $HOME/code/github'
+alias godot='cd ${HOME}/dotfiles'
+alias gocode='cd ${HOME}/code'
+alias gogit='cd ${HOME}/code/github'
 
 # Enable syntax-highlighting in less/cat
 # Note: needs source-highlight and highlight brew packages for these to work
@@ -253,21 +253,22 @@ alias fastping='ping -c 100 -s.2'
 alias ports='netstat -tulanp'
 alias wget='wget -c'
 
-# iperf3, uses daemon on pve persever
-alias iperfdown='iperf3 -Rc 10.100.100.50'
-alias iperfup='iperf3 -c 10.100.100.50'
-
-# ping aliases
-alias pingrouter='ping 10.100.100.1'
-alias pingserver='ping 10.100.100.50'
-
 # other goto aliases
-alias godot='cd $HOME/dotfiles'
+alias godot='cd ${HOME}/dotfiles'
 
 # non-PVE server commands
 if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
-  alias gocode='cd $HOME/code'
-  alias gogit='cd $HOME/code/github'
+  
+  # other goto aliases
+  alias gocode='cd ${HOME}/code'
+  alias gogit='cd ${HOME}/code/github'
+
+  # iperf3, uses daemon on pve persever
+  alias iperfdown='iperf3 -Rc 10.100.100.50'
+  alias iperfup='iperf3 -c 10.100.100.50'
+
+  # ping aliases
+  alias pingserver='ping 10.100.100.50'
 
   # by default always open a tmux session for PVE server, use sshserver for non-tmux version
   alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tmux new"'
@@ -276,6 +277,7 @@ fi
 
 #router
 alias sshrouter='ssh admin@10.100.100.1 -p 12372'
+alias pingrouter='ping 10.100.100.1'
 
 #ssh to LXC/VMs
 alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65'
@@ -362,7 +364,7 @@ timelapse()
 #intended to be run on linux only
 cleanlocales()
 {
-    if [ ! -x "$(command -v diskutil)" ]; then
+    if [ ! -x "$(command -v diskutil)" ]; then #detect running on non-macos
       sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
     fi
 }
