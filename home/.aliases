@@ -237,6 +237,8 @@ alias gogit='cd $HOME/code/github'
 alias lessc='less -R'
 alias more='less'
 #alias cat='less'
+#use column command for a table. syntax: column -t -s "separator like , :" <filename>
+alias table='column -t -s'
 
 #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
 alias refresh='watch --interval=3'
