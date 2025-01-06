@@ -154,25 +154,27 @@ if [ -x "$(command -v apt-get)" ]; then
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
 
-    # LXC/VM go shortcuts
-    alias gomedia='cd /mnt/server/ssd-media/media'
-    alias godata='cd /mnt/server/ssd-data'
-    alias godocker='cd /mnt/server/ssd-data/dockerapps'
-
     # PVE go shortcuts
-    alias gopvemedia='cd /mnt/sata-ssd/ssd-media/media'
-    alias gopvedata='cd /mnt/sata-ssd/ssd-data'
-    alias gopvedocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
-    alias gopvescripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
-    
-    # following to be run on LXC/VM guests only, not server
-    alias dockerup='docker compose up -d'
-    alias dockerdown='docker compose down'
-    alias dockerrestart='docker compose down && docker compose up -d'
-    alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-    alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
-    alias dockerclean='docker system prune --volumes'
-    #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
+    if [ -x "$(command -v pveversion)" ]; then #detect if running on PVE server
+      alias gomedia='cd /mnt/sata-ssd/ssd-media/media'
+      alias godata='cd /mnt/sata-ssd/ssd-data'
+      alias godocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
+      alias goscripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
+    else
+      # LXC/VM go shortcuts
+      alias gomedia='cd /mnt/server/ssd-media/media'
+      alias godata='cd /mnt/server/ssd-data'
+      alias godocker='cd /mnt/server/ssd-data/dockerapps'
+
+      # following to be run on LXC/VM guests only, not server
+      alias dockerup='docker compose up -d'
+      alias dockerdown='docker compose down'
+      alias dockerrestart='docker compose down && docker compose up -d'
+      alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+      alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
+      alias dockerclean='docker system prune --volumes'
+      #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
+    fi
 #Fedora Linux only below
 elif [ -x "$(command -v dnf)" ]; then 
     # add condition for fedora specific command here
@@ -259,6 +261,22 @@ alias iperfup='iperf3 -c 10.100.100.50'
 alias pingrouter='ping 10.100.100.1'
 alias pingserver='ping 10.100.100.50'
 
+# other goto aliases
+alias godot='cd $HOME/dotfiles'
+
+# non-PVE server commands
+if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
+  alias gocode='cd $HOME/code'
+  alias gogit='cd $HOME/code/github'
+
+  # by default always open a tmux session for PVE server, use sshserver for non-tmux version
+  alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tmux new"'
+  alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
+fi
+
+#router
+alias sshrouter='ssh admin@10.100.100.1 -p 12372'
+
 #ssh to LXC/VMs
 alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65'
 alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70'
@@ -272,11 +290,6 @@ alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
 # alias sshnc=''
 # alias sshkodi=''
 # alias sshfrigate=''
-
-# by default always open a tmux session for PVE server, use sshserver for non-tmux version
-alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tmux new"'
-alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
-alias sshrouter='ssh admin@10.100.100.1 -p 12372'
 
 # generic linux-only, distro agnostic; not applicable to macOS
 if [ ! -x "$(command -v diskutil)" ]; then
@@ -307,26 +320,30 @@ mkcd()
 #intended to be run on PVE guests only
 movemovie()
 {
-    case $# in
-    1)
-        chmod 777 "$1"
-        chown -R nobody:nogroup "$1"
-        mv "$1" /mnt/server/ssd-media/media/video/MyMovies
-        ;;
-    *)
-        echo "USAGE : movemovie <movie_dir>"
-        ;;
-    esac
+    if [ ! -x "$(command -v pveversion)" ]; then #detect if running on PVE server
+      case $# in
+      1)
+          chmod 777 "$1"
+          chown -R nobody:nogroup "$1"
+          mv "$1" /mnt/server/ssd-media/media/video/MyMovies
+          ;;
+      *)
+          echo "USAGE : movemovie <movie_dir>"
+          ;;
+      esac
+    fi
 }
 
 #intended to be run on PVE guests only
 dockerupdateall()
 {
-    cd /mnt/server/ssd-data/dockerapps
-    cd $(hostname) || exit
-    find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
-    docker image prune -a -f
-    docker system prune --volumes -f
+    if [ ! -x "$(command -v pveversion)" ]; then #detect if running on PVE server
+      cd /mnt/server/ssd-data/dockerapps
+      cd $(hostname) || exit
+      find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
+      docker image prune -a -f
+      docker system prune --volumes -f
+    fi
 }
 
 #create timelapse from set of images in a directory
