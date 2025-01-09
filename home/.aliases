@@ -207,6 +207,7 @@ elif [ -x "$(command -v diskutil)" ]; then
     # Desktop Programs
     alias preview="open -a '$PREVIEW'"
     alias xcode="open -a '/Applications/XCode.app'"
+    alias edge="open -a '/Applications/Microsoft\ Edge.app'"
     alias filemerge="open -a '/Developer/Applications/Utilities/FileMerge.app'"
     alias safari="open -a safari"
     alias firefox="open -a firefox"
@@ -226,10 +227,8 @@ alias gitpush="git pull && git add * && git commit -a && git push"
 alias gitpullall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull\" \;"
 alias gitpushall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull && git add * && git commit -a && git push\" \;"
 
-# other goto aliases
+# goto aliases
 alias godot='cd ${HOME}/dotfiles'
-alias gocode='cd ${HOME}/code'
-alias gogit='cd ${HOME}/code/github'
 
 # Enable syntax-highlighting in less/cat
 # Note: needs source-highlight and highlight brew packages for these to work
@@ -252,9 +251,6 @@ alias ping='ping -c 5'
 alias fastping='ping -c 100 -s.2'
 alias ports='netstat -tulanp'
 alias wget='wget -c'
-
-# other goto aliases
-alias godot='cd ${HOME}/dotfiles'
 
 # non-PVE server commands
 if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
