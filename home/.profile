@@ -1,6 +1,8 @@
 # . is POSIX version of "source"
 . ${HOME}/.aliases
 
+export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
+
 #macos only, test by checking if "open" command exists (macos-only)
 if (( ${+commands[open]} )); then 
     source <(fzf --zsh)
