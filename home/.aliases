@@ -241,6 +241,9 @@ alias more='less'
 #use column command for a table. syntax: column -t -s "separator like , :" <filename>
 alias table='column -t -s'
 
+#dumps directory contents to file, usage dir2file <filename>
+alias dir2file="find \"$PWD\" -iname \"*\" >" 
+
 #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
 alias refresh='watch --interval=3'
 
