@@ -184,7 +184,8 @@ elif [ -x "$(command -v dnf)" ]; then
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
     alias showkernel='echo Active && sudo uname -a && echo && echo Installed: && sudo rpm -q kernel-core'
-#macOS specific only below
+    alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less"
+#rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
 elif [ -x "$(command -v diskutil)" ]; then 
     # add condition for macos specific commmand here - diskutil not available on linux
     alias brew_update='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
