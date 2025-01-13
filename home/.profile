@@ -19,7 +19,7 @@ if (( ${+commands[open]} )); then
 
     export GTK_PATH=/usr/local/lib/gtk-2.0
     export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
-    export PATH="/usr/local/sbin:$PATH"
+    export PATH="/usr/local/sbin:/opt/android-platform-tools:$PATH"
 
     LESSPIPE=$(which src-hilite-lesspipe.sh)
     export LESSOPEN="| ${LESSPIPE} %s"

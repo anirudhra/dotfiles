@@ -294,6 +294,9 @@ alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
 # alias sshkodi=''
 # alias sshfrigate=''
 
+# generic tmux ssh alias, usage: sshtmux <login@host>
+alias sshtmux='ssh -t "tmux attach || tmux new"'
+
 # generic linux-only, distro agnostic; not applicable to macOS
 if [ ! -x "$(command -v diskutil)" ]; then
     # linux services
