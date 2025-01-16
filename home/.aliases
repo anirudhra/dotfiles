@@ -103,7 +103,7 @@ alias proc='ps aux | grep -i '
 
 # become root #
 alias root='sudo -i'
-alias su='sudo -i'
+#alias su='sudo -i'
 alias please='sudo $( history -p !! )'
  
 # editor aliases
@@ -189,16 +189,11 @@ elif [ -x "$(command -v dnf)" ]; then
 #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
 elif [ -x "$(command -v diskutil)" ]; then 
     # add condition for macos specific commmand here - diskutil not available on linux
-    alias brew_update='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
-    alias fullupdate='brew update --greedy && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'    
+    alias brew_update='brew update && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
     
     # all other macos aliases/macros
     alias showkext="kextstat | grep -E"
     alias gvim='vimr'
-    alias fix_wireshark='cd /dev && sudo chown aacharya:admin bp*; cd -'
-    alias flushdns='dscacheutil -flushcache'
-    alias lscleanup='/System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user && killall Finder'
-    alias cleanup='sudo update_dyld_shared_cache -force'
         
     #finder hidden files
     alias showhidden='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
@@ -295,6 +290,10 @@ alias sshubuntuuser='ssh -o MACs=hmac-sha2-256 nonroot@10.100.100.85 -t "tmux at
 # alias sshnc=''
 # alias sshkodi=''
 # alias sshfrigate=''
+
+# IFC6410 SBC
+alias sshsbc='ssh root@10.100.100.63 -t "tmux attach || tmux new"' #wifi
+alias sshsbceth='ssh root@10.100.100.64 -t "tmux attach || tmux new"' #ethernet
 
 # generic tmux ssh alias, usage: sshtmux <login@host>
 # alias sshtmux='ssh -t "tmux attach || tmux new"'
