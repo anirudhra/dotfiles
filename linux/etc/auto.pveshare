@@ -1,2 +1,2 @@
 # nfs server mount
-/mnt/server -rw,fstype=nfs4 10.100.100.50:/mnt/sata-ssd
+/mnt/nfs -rw,fstype=nfs4 10.100.100.50:/mnt/sata-ssd

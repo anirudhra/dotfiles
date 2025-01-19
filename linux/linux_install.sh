@@ -26,9 +26,9 @@ echo
 
 # check if running from the right directory
 install_dir=$(pwd)
-if [[ $install_dir != *"/dotfiles/linux"* ]]; then
+if [[ ${install_dir} != *"/dotfiles/linux"* ]]; then
   echo "Script invoked from incorrect directory!"
-  echo "The current directory is: $install_dir"
+  echo "The current directory is: ${install_dir}"
   echo "Please run this script from .../dotfiles/linux directory"
   echo
   exit
@@ -77,7 +77,7 @@ else
 fi
 
 # refresh again to be sure
-sudo $installer update && sudo $installer upgrade
+sudo ${installer} update && sudo ${installer} upgrade
 
 ####################################################################################
 # Install packages
@@ -108,7 +108,7 @@ corepackages=(
     'gh'
     'stow'
     'fastfetch'
-    'papirus-icon-theme'
+    #'papirus-icon-theme'
     'dconf-editor'
     'geary'
     'vlc'
@@ -138,6 +138,7 @@ corepackages=(
     'jhead'
     'iperf3'
     'ncdu'
+    's-tui'
 )
 
 # Nerd fonts list to be installed
@@ -168,13 +169,12 @@ fonts=(
 if [ $ID == "fedora" ]; then
     # Fedora specific packages
     ospackages=(
-        's-tui'
         'throttled'
         'nfs-utils'
         'intel-media-driver'
-        'epapirus-icon-theme'
-        'papirus-icon-theme-dark'
-        'papirus-icon-theme-light'
+        #'epapirus-icon-theme'
+        #'papirus-icon-theme-dark'
+        #'papirus-icon-theme-light'
         'ulauncher'
         'btrfs-assistant'
         'heif-pixbuf-loader'
@@ -190,7 +190,6 @@ else
     # Debian/Ubuntu specific packages
     echo "Debian installer..."
     ospackages=(
-        's-tui'
         'avahi-utils'
         'nfs-common'
         'systemd-resolved'
@@ -201,7 +200,7 @@ else
 fi
 
 # install all packages
-sudo $installer install "${corepackages[@]}" "${ospackages[@]}"
+sudo ${installer} install "${corepackages[@]}" "${ospackages[@]}"
 
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory
@@ -217,42 +216,45 @@ source_tlp_file="./etc/tlp.conf"
 sys_tlp_file="/etc/tlp.conf"
 source_throttled_file="./etc/throttled.conf"
 sys_throttled_file="/etc/throttled.conf"
+nfs_mount_point="/mnt/nfs"
+autofs_master="/etc/auto.master"
+autofs_pvenfs="/etc/auto.pveshare"
 
 # install autofs pve share file
-if [ -e "$sys_autofs_share_file" ]; then
-    echo "$sys_autofs_share_file /etc config file exists, creating backup!"
+if [ -e "${sys_autofs_share_file}" ]; then
+    echo "${sys_autofs_share_file} /etc config file exists, creating backup!"
     # \\cp should use the unaliased version of cp (\cp, with \ for escape), else cp is usually aliases to cp -i and below will fail
-    sudo \\cp -rf $sys_autofs_share_file "$sys_autofs_share_file.bak"
+    sudo \\cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
 fi
-echo "Installing /etc config file: $source_autofs_share_file to $sys_autofs_share_file"
-sudo \\cp -rf $source_autofs_share_file $sys_autofs_share_file
-sudo mkdir -p /mnt/server
-sudo chmod 777 /mnt/server
+echo "Installing /etc config file: ${source_autofs_share_file} to ${sys_autofs_share_file}"
+sudo \\cp -rf ${source_autofs_share_file} ${sys_autofs_share_file}
+sudo mkdir -p ${nfs_mount_point}
+sudo chmod 777 ${nfs_mount_point}
 
 # add auto mount pve to auto.master file
-if grep -wq "/- /etc/auto.pveshare" "$sys_auto_master_file"; then 
-  echo "$sys_auto_master_file already has PVE share NFS entry, restart autofs service if server isn't mounted" 
+if grep -wq "/- ${autofs_pvenfs}" "${sys_auto_master_file}"; then 
+  echo "${sys_auto_master_file} already has PVE share NFS entry, restart autofs service if server isn't mounted" 
 else 
-  echo "Appending PVE entry to /etc/auto.master file"
-  echo "# Adding PVE server NFS entry mount" | sudo tee -a /etc/auto.master
-  echo "/- /etc/auto.pveshare" | sudo tee -a /etc/auto.master
+  echo "Appending PVE entry to ${autofs_master} file"
+  echo "# Adding PVE server NFS entry mount" | sudo tee -a ${autofs_master}
+  echo "/- ${autofs_pvenfs}" | sudo tee -a ${autofs_master}
 fi
 
 # install tlp config file
-if [ -e "$sys_tlp_file" ]; then
-    echo "$sys_tlp_file /etc config file exists, creating backup"
-    sudo \\cp -rf $sys_tlp_file "$sys_tlp_file.bak"
+if [ -e "${sys_tlp_file}" ]; then
+    echo "${sys_tlp_file} /etc config file exists, creating backup"
+    sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
 fi
-echo "Installing /etc config file: $source_tlp_file to $sys_tlp_file"
-sudo \\cp -rf $source_tlp_file $sys_tlp_file
+echo "Installing /etc config file: ${source_tlp_file} to ${sys_tlp_file}"
+sudo \\cp -rf ${source_tlp_file} ${sys_tlp_file}
 
 # install throttled and UV config file
-if [ -e "$sys_throttled_file" ]; then
-    echo "$sys_throttled_file /etc config file exists, creating backup"
-    sudo \\cp -rf $sys_tlp_file "$sys_tlp_file.bak"
+if [ -e "${sys_throttled_file}" ]; then
+    echo "${sys_throttled_file} /etc config file exists, creating backup"
+    sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
 fi
-echo "Installing /etc config file: $source_throttled_file to $sys_throttled_file"
-sudo \\cp -rf $source_throttled_file $sys_throttled_file
+echo "Installing /etc config file: ${source_throttled_file} to ${sys_throttled_file}"
+sudo \\cp -rf ${source_throttled_file} ${sys_throttled_file}
 
 
 
@@ -260,21 +262,24 @@ sudo \\cp -rf $source_throttled_file $sys_throttled_file
 # Install UI/Customizations
 ####################################################################################
 
-echo "Current directory: $install_dir"
+echo "Current directory: ${install_dir}"
 
 # Replace audio alert file
-audio_alert_bak_file=/usr/share/sounds/gnome/default/alerts/hum_og.ogg
-if [ ! -e $audio_alert_bak_file ]; then
+audio_alert_file="/usr/share/sounds/gnome/default/alerts/hum.ogg"
+audio_alert_bak_file="/usr/share/sounds/gnome/default/alerts/hum_og.ogg"
+audio_alert_source_file="./sounds/hum.ogg"
+
+if [ ! -e ${audio_alert_bak_file} ]; then
     echo "Installing audio alert file replacement"
     echo
-    sudo cp /usr/share/sounds/gnome/default/alerts/hum.ogg /usr/share/sounds/gnome/default/alerts/hum_og.ogg
-    sudo cp ./sounds/hum.ogg /usr/share/sounds/gnome/default/alerts/hum.ogg 
+    sudo cp ${audio_alert_file} ${audio_alert_bak_file}
+    sudo cp ${audio_alert_source_file} ${audio_alert_file} 
 fi
 
 # Install GTK and Icon themes
 pkg_install_dir="$HOME/packages/install"
-mkdir -p "$pkg_install_dir"
-cd $pkg_install_dir
+mkdir -p "${pkg_install_dir}"
+cd ${pkg_install_dir}
 install_ui=0 #default flag, if at least one is pulled, set this below
 
 # check if exists, else pull
@@ -312,31 +317,32 @@ if [ ! -d "Fluent-icon-theme" ]; then
 fi
 
 # execute install.sh script from each directory for all above, if at least one was sync'd
-if [ $install_ui -eq 1 ]; then
+if [ ${install_ui} -eq 1 ]; then
     echo "Executing UI installation scripts"
     find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && pwd && ./install.sh" \;
 fi
 
 # Install Nerd fonts, cleanup and update font cache
-cd $pkg_install_dir
-mkdir -p ./nerd_font_install
-cd ./nerd_font_install
+source_nerd_font_dir="./nerd_font_install"
+cd ${pkg_install_dir}
+mkdir -p ${source_nerd_font_dir}
+cd ${source_nerd_font_dir}
 
 fonts_dir="${HOME}/.local/share/fonts"
-if [[ ! -d "$fonts_dir" ]]; then
-	mkdir -p "$fonts_dir"
+if [[ ! -d "${fonts_dir}" ]]; then
+	mkdir -p "${fonts_dir}"
 fi
 
 #array defined at the top of the file, change list and version there
 for font in "${fonts[@]}"; do
 	zip_file="${font}.zip"
 	download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${nerd_font_ver}/${zip_file}"
-	echo "Downloading $download_url"
-	wget "$download_url"
-	unzip -o "$zip_file" -d "$fonts_dir"
-	rm "$zip_file"
+	echo "Downloading ${download_url}"
+	wget "${download_url}"
+	unzip -o "${zip_file}" -d "${fonts_dir}"
+	rm "${zip_file}"
 done
-find "$fonts_dir" -name '*Windows Compatible*' -delete
+find "${fonts_dir}" -name '*Windows Compatible*' -delete
 fc-cache -fv
 
 # set GTK and icon themes
@@ -364,7 +370,7 @@ gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Fon
 gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Cantarell 10'
 
 # change back to original installation directory
-cd $install_dir
+cd ${install_dir}
 
 ####################################################################################
 # Enable various services
@@ -391,7 +397,6 @@ chsh -s $(which zsh)
 ####################################################################################
 # Manual install notice
 ####################################################################################
-sys_auto_master_file="/etc/auto.master"
 
 echo
 echo "==========================================================================================="
@@ -402,7 +407,7 @@ echo "Removable Drive Menu, Transparent Window Moving, User Themes, Vitals, Weat
 echo
 echo "Manually set Nerd Font in: Terminal, Gnome Tweaks and VSCode"
 echo
-echo "UI customizations have been cloned in $pkg_install_dir, for future git pulls and updates or can be manually removed to save space. Manually set GNOME Shell theme and Hum alert sound in settings"
+echo "UI customizations have been cloned in ${pkg_install_dir}, for future git pulls and updates or can be manually removed to save space. Manually set GNOME Shell theme and Hum alert sound in settings"
 echo
 echo "==========================================================================================="
 echo
@@ -410,10 +415,12 @@ echo
 ####################################################################################
 # ZSH and customizations
 ####################################################################################
+ohmyzshinstallurl="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
 echo "==========================================================================================="
 read -p "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script. Installing oh-my-zsh as the last software. Press Enter to continue." -n1 -s
 #echo "==========================================================================================="
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+sh -c "$(curl -fsSL ${ohmyzshinstallurl})"
 
 # installing oh-my-zsh will exit this script, so keep it as the last item to be installed
 ####################################################################################

@@ -5,7 +5,7 @@
 # Create folders in destination
 #
 
-backup_base_dir="/mnt/server/ssd-data/backup/linux"
+backup_base_dir="/mnt/nfs/ssd-data/backup/linux"
 backup_home_source_dir=${HOME}
 backup_etc_source_dir="/etc"
 backup_dst_home_dir="${backup_base_dir}/home"
@@ -83,15 +83,6 @@ do
     #don't forget trailing '/' for destination!
     rsync -avHPAX --delete /etc/${j} ${backup_dst_etc_dir}/
 done
-
-#rsync -avHPAX --delete /etc/udev/ ${backup_base_dir}/etc/udev
-#rsync -avHPAX --delete /etc/systemd/ ${backup_base_dir}/etc/systemd
-#rsync -avHPAX --delete /etc/profile ${backup_base_dir}/etc/profile
-#rsync -avHPAX --delete /etc/auto.pveshare ${backup_base_dir}/etc/auto.pveshare
-#rsync -avHPAX --delete /etc/auto.master ${backup_base_dir}/etc/auto.master
-#rsync -avHPAX --delete /etc/throttled.conf ${backup_base_dir}/etc/throttled.conf
-#rsync -avHPAX --delete /etc/tlp.conf ${backup_base_dir}/etc/tlp.conf
-#rsync -avHPAX --delete /etc/environment ${backup_base_dir}/etc/environment
 
 # run backup commands
 echo 
