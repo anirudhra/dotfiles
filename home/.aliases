@@ -157,22 +157,22 @@ if [ -x "$(command -v apt-get)" ]; then
 
     # PVE go shortcuts
     if [ -x "$(command -v pveversion)" ]; then #detect if running on PVE server
-      alias gomedia='cd /mnt/sata-ssd/ssd-media/media'
+      alias gomedia='cd /mnt/sata-ssd/sata-ssd/ssd-media/media'
       alias godata='cd /mnt/sata-ssd/ssd-data'
       alias godocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
       alias goscripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
     else
       # LXC/VM go shortcuts
-      alias gomedia='cd /mnt/server/ssd-media/media'
-      alias godata='cd /mnt/server/ssd-data'
-      alias godocker='cd /mnt/server/ssd-data/dockerapps'
+      alias gomedia='cd /mnt/pve-sata-ssd/ssd-media/media'
+      alias godata='cd /mnt/pve-sata-ssd/ssd-data'
+      alias godocker='cd /mnt/pve-sata-ssd/ssd-data/dockerapps'
 
       # following to be run on LXC/VM guests only, not server
       alias dockerup='docker compose up -d'
       alias dockerdown='docker compose down'
       alias dockerrestart='docker compose down && docker compose up -d'
       alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-      alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/server/ssd-data/dockerapps'
+      alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/pve-sata-ssd/ssd-data/dockerapps'
       alias dockerclean='docker system prune --volumes'
       #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
     fi
@@ -332,7 +332,7 @@ movemovie()
       1)
           chmod 777 "$1"
           chown -R nobody:nogroup "$1"
-          mv "$1" /mnt/server/ssd-media/media/video/MyMovies
+          mv "$1" /mnt/pve-sata-ssd/ssd-media/media/video/MyMovies
           ;;
       *)
           echo "USAGE : movemovie <movie_dir>"
@@ -345,7 +345,7 @@ movemovie()
 dockerupdateall()
 {
     if [ ! -x "$(command -v pveversion)" ]; then #detect if running on PVE server
-      cd /mnt/server/ssd-data/dockerapps
+      cd /mnt/pve-sata-ssd/ssd-data/dockerapps
       cd $(hostname) || exit
       find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
       docker image prune -a -f

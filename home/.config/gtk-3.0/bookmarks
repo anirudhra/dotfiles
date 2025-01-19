@@ -1,6 +1,4 @@
-file:///home/anirudh/Downloads
 file:///home/anirudh/Documents
-file:///home/anirudh/Pictures
+file:///home/anirudh/Downloads
 file:///mnt/server PVE Server NFS
-smb://pve.local/sata-ssd/ PVE Server SMB
-smb://rt-ax82u.local/entware%20(at%20usb)/ Router SMB
+smb://rt-ax82u.local/ RT-AX82U SMB
