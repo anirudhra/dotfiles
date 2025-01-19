@@ -1,4 +1,5 @@
 file:///home/anirudh/Documents
 file:///home/anirudh/Downloads
-file:///mnt/server PVE Server NFS
+file:///mnt/nfs PVE Server NFS
 smb://rt-ax82u.local/ RT-AX82U SMB
+smb://pve.local/ PVE Server SMB
