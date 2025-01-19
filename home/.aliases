@@ -157,7 +157,7 @@ if [ -x "$(command -v apt-get)" ]; then
 
     # PVE go shortcuts
     if [ -x "$(command -v pveversion)" ]; then #detect if running on PVE server
-      alias gomedia='cd /mnt/sata-ssd/sata-ssd/ssd-media/media'
+      alias gomedia='cd /mnt/sata-ssd/ssd-media/media'
       alias godata='cd /mnt/sata-ssd/ssd-data'
       alias godocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
       alias goscripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
