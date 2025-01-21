@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # (c) Anirudh Acharya 2024
 # Fedora setup and Fedora/Debian dotfiles repo for thinkpad
 # Run this script as non-root user AFTER the linux_install.sh script
@@ -33,13 +33,13 @@ git config --global core.editor "nano"
 ####################################################################################
 # install powerlevel10k
 echo "Installing powerlevel10k and oh-my-zsh plugins..."
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k
+git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 
 #install oh-my-zsh plugins
-git clone https://github.com/zsh-users/zsh-autosuggestions.git $ZSH_CUSTOM/plugins/zsh-autosuggestions
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git $ZSH_CUSTOM/plugins/zsh-syntax-highlighting
-git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting
-git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git $ZSH_CUSTOM/plugins/zsh-autocomplete
+git clone https://github.com/zsh-users/zsh-autosuggestions.git "$ZSH_CUSTOM/plugins/zsh-autosuggestions"
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "$ZSH_CUSTOM/plugins/zsh-syntax-highlighting"
+git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
+git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "$ZSH_CUSTOM/plugins/zsh-autocomplete"
 
 ####################################################################################
 # EasyEffects pipewire audio enhancer plugins
@@ -61,29 +61,29 @@ local_p10k="$HOME/.p10k.zsh"
 local_nvim_dir="$HOME/.config/nvim"
 
 if [ -e "${local_profile}" ]; then
-  cp -rf ${local_profile} "${local_profile}.bak"
+  cp -rf "${local_profile}" "${local_profile}.bak"
 fi
 if [ -e "${local_zshrc}" ]; then
-  cp -rf ${local_zshrc} "${local_zshrc}.bak"
+  cp -rf "${local_zshrc}" "${local_zshrc}.bak"
 fi
 if [ -e "${local_aliases}" ]; then
-  cp -rf ${local_aliases} "${local_aliases}.bak"
+  cp -rf "${local_aliases}" "${local_aliases}.bak"
 fi
 if [ -e "${local_p10k}" ]; then
-  cp -rf ${local_p10k} "${local_p10k}.bak"
+  cp -rf "${local_p10k}" "${local_p10k}.bak"
 fi
-if [ -d ${local_nvim_dir} ]; then
-  mv ${local_nvim_dir} "${local_nvim_dir}.bak"
+if [ -d "${local_nvim_dir}" ]; then
+  mv "${local_nvim_dir}" "${local_nvim_dir}.bak"
 fi
 
 # activate stow
 echo "Stowing dotfiles..."
-cd ${install_dir}/../home
-stow --verbose=1 --target=$HOME --stow --adopt .
+cd "${install_dir}/../home"
+stow --verbose=1 --target="$HOME" --stow --adopt .
 # above will overwrite git repo if files already exist in $HOME,
 # git restore . will restore with the correct versions, this is a trick to overwrite with repo files
 git restore .
-cd ${install_dir}
+cd "${install_dir}"
 
 echo "==========================================================================================="
 echo " All done, logout and log back in for changes to take effect."

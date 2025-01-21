@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # (c) Anirudh Acharya 2024
 # backs up local to server
 # run this script from within client linux with server mounted as /mnt/server
@@ -45,7 +45,7 @@ mkdir -p ${backup_dst_etc_dir}
 mkdir -p ${backup_dst_etc_dir}/udev
 mkdir -p ${backup_dst_etc_dir}/systemd
 # timestamp
-today=`date -I`
+today=$(date -I)
 
 # run backup commands
 echo
@@ -56,44 +56,42 @@ echo
 #
 
 etc_dirs=(
-    'udev'
-    'systemd'
-    'tlp.d'
+  'udev'
+  'systemd'
+  'tlp.d'
 )
 
 etc_files=(
-    'fstab'
-    'auto.pveshare'
-    'auto.master'
-    'throttled.conf'
-    'tlp.conf'
-    'environment'
+  'fstab'
+  'auto.pveshare'
+  'auto.master'
+  'throttled.conf'
+  'tlp.conf'
+  'environment'
 )
 
 # /etc/ directories
-for i in "${etc_dirs[@]}"
-do
-    #don't forget trailing '/' for destination!
-    rsync -avHPAX --delete /etc/${i} ${backup_dst_etc_dir}/
+for i in "${etc_dirs[@]}"; do
+  #don't forget trailing '/' for destination!
+  rsync -avHPAX --delete /etc/"${i}" ${backup_dst_etc_dir}/
 done
 
 # /etc/ files
-for j in "${etc_files[@]}"
-do
-    #don't forget trailing '/' for destination!
-    rsync -avHPAX --delete /etc/${j} ${backup_dst_etc_dir}/
+for j in "${etc_files[@]}"; do
+  #don't forget trailing '/' for destination!
+  rsync -avHPAX --delete /etc/"${j}" ${backup_dst_etc_dir}/
 done
 
 # run backup commands
-echo 
-echo Starting ${backup_home_source_dir} backup...
+echo
+echo "Starting ${backup_home_source_dir} backup..."
 echo
 # backup home directory
 # following command is only for linux/macos file systems and won't work for exfat/fat32 sources
-rsync -avHPAX --delete --exclude-from=${backup_exclude_list} ${backup_home_source_dir} ${backup_dst_home_dir}
+rsync -avHPAX --delete --exclude-from=${backup_exclude_list} "${backup_home_source_dir}" "${backup_dst_home_dir}"
 
 echo
-echo Done!
+echo "Done! Backup complete: ${today}"
 echo
 # end of script
 #

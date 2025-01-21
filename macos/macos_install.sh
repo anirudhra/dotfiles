@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # (c) Anirudh Acharya 2024
 # macOS installer script
 # Run this script as non-root user
@@ -9,79 +9,78 @@ brew install homebrew/cask/brew-cask
 
 # command line apps
 corepackages=(
-    'wget'
-    'imagemagick'
-    'ack'
-    'fortune'
-    'cowsay'
-    'colordiff'
-    'expect'
-    'fastfetch'
-    'gawk'
-    'gnu-sed'
-    'p7zip'
-    'pv'
-    'btop'
-    'calc'
-    'dos2unix'
-    'nmap'
-    'rename'
-    'watch'
-    'tree'
-    'trash'
-    'coreutils'
-    'figlet'
-    'neovim'
-    'iterm2'
-    'vimr'
-    'duf'
-    'stow'
-    'usbutils'
-    'git'
-    'gh'
-    'fzf'
-    'rdfind'
-    'lolcat'
-    'luarocks'
-    'unzip'
-    'iperf3'
+  'wget'
+  'imagemagick'
+  'ack'
+  'fortune'
+  'cowsay'
+  'colordiff'
+  'expect'
+  'fastfetch'
+  'gawk'
+  'gnu-sed'
+  'p7zip'
+  'pv'
+  'btop'
+  'calc'
+  'dos2unix'
+  'nmap'
+  'rename'
+  'watch'
+  'tree'
+  'trash'
+  'coreutils'
+  'figlet'
+  'neovim'
+  'iterm2'
+  'vimr'
+  'duf'
+  'stow'
+  'usbutils'
+  'git'
+  'gh'
+  'fzf'
+  'rdfind'
+  'lolcat'
+  'luarocks'
+  'unzip'
+  'iperf3'
 )
 
 nerdfonts=(
-    'font-fira-code-nerd-font'
-    'font-fira-mono-nerd-font'
-    'font-hack-nerd-font'
-    'font-meslo-lg-nerd-font'
-    'font-roboto-mono-nerd-font'
-    'font-ubuntu-nerd-font'
-    'font-sauce-code-pro-nerd-font'
-    'font-ubuntu-mono-nerd-font'
-    'font-jetbrains-mono-nerd-font'
-    'font-dejavu-sans-mono-nerd-font'
-    'font-droid-sans-mono-nerd-font'
+  'font-fira-code-nerd-font'
+  'font-fira-mono-nerd-font'
+  'font-hack-nerd-font'
+  'font-meslo-lg-nerd-font'
+  'font-roboto-mono-nerd-font'
+  'font-ubuntu-nerd-font'
+  'font-sauce-code-pro-nerd-font'
+  'font-ubuntu-mono-nerd-font'
+  'font-jetbrains-mono-nerd-font'
+  'font-dejavu-sans-mono-nerd-font'
+  'font-droid-sans-mono-nerd-font'
 )
 
-
 gtkpackages=(
-    # gtk integration
-    #'gtk'
-    #'gtk+'
-    #'gtk+3'
-    #'gtk-mac-integration'
-    #'gtk-chtheme'
-    #'gtk-engines'
-    #'gtk-murrine-engine'
-    #'gnome-themes-standard'
-    # extract themes in /usr/local/Cellar/gtk+/2.24.31/share/themes
+  # gtk integration
+  #'gtk'
+  #'gtk+'
+  #'gtk+3'
+  #'gtk-mac-integration'
+  #'gtk-chtheme'
+  #'gtk-engines'
+  #'gtk-murrine-engine'
+  #'gnome-themes-standard'
+  # extract themes in /usr/local/Cellar/gtk+/2.24.31/share/themes
 )
 
 guipackages=(
-    # cask gui apps
-    #'macvim'
-    'alfred'
-    'gimp'
-    'xquartz'
-    'macfuse'
+  # cask gui apps
+  #'macvim'
+  'alfred'
+  'gimp'
+  'xquartz'
+  'macfuse'
 )
 
 echo "Installing command line apps..."
@@ -93,7 +92,6 @@ echo "Installing command line apps... done!"
 echo "Installing nerd fonts..."
 brew install --cask "${nerdfonts[@]}"
 echo "Installing command line apps... done!"
-
 
 echo "Installing GUI apps..."
 brew install "${gtkpackages[@]}" "${guipackages[@]}"
