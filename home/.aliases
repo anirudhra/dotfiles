@@ -57,6 +57,7 @@ if [  -x "$(command -v stow)" ]; then
   alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
   alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
 else
+  alias stow='cp -f ${HOME}/dotfiles/home/.aliases ${HOME}/.aliases'
   alias restow='cp -f ${HOME}/.aliases ${HOME}/.aliases.bak && cp -f ${HOME}/dotfiles/home/.aliases ${HOME}/.aliases'
 fi
 
