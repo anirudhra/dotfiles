@@ -141,6 +141,9 @@ fi
 alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._.DS_Store -delete'
 alias dotclean='find . -name ._\* -delete'
 
+# Create m3u playlist from file listing in current directory recursively
+alias createplaylist="find -type f -iname \"*.mp3\" -or iname \"*.flac\" -or -iname \"*.alac\" -or -iname \"*.m4a\" > Playlist.m3u"
+
 ############### OS Assumptions #################
 # Debian/Ubuntu: PVE Server and PVE LXCs and VMs
 # Fedora: Laptop
