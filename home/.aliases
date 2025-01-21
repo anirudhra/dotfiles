@@ -256,6 +256,9 @@ alias fastping='ping -c 100 -s.2'
 alias ports='netstat -tulanp'
 alias wget='wget -c'
 
+# change ownership to nobdoy:nogroup, primarily for shares 
+alias nobodyown='chown -R nobody:nogroup *'
+
 # non-PVE server commands
 if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
   
