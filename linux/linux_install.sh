@@ -35,13 +35,14 @@ if [[ ${install_dir} != *"/dotfiles/linux"* ]]; then
 fi
 
 installer="dnf" #default Fedora
+
 if [ "$ID" == "fedora" ]; then
   echo "Fedora detected!"
   echo
   # don't change installer variable, use default, but keep this block for future use
 
   # add repos and keys
-  sudo dnf install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
+  sudo ${installer} install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
 
   #microsoft repos
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
@@ -49,7 +50,7 @@ if [ "$ID" == "fedora" ]; then
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
   echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo >/dev/null
 
-  sudo dnf group upgrade core -y
+  sudo ${installer} group upgrade core -y
 elif [ "$ID" == "debian" ] || [ "$ID" == "ubuntu" ]; then
   echo "Debian or derivative detected!"
   echo
@@ -179,14 +180,16 @@ if [ "$ID" == "fedora" ]; then
     'libheif-freeworld'
     'libheif'
     'easyeffects'
+    'gtk-murrine-engine'
   )
 
   echo "Fedora installer..."
-  sudo dnf remove thermald -y
-  sudo dnf copr enable abn/throttled -y
+
+  # following conflicts with throttled
+  sudo ${installer} remove thermald -y
+  sudo ${installer} copr enable abn/throttled -y
 else
   # Debian/Ubuntu specific packages
-  echo "Debian installer..."
   ospackages=(
     'avahi-utils'
     'nfs-common'
@@ -194,7 +197,9 @@ else
     'cifs-utils'
     'alsa-utils'
     'intel-media-va-driver-non-free'
+    'gtk2-engines-murrine'
   )
+  echo "Debian installer..."
 fi
 
 # install all packages
@@ -216,7 +221,6 @@ source_throttled_file="./etc/throttled.conf"
 sys_throttled_file="/etc/throttled.conf"
 nfs_mount_point="/mnt/nfs"
 autofs_master="/etc/auto.master"
-autofs_pvenfs="/etc/auto.pveshare"
 
 # install autofs pve share file
 if [ -e "${sys_autofs_share_file}" ]; then
@@ -230,12 +234,12 @@ sudo mkdir -p ${nfs_mount_point}
 sudo chmod 777 ${nfs_mount_point}
 
 # add auto mount pve to auto.master file
-if grep -wq "/- ${autofs_pvenfs}" "${autofs_master}"; then
+if grep -wq "/- ${sys_autofs_share_file}" "${autofs_master}"; then
   echo "${autofs_master} already has PVE share NFS entry, restart autofs service if server isn't mounted"
 else
   echo "Appending PVE entry to ${autofs_master} file"
   echo "# Adding PVE server NFS entry mount" | sudo tee -a ${autofs_master}
-  echo "/- ${autofs_pvenfs}" | sudo tee -a ${autofs_master}
+  echo "/- ${sys_autofs_share_file}" | sudo tee -a ${autofs_master}
 fi
 
 # install tlp config file
