@@ -19,7 +19,7 @@ if (( ${+commands[open]} )); then
 
     export GTK_PATH=/usr/local/lib/gtk-2.0
     export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
-    export PATH="/usr/local/sbin:$PATH"
+    export PATH="${HOME}/.local/bin:/usr/local/sbin:${PATH}"
 
     LESSPIPE=$(which src-hilite-lesspipe.sh)
     export LESSOPEN="| ${LESSPIPE} %s"
@@ -28,9 +28,15 @@ if (( ${+commands[open]} )); then
     echo
     cowsay $(fortune -s)
     echo
+else
+    export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
 fi
 
 # common for all
 #fastfetch --config groups #enable only if presets are correctly installed both macos/linux, else failsafe below
 fastfetch
 echo
+
+#source shortcut
+. "$HOME/.local/bin/env"
+

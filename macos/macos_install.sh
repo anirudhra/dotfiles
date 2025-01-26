@@ -44,6 +44,7 @@ corepackages=(
   'lolcat'
   'luarocks'
   'unzip'
+  'ncdu'
   'iperf3'
 )
 
