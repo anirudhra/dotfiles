@@ -181,6 +181,7 @@ if [ "$ID" == "fedora" ]; then
     'libheif'
     'easyeffects'
     'gtk-murrine-engine'
+    'solaar' #logitech config app
   )
 
   echo "Fedora installer..."
