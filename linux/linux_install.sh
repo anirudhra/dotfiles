@@ -138,6 +138,7 @@ corepackages=(
   'iperf3'
   'ncdu'
   's-tui'
+  'solaar' #logitech config utility
 )
 
 # Nerd fonts list to be installed
@@ -181,7 +182,6 @@ if [ "$ID" == "fedora" ]; then
     'libheif'
     'easyeffects'
     'gtk-murrine-engine'
-    'solaar' #logitech config app
   )
 
   echo "Fedora installer..."
