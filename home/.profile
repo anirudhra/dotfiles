@@ -1,8 +1,6 @@
 # . is POSIX version of "source"
 . ${HOME}/.aliases
 
-export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
-
 #macos only, test by checking if "open" command exists (macos-only)
 if (( ${+commands[open]} )); then 
     source <(fzf --zsh)
@@ -25,6 +23,8 @@ if (( ${+commands[open]} )); then
     export LESSOPEN="| ${LESSPIPE} %s"
     export LESS=' -R -X -F '
 
+    #shortcut for manim source
+    . "$HOME/.local/bin/env"
     echo
     cowsay $(fortune -s)
     echo
@@ -36,7 +36,4 @@ fi
 #fastfetch --config groups #enable only if presets are correctly installed both macos/linux, else failsafe below
 fastfetch
 echo
-
-#source shortcut
-. "$HOME/.local/bin/env"
 
