@@ -1,12 +1,11 @@
 # . is POSIX version of "source"
 . ${HOME}/.aliases
 
-#macos only, test by checking if "open" command exists (macos-only)
-if (( ${+commands[open]} )); then 
+#macos only, test by checking if "diskutil" command exists (macos-only)
+if (( ${+commands[diskutil]} )); then 
     source <(fzf --zsh)
     test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-    echo
     eval "$(/usr/local/bin/brew shellenv)"
 
     export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
@@ -16,7 +15,7 @@ if (( ${+commands[open]} )); then
     export EDITOR='nvim'
 
     export GTK_PATH=/usr/local/lib/gtk-2.0
-    export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
+    #export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
     export PATH="${HOME}/.local/bin:/usr/local/sbin:${PATH}"
 
     LESSPIPE=$(which src-hilite-lesspipe.sh)
@@ -29,11 +28,11 @@ if (( ${+commands[open]} )); then
     cowsay $(fortune -s)
     echo
 else
-    export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:$XDG_DATA_DIRS"
+    export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
+    export XDG_DATA_HOME="/var/lib/flatpak/exports/share:${XDG_DATA_HOME}"
 fi
 
 # common for all
 #fastfetch --config groups #enable only if presets are correctly installed both macos/linux, else failsafe below
 fastfetch
 echo
-

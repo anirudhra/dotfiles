@@ -192,7 +192,7 @@ elif [ -x "$(command -v dnf)" ]; then
     alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less"
 #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
 elif [ -x "$(command -v diskutil)" ]; then 
-    # add condition for macos specific commmand here - diskutil not available on linux
+    # add condition for macos specific commmand here - diskutil not available on linux, only macos
     alias brew_update='brew update && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
     
     # all other macos aliases/macros
