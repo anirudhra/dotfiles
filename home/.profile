@@ -1,5 +1,5 @@
 # . is POSIX version of "source"
-. ${HOME}/.aliases
+. "${HOME}/.aliases"
 
 #macos only, test by checking if "diskutil" command exists (macos-only)
 if (( ${+commands[diskutil]} )); then 
@@ -29,7 +29,6 @@ if (( ${+commands[diskutil]} )); then
     echo
 else
     export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
-    export XDG_DATA_HOME="/var/lib/flatpak/exports/share:${XDG_DATA_HOME}"
 fi
 
 # common for all
