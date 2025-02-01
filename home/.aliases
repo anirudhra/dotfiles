@@ -158,7 +158,7 @@ if [ -x "$(command -v apt-get)" ]; then
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
     alias showinstalled="sudo apt list --installed | less"
-    alias showkernel="echo Active echo && uname -a && echo Installed echo && dpkg --list | grep -i kernel-"
+    alias showkernel="echo Active Kernel && uname -a && echo Installed Kernels && dpkg --list | grep -i kernel-"
 
     # PVE go shortcuts
     if [ -x "$(command -v pveversion)" ]; then #detect if running on PVE server
@@ -191,7 +191,7 @@ elif [ -x "$(command -v dnf)" ]; then
     alias fullupgrade='sudo dnf update --refresh && sudo flatpak upgrade -y && sudo dnf distro-sync'
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
-    alias showkernel='echo Active && sudo uname -a && echo && echo Installed: && sudo rpm -q kernel-core'
+    alias showkernel='echo Active Kernel && sudo uname -a && echo && echo Installed Kernels && sudo rpm -q kernel-core'
     alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less"
 #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
 elif [ -x "$(command -v diskutil)" ]; then 
