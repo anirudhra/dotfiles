@@ -50,6 +50,7 @@ alias rd='rmdir'
 
 # "dos" aliases
 alias cls='clear'
+alias c='clear'
 alias dir='ls'
 
 #stow aliases
@@ -127,6 +128,8 @@ else
   alias sudovi='sudo nano'
   alias edit="nano"
 fi
+
+alias v='vim'
 
 # pager and readme aliases
 alias pager="${PAGER}"
