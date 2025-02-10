@@ -181,6 +181,7 @@ if [ "$ID" == "fedora" ]; then
     'libheif-freeworld'
     'libheif'
     'easyeffects'
+    'gtk2-engines'
     'gtk-murrine-engine'
   )
 
@@ -198,6 +199,7 @@ else
     'cifs-utils'
     'alsa-utils'
     'intel-media-va-driver-non-free'
+    'gtk2-engines-pixbuf'
     'gtk2-engines-murrine'
   )
   echo "Debian installer..."
