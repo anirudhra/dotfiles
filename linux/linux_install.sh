@@ -183,6 +183,8 @@ if [ "$ID" == "fedora" ]; then
     'easyeffects'
     'gtk2-engines'
     'gtk-murrine-engine'
+    'fuse'
+    'fuse-libs'
   )
 
   echo "Fedora installer..."
