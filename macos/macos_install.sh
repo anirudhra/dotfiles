@@ -63,7 +63,7 @@ nerdfonts=(
 )
 
 gtkpackages=(
-  # gtk integration
+  # gtk integration - none for now
   #'gtk'
   #'gtk+'
   #'gtk+3'

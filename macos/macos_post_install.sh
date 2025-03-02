@@ -67,12 +67,12 @@ fi
 
 # activate stow
 echo "Stowing dotfiles..."
-cd "${install_dir}/../home"
+cd "${install_dir}/../home" || exit
 stow --verbose=1 --target="$HOME" --stow --adopt .
 # above will overwrite git repo if files already exist in $HOME,
 # git restore . will restore with the correct versions, this is a trick to overwrite with repo files
 git restore .
-cd "${install_dir}"
+cd "${install_dir}" || exit
 
 echo "==========================================================================================="
 echo " All done, logout and log back in for changes to take effect."

@@ -1,5 +1,27 @@
-# (c) Anirudh Acharya 2024
-# useful aliases
+## (c) Anirudh Acharya 2024
+## useful aliases
+
+# For OS detection
+#detect_os() {
+#    if [[ "$OSTYPE" == "darwin"* ]]; then
+#        # do what's needed for macos
+#    elif [[ -f /etc/os-release ]]; then
+#    # can also use if [[ "$OSTYPE" == "linux=gnu"* ]]; then
+#        source /etc/os-release
+#        if [[ $ID == "ubuntu" ]] || [[ $ID == "debian" ]]; then
+#            #do what's needed for ubuntu/debian
+#             #if [ -x "$(command -v pveversion)" ]; then
+#                 # for pve server only
+#             #fi 
+#        elif [[ $ID == "fedora" ]] || [[ $ID == "centos" ]] || [[ $ID == "rhel" ]]; then
+#            #do what's needed for fedora/rhel/centos
+#        else
+#            #echo "Unsupported Linux distribution 
+#        fi
+#    else
+#        echo "Unsupported UNIX/Linux OS"
+#    fi
+#}
 
 ## ls aliases
 ## Colorize the ls output ##
@@ -163,8 +185,9 @@ if [ -x "$(command -v apt-get)" ]; then
     alias showinstalled="sudo apt list --installed | less"
     alias showkernel="echo Active Kernel && uname -a && echo Installed Kernels && dpkg --list | grep -i kernel-"
 
+    #detect if running on PVE server
     # PVE go shortcuts
-    if [ -x "$(command -v pveversion)" ]; then #detect if running on PVE server
+    if [ -x "$(command -v pveversion)" ]; then 
       alias gomedia='cd /mnt/sata-ssd/ssd-media/media'
       alias godata='cd /mnt/sata-ssd/ssd-data'
       alias godocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
@@ -174,7 +197,6 @@ if [ -x "$(command -v apt-get)" ]; then
       alias gomedia='cd /mnt/pve-sata-ssd/ssd-media/media'
       alias godata='cd /mnt/pve-sata-ssd/ssd-data'
       alias godocker='cd /mnt/pve-sata-ssd/ssd-data/dockerapps && cd $HOSTNAME'
-
       alias upgrade="fullupdate && fullclean && dockerupdateall"
 
       # following to be run on LXC/VM guests only, not server
@@ -358,8 +380,8 @@ movemovie()
 dockerupdateall()
 {
     if [ ! -x "$(command -v pveversion)" ]; then #detect if running on PVE server
-      cd /mnt/pve-sata-ssd/ssd-data/dockerapps
-      cd $(hostname) || exit
+      cd /mnt/pve-sata-ssd/ssd-data/dockerapps || exit
+      cd "$(hostname)" || exit
       find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
       docker image prune -a -f
       docker system prune --volumes -f

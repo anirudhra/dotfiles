@@ -39,11 +39,11 @@ echo
 read answer
 
 #failsafe
-mkdir -p ${backup_dst_home_dir}
-mkdir -p ${backup_dst_etc_dir}
+mkdir -p "${backup_dst_home_dir}"
+mkdir -p "${backup_dst_etc_dir}"
 
-mkdir -p ${backup_dst_etc_dir}/udev
-mkdir -p ${backup_dst_etc_dir}/systemd
+mkdir -p "${backup_dst_etc_dir}/udev"
+mkdir -p "${backup_dst_etc_dir}/systemd"
 # timestamp
 today=$(date -I)
 

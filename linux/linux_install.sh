@@ -15,8 +15,6 @@
 # . acts as source and is POSIX compliant
 . /etc/os-release
 #echo $PRETTY_NAME $ID #debug
-# ID will have fedora or debian
-#ID="debian" #override for debug
 
 echo
 echo "===================================================================================="
@@ -107,7 +105,6 @@ corepackages=(
   'gh'
   'stow'
   'fastfetch'
-  #'papirus-icon-theme'
   'dconf-editor'
   'geary'
   'vlc'
@@ -139,6 +136,7 @@ corepackages=(
   'ncdu'
   's-tui'
   'solaar' #logitech config utility
+  'papirus-icon-theme'
 )
 
 # Nerd fonts list to be installed
@@ -172,9 +170,9 @@ if [ "$ID" == "fedora" ]; then
     'throttled'
     'nfs-utils'
     'intel-media-driver'
-    #'epapirus-icon-theme'
-    #'papirus-icon-theme-dark'
-    #'papirus-icon-theme-light'
+    'epapirus-icon-theme'
+    'papirus-icon-theme-dark'
+    'papirus-icon-theme-light'
     'ulauncher'
     'btrfs-assistant'
     'heif-pixbuf-loader'
@@ -230,7 +228,8 @@ autofs_master="/etc/auto.master"
 # install autofs pve share file
 if [ -e "${sys_autofs_share_file}" ]; then
   echo "${sys_autofs_share_file} /etc config file exists, creating backup!"
-  # \\cp should use the unaliased version of cp (\cp, with \ for escape), else cp is usually aliases to cp -i and below will fail
+  # command \\cp should use the unaliased version of cp (command is \cp, with \ for escape), 
+  # else cp is usually aliases to cp -i and below will fail
   sudo \\cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
 fi
 echo "Installing /etc config file: ${source_autofs_share_file} to ${sys_autofs_share_file}"
@@ -282,9 +281,9 @@ if [ ! -e ${audio_alert_bak_file} ]; then
 fi
 
 # Install GTK and Icon themes
-pkg_install_dir="$HOME/packages/install"
+pkg_install_dir="${HOME}/packages/install"
 mkdir -p "${pkg_install_dir}"
-cd ${pkg_install_dir}
+cd "${pkg_install_dir}" || exit
 install_ui=0 #default flag, if at least one is pulled, set this below
 
 # check if exists, else pull
@@ -329,9 +328,9 @@ fi
 
 # Install Nerd fonts, cleanup and update font cache
 source_nerd_font_dir="./nerd_font_install"
-cd ${pkg_install_dir}
-mkdir -p ${source_nerd_font_dir}
-cd ${source_nerd_font_dir}
+cd "${pkg_install_dir}" || exit
+mkdir -p "${source_nerd_font_dir}"
+cd "${source_nerd_font_dir}" || exit
 
 fonts_dir="${HOME}/.local/share/fonts"
 if [[ ! -d "${fonts_dir}" ]]; then
@@ -375,7 +374,7 @@ gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Fon
 gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Cantarell 10'
 
 # change back to original installation directory
-cd ${install_dir}
+cd "${install_dir}" || exit
 
 ####################################################################################
 # Enable various services
