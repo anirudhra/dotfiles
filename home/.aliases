@@ -341,7 +341,7 @@ if [ ! -x "$(command -v diskutil)" ]; then
     alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
     alias reservice='sudo systemctl daemon-reload'
     alias serialnum='sudo dmidecode -t system'
-    alias ncduroot='ncdu --exclude \"/mnt/nfs\" --exclude-kernfs -e'
+    alias ncdulocal='ncdu --exclude \"/mnt/nfs\" --exclude-kernfs -e'
     
     alias fm='nautilus . &'
     alias gvim='vim'
