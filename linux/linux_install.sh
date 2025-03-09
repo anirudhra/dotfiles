@@ -228,7 +228,7 @@ autofs_master="/etc/auto.master"
 # install autofs pve share file
 if [ -e "${sys_autofs_share_file}" ]; then
   echo "${sys_autofs_share_file} /etc config file exists, creating backup!"
-  # command \\cp should use the unaliased version of cp (command is \cp, with \ for escape), 
+  # command \\cp should use the unaliased version of cp (command is \cp, with \ for escape),
   # else cp is usually aliases to cp -i and below will fail
   sudo \\cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
 fi
@@ -408,6 +408,9 @@ echo
 echo "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
 echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
 echo "Removable Drive Menu, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
+echo
+echo "EasyEffects presets: bash -c \"$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)\""
+echo "and https://github.com/shuhaowu/linux-thinkpad-speaker-improvements"
 echo
 echo "Manually set Nerd Font in: Terminal, Gnome Tweaks and VSCode"
 echo
