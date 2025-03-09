@@ -340,6 +340,7 @@ if [ ! -x "$(command -v diskutil)" ]; then
     alias sysinfo='sudo inxi -Fzx'
     alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
     alias reservice='sudo systemctl daemon-reload'
+    alias serialnum='sudo dmidecode -t system' 
     
     alias fm='nautilus . &'
     alias gvim='vim'
