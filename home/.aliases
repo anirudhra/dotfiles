@@ -197,7 +197,7 @@ if [ -x "$(command -v apt-get)" ]; then
       alias gomedia='cd /mnt/pve-sata-ssd/ssd-media/media'
       alias godata='cd /mnt/pve-sata-ssd/ssd-data'
       alias godocker='cd /mnt/pve-sata-ssd/ssd-data/dockerapps && cd $HOSTNAME'
-      alias upgrade="fullupdate && fullclean && dockerupdateall"
+      alias upgrade="fullupdate && update && fullclean && dockerupdateall"
 
       # following to be run on LXC/VM guests only, not server
       alias dockerup='docker compose up -d'
