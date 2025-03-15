@@ -45,9 +45,11 @@ git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "$Z
 # EasyEffects pipewire audio enhancer plugins
 ####################################################################################
 # manually install easy effects presets and gnome extensions for easy control (optional)
-echo "Installing EasyEffects presets..."
-bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
+#echo "Installing EasyEffects presets..."
+#bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
 # https://extensions.gnome.org/extension/4907/easyeffects-preset-selector/
+
+# no longer needed: easyeffects presets now part of github repo and will be stowed
 
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory - should be last in this file

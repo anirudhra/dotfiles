@@ -409,9 +409,10 @@ echo "Install the following GNOME Extensions manually from: https://extensions.g
 echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
 echo "Removable Drive Menu, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
 echo
-echo "EasyEffects presets: bash -c \"$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)\""
-echo "and https://github.com/shuhaowu/linux-thinkpad-speaker-improvements"
-echo
+# no need to install easyeffects presets, now part of repo and stowed
+#echo "EasyEffects presets: bash -c \"$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)\""
+#echo "and https://github.com/shuhaowu/linux-thinkpad-speaker-improvements"
+#echo
 echo "Manually set Nerd Font in: Terminal, Gnome Tweaks and VSCode"
 echo
 echo "UI customizations have been cloned in ${pkg_install_dir}, for future git pulls and updates or can be manually removed to save space. Manually set GNOME Shell theme and Hum alert sound in settings"

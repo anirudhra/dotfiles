@@ -4,32 +4,38 @@
 #macos only, test by checking if "diskutil" command exists (macos-only)
 #if (( ${+commands[diskutil]} )); then
 if [[ "$OSTYPE" == "darwin"* ]]; then
-    source <(fzf --zsh)
-    test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+  source <(fzf --zsh)
+  test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-    eval "$(/usr/local/bin/brew shellenv)"
+  eval "$(/usr/local/bin/brew shellenv)"
 
-    export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
-    export HOMEBREW_NO_ANALYTICS=1
-    export HOMEBREW_CASK_OPTS="--appdir=/Applications"
-    export VISUAL='vimr'
-    export EDITOR='nvim'
+  export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
+  export HOMEBREW_NO_ANALYTICS=1
+  export HOMEBREW_CASK_OPTS="--appdir=/Applications"
+  export VISUAL='vimr'
+  export EDITOR='nvim'
 
-    export GTK_PATH=/usr/local/lib/gtk-2.0
-    #export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
-    export PATH="${HOME}/.local/bin:/usr/local/sbin:${PATH}"
+  export GTK_PATH=/usr/local/lib/gtk-2.0
+  #export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
+  export PATH="${HOME}/.local/bin:/usr/local/sbin:${PATH}"
 
-    LESSPIPE=$(which src-hilite-lesspipe.sh)
-    export LESSOPEN="| ${LESSPIPE} %s"
-    export LESS=' -R -X -F '
+  LESSPIPE=$(which src-hilite-lesspipe.sh)
+  export LESSOPEN="| ${LESSPIPE} %s"
+  export LESS=' -R -X -F '
 
-    #shortcut for manim source
-    . "$HOME/.local/bin/env"
-    echo
-    cowsay $(fortune -s)
-    echo
+  #shortcut for manim source
+  . "$HOME/.local/bin/env"
+  echo
+  cowsay $(fortune -s)
+  echo
 else
-    export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
+  export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
+
+  #Vulkan headers
+  export VULKAN_SDK=~/code/vulkansdk/x86_64
+  export PATH=$VULKAN_SDK/bin:$PATH
+  export LD_LIBRARY_PATH=$VULKAN_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+  export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
 fi
 
 # common for all

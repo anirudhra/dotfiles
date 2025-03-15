@@ -1,7 +1,6 @@
 # DO NOT EDIT! This file will be overwritten by nwg-look.
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
-include "/home/anirudh/.gtkrc-2.0.mine"
 gtk-theme-name="default"
 gtk-icon-theme-name="Tela-dark"
 gtk-font-name="FiraCode Nerd Font Mono 10"
