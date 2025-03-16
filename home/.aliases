@@ -411,3 +411,15 @@ cleanlocales()
     fi
 }
 
+#manually move rocbkbox themes
+copyrockboxthemes()
+{
+    ipoddir="/run/media/anirudh/IPOD7G"
+    # change to locally extracted .rockbox directory
+    cp -r backdrops/* ${ipoddir}/backdrops
+    cp -r fonts/* ${ipoddir}/fonts
+    cp -r icons/* ${ipoddir}/icons
+    cp -r themes/* ${ipoddir}/themes
+    cp -r wps/* ${ipoddir}/wps
+}
+

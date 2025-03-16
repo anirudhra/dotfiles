@@ -17,7 +17,7 @@
             "bypass": false,
             "input-gain": -2.0,
             "ir-width": 100,
-            "kernel-name": "DolbyMusicBalanced",
+            "kernel-name": "Waves MaxxAudio ((Z-Edition)) AudioWizard 1.Music",
             "output-gain": 0.0
         },
         "filter#0": {
@@ -287,11 +287,11 @@
             "wet": 0.0
         },
         "plugins_order": [
-            "convolver#0",
             "filter#0",
             "bass_enhancer#0",
             "multiband_compressor#0",
             "stereo_tools#0",
+            "convolver#0",
             "limiter#0"
         ],
         "stereo_tools#0": {
