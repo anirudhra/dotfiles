@@ -7,6 +7,10 @@
 *vscode*
 *cache*
 *Cache*
+*python3*
+*site-packages*
+*.zoom*
+*vulkan*
 *share/nvim*
 *geary*
 *fonts*
