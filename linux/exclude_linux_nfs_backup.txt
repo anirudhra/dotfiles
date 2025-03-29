@@ -6,6 +6,7 @@
 *Trash*
 *vscode*
 *cache*
+*Cache*
 *share/nvim*
 *geary*
 *fonts*

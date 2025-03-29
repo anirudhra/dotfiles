@@ -10,6 +10,7 @@ backup_home_source_dir=${HOME}
 backup_etc_source_dir="/etc"
 backup_dst_home_dir="${backup_base_dir}/home"
 backup_dst_etc_dir="${backup_base_dir}/etc"
+# add all backup exclusion regex to the file below
 backup_exclude_list="./exclude_linux_nfs_backup.txt"
 
 #confirm external storage/destination is mounted correctly before proceeding
@@ -55,12 +56,14 @@ echo
 # rsync individual and small directories first
 #
 
+# /etc directories to backup
 etc_dirs=(
   'udev'
   'systemd'
   'tlp.d'
 )
 
+# /etc files to backup
 etc_files=(
   'fstab'
   'auto.pveshare'
@@ -70,19 +73,19 @@ etc_files=(
   'environment'
 )
 
-# /etc/ directories
+# backup /etc/ directories
 for i in "${etc_dirs[@]}"; do
   #don't forget trailing '/' for destination!
   rsync -avHPAX --delete /etc/"${i}" ${backup_dst_etc_dir}/
 done
 
-# /etc/ files
+# backup /etc/ files
 for j in "${etc_files[@]}"; do
   #don't forget trailing '/' for destination!
   rsync -avHPAX --delete /etc/"${j}" ${backup_dst_etc_dir}/
 done
 
-# run backup commands
+# run home backup commands
 echo
 echo "Starting ${backup_home_source_dir} backup..."
 echo
