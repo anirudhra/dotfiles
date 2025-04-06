@@ -31,6 +31,9 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
 
+  # cursor size fix
+  export XCURSOR_SIZE=32
+
   #Vulkan headers
   export VULKAN_SDK=~/code/vulkansdk/x86_64
   export PATH=$VULKAN_SDK/bin:$PATH
