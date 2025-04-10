@@ -342,7 +342,8 @@ if [ ! -x "$(command -v diskutil)" ]; then
     alias reservice='sudo systemctl daemon-reload'
     alias serialnum='sudo dmidecode -t system'
     alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude-kernfs -e'
-    
+
+    alias upgrade='fullupdate && fullclean'
     alias fm='nautilus . &'
     alias gvim='vim'
 fi
