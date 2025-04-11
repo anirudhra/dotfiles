@@ -48,8 +48,14 @@ git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "$Z
 #echo "Installing EasyEffects presets..."
 #bash -c "$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)"
 # https://extensions.gnome.org/extension/4907/easyeffects-preset-selector/
+# above is no longer needed: easyeffects presets now part of github repo and will be stowed
 
-# no longer needed: easyeffects presets now part of github repo and will be stowed
+####################################################################################
+# Restore GNOME shell extension sessings via config
+####################################################################################
+
+echo "Restoring GNOME shell extension settings..."
+dconf load /org/gnome/shell/extensions/ <"${install_dir}/extensions/dconf_gnome_extensions_settings"
 
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory - should be last in this file
