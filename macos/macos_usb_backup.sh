@@ -16,20 +16,25 @@ source_media_base_dir="${HOME}/Music"
 echo
 echo "==============================================================================="
 echo "Ensure your External USB is mounted correctly before running this script!"
-echo "Home to be backed up to: ${dest_home_base_dir}"
-echo "Meida to be backed up to: ${dest_media_base_dir}"
+echo "Home will be backed up to: ${dest_home_base_dir}"
+echo "Media will be backed up to: ${dest_media_base_dir}"
 echo "==============================================================================="
 echo
 echo "Contents of destination Home: ${dest_home_base_dir}:"
 echo
 ls ${dest_home_base_dir}
+echo
 echo "========================"
+echo
 echo "Contents of destination Media: ${dest_media_base_dir}:"
 echo
 ls ${dest_media_base_dir}
+echo
 echo "==============================================================================="
 echo "Disk space usage of ${dest_home_base_dir} and ${dest_media_base_dir}"
+echo
 df -h ${dest_home_base_dir}
+echo
 df -h ${dest_media_base_dir}
 echo
 echo "============================================================================================"
@@ -74,7 +79,7 @@ for i in "${source_home_dir_list[@]}"; do
 
   # /usr/bin/rsync uses Apple's version that understands APFS better and avoid recopyiong
   # -hvrltD --modify-window=1 works for exfat or fat32 destinations, -a will recopy everytime
-  echo "Command (dry run first): rsync -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}"
+  echo "Command: rsync -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}"
 
   #FIXME: following does not work
   #/usr/bin/rsync --dry-run -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}
@@ -111,7 +116,7 @@ for j in "${source_media_dir_list[@]}"; do
 
   # /usr/bin/rsync uses Apple's version that understands APFS better and avoid recopyiong
   # -hvrltD --modify-window=1 works for exfat or fat32 destinations, -a will recopy everytime
-  echo "Command (dry run first): rsync -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}"
+  echo "Command: rsync -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}"
 
   #FIXME: Following does not work
   #/usr/bin/rsync --dry-run -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}
