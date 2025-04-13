@@ -9,6 +9,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
   eval "$(/usr/local/bin/brew shellenv)"
 
+  export XDG_CONFIG_HOME=${HOME}/.config
   export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
   export HOMEBREW_NO_ANALYTICS=1
   export HOMEBREW_CASK_OPTS="--appdir=/Applications"
@@ -32,7 +33,7 @@ else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
 
   # cursor size fix
-  export XCURSOR_SIZE=24
+  #export XCURSOR_SIZE=24
 
   #Vulkan headers
   export VULKAN_SDK=~/code/vulkansdk/x86_64
