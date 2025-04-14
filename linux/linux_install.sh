@@ -279,7 +279,7 @@ if [ ! -e ${audio_alert_bak_file} ]; then
   sudo cp ${audio_alert_source_file} ${audio_alert_file}
 fi
 
-# Install GTK and Icon themes
+# Install GTK and Icon themes in the following directory
 pkg_install_dir="${HOME}/packages/install"
 mkdir -p "${pkg_install_dir}"
 cd "${pkg_install_dir}" || exit
@@ -319,7 +319,40 @@ if [ ! -d "Fluent-icon-theme" ]; then
   install_ui=1
 fi
 
-# execute install.sh script from each directory for all above, if at least one was sync'd
+# -------------------
+# elementary OS and Zorin OS assets - no installation scripts for them, need to manually install each
+
+# elementary OS assets icons theme: no standard install; pull the repos for manual install
+if [ ! -d "elementary-sound-theme" ]; then
+if [ ! -d "elementary-icon-theme" ]; then
+  git https://github.com/elementary/icons elementary-icon-theme
+  # no install script for now
+  #install_ui=1
+fi
+
+# elementary OS assets: no standard install; pull the repos for manual install
+if [ ! -d "elementary-sound-theme" ]; then
+  git https://github.com/elementary/sound-theme elementary-sound-theme
+  # no install script for now
+  #install_ui=1
+fi
+
+# zorin OS assets - icons
+if [ ! -d "zorin-icon-themes" ]; then
+  git https://github.com/ZorinOS/zorin-icon-themes
+  # no install script for now
+  #install_ui=1
+fi
+
+# zorin OS assets - gtk
+if [ ! -d "zorin-desktop-themes" ]; then
+  git https://github.com/ZorinOS/zorin-desktop-themes
+  # no install script for now
+  #install_ui=1
+fi
+# -------------------
+
+# execute install.sh script from each directory above where supported, if at least one was sync'd
 if [ ${install_ui} -eq 1 ]; then
   echo "Executing UI installation scripts"
   find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && pwd && ./install.sh" \;
