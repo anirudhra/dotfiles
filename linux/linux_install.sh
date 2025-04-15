@@ -320,7 +320,15 @@ if [ ! -d "Fluent-icon-theme" ]; then
 fi
 
 # -------------------
-# elementary OS and Zorin OS assets - no installation scripts for them, need to manually install each
+# kora, marble, elementary OS and Zorin OS assets
+# no installation scripts for them, need to manually install each
+
+if [ ! -d "kora-icon-theme" ]; then
+  git clone https://github.com/bikass/kora kora-icon-theme
+  # no install script for now
+  #install_ui=1
+fi
+
 if [ ! -d "Marble-shell-theme" ]; then
   git clone https://github.com/Fausto-Korpsvart/Marble-shell-theme
   # no install script for now
