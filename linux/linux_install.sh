@@ -321,32 +321,36 @@ fi
 
 # -------------------
 # elementary OS and Zorin OS assets - no installation scripts for them, need to manually install each
+if [ ! -d "Marble-shell-theme" ]; then
+  git clone https://github.com/Fausto-Korpsvart/Marble-shell-theme
+  # no install script for now
+  #install_ui=1
+fi
 
 # elementary OS assets icons theme: no standard install; pull the repos for manual install
-if [ ! -d "elementary-sound-theme" ]; then
 if [ ! -d "elementary-icon-theme" ]; then
-  git https://github.com/elementary/icons elementary-icon-theme
+  git clone https://github.com/elementary/icons elementary-icon-theme
   # no install script for now
   #install_ui=1
 fi
 
 # elementary OS assets: no standard install; pull the repos for manual install
 if [ ! -d "elementary-sound-theme" ]; then
-  git https://github.com/elementary/sound-theme elementary-sound-theme
+  git clone https://github.com/elementary/sound-theme elementary-sound-theme
   # no install script for now
   #install_ui=1
 fi
 
 # zorin OS assets - icons
 if [ ! -d "zorin-icon-themes" ]; then
-  git https://github.com/ZorinOS/zorin-icon-themes
+  git clone https://github.com/ZorinOS/zorin-icon-themes
   # no install script for now
   #install_ui=1
 fi
 
 # zorin OS assets - gtk
 if [ ! -d "zorin-desktop-themes" ]; then
-  git https://github.com/ZorinOS/zorin-desktop-themes
+  git clone https://github.com/ZorinOS/zorin-desktop-themes
   # no install script for now
   #install_ui=1
 fi
