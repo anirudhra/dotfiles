@@ -384,7 +384,7 @@ movemovie()
 #intended to be run on PVE guests only
 dockerupdateall()
 {
-    if [ ! -x "$(command -v pveversion)" ]; then #detect if running on PVE server
+    if [ ! -x "$(command -v pveversion)" ]; then #ensure it's not the server 
       cd /mnt/pve-sata-ssd/ssd-data/dockerapps || exit
       cd "$(hostname)" || exit
       find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
@@ -412,6 +412,23 @@ cleanlocales()
     if [ ! -x "$(command -v diskutil)" ]; then #detect running on non-macos
       sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
     fi
+}
+
+# remove old kernels in fedora
+cleankernels()
+{
+    # only run on fedora 
+    if [ -x "$(command -v dnf)" ]; then 
+
+      old_kernels=($(dnf repoquery --installonly --latest-limit=-1 -q))
+      
+      if [ "${#old_kernels[@]}" -eq 0 ]; then
+          echo "No old kernels found"
+      elif ! dnf remove "${old_kernels[@]}"; then
+          echo "Failed to remove old kernels"
+      fi
+
+    fi 
 }
 
 #manually move rocbkbox themes
