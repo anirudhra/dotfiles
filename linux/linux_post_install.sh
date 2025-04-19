@@ -55,7 +55,7 @@ git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "$Z
 ####################################################################################
 
 echo "Restoring GNOME shell extension settings..."
-dconf load /org/gnome/shell/extensions/ <"${install_dir}/extensions/dconf_gnome_extensions_settings"
+dconf load /org/gnome/shell/extensions/ <"${install_dir}/extensions/gnome_extensions_backup.dconf"
 
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory - should be last in this file
