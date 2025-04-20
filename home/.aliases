@@ -352,7 +352,6 @@ if [ ! -x "$(command -v diskutil)" ]; then
     alias gnome_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf"
     alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
     alias gnome_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
-fi
     alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
 fi
 ######## functions ######################
