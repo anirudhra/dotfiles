@@ -1,3 +1,5 @@
+alias firewall="sh /jffs/scripts/firewall" # Skynet
+
 ## Colorize the ls output ##
 alias ls='ls -F'
 #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
@@ -55,6 +57,7 @@ alias wgetnc='wget -c --no-check-certificate'
 ## set some other defaults ##
 alias df='df -P -h'
 alias du='du -ch'
+alias duf='df -P -h'
 
 alias vim='vi'
 alias edit="vim"
@@ -78,8 +81,17 @@ alias greph='history | grep'
 alias count='find . -type f | wc -l'
 alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
 
-alias sshserver='ssh admin@10.100.100.99'
-alias pingserver='ping 10.100.100.99'
+alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65'
+alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70'
+alias sshjf='ssh -o MACs=hmac-sha2-256 root@10.100.100.80'
+alias sshsagat='ssh -o MACs=hmac-sha2-256 root@10.100.100.75'
+#alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50'
+alias sshvega='ssh -o MACs=hmac-sha2-256 root@10.100.100.60'
+alias sshventoy='ssh -o MACs=hmac-sha2-256 root@10.100.100.51'
+alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55'
+alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
+
+alias backupmon="sh /jffs/scripts/backupmon.sh" # backupmon
 
 ############# Functions #######################
 mkcd()
