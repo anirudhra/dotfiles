@@ -45,4 +45,5 @@ fi
 # common for all
 #fastfetch --config groups #enable only if presets are correctly installed both macos/linux, else failsafe below
 fastfetch
+#neofetch
 echo
