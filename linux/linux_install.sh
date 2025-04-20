@@ -34,6 +34,16 @@ fi
 
 installer="dnf" #default Fedora
 
+# get right timezone and locale/language
+L_TZ="America/Los_Angeles"
+L_LANG="en_US.UTF-8"
+
+TZSET=""
+if [ -f /etc/timezone ]; then
+  TZSET=`cat /etc/timezone`  
+fi
+LANGSET=`env | grep LANG`
+
 if [ "$ID" == "fedora" ]; then
   echo "Fedora detected!"
   echo
@@ -48,7 +58,8 @@ if [ "$ID" == "fedora" ]; then
   echo -e "[vscode]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo >/dev/null
 
   sudo ${installer} group upgrade core -y
-elif [ "$ID" == "debian" ] || [ "$ID" == "ubuntu" ]; then
+# Debian and derivative distros
+elif [ "$ID" == "debian" ] || [ "$ID" == "ubuntu" ] || [ "$ID" == "zorin" ]; then
   echo "Debian or derivative detected!"
   echo
   echo "Before you run this script, enable non-free and non-free-firmware repos"
@@ -58,15 +69,35 @@ elif [ "$ID" == "debian" ] || [ "$ID" == "ubuntu" ]; then
 
   # add repos
   sudo add-apt-repository universe -y && sudo add-apt-repository ppa:agornostal/ulauncher -y
+  
+  # vscode repos
+  sudo apt-get install wget gpg
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+  echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+  rm -f packages.microsoft.gpg
 
+  # microsoft edge
+  wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+  sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" -y
+  
   # Configure console font and size, esp. usefull for hidpi displays (select Combined Latin, Terminus, 16x32 for legibility
-  echo "Configuring Console..."
-  sudo dpkg-reconfigure console-setup
+  # disabled for now, enable this manually if needed
+  #echo "Configuring Console..."
+  #sudo dpkg-reconfigure console-setup
   # Configure timezone and locale for en/UTF-8
-  echo "Configuring Timezone..."
-  sudo dpkg-reconfigure tzdata
-  echo "Configuring Locales..."
-  sudo dpkg-reconfigure locales
+  if [ ! ${TZSET} == ${L_TZ} ]; then
+     echo "Configuring Timezone..."
+     #sudo dpkg-reconfigure tzdata
+     sudo timedatectl set-timezone "${L_TZ}"
+  fi
+
+  if [ ! ${LANGSET} == "LANG=${L_LANG}" ]; then
+     echo "Configuring Locales..."
+     #sudo dpkg-reconfigure locales
+     sudo update-locale LANG=${L_LANG}
+  fi
+# unknown OS, exit
 else
   echo "Unknown OS, cannot proceed; exiting"
   exit
@@ -81,14 +112,14 @@ sudo ${installer} update && sudo ${installer} upgrade
 
 # list of core packages
 corepackages=(
+  'tmux'
   'duf'
+  'code'
   'btop'
   'stress'
   'zsh'
   'gnome-tweaks'
-  'gnome-extensions-app'
   'avahi-daemon'
-  'lm_sensors'
   'powertop'
   'vainfo'
   'usbutils'
@@ -103,18 +134,15 @@ corepackages=(
   'git'
   'gh'
   'stow'
-  'fastfetch'
   'dconf-editor'
   'geary'
   'vlc'
   'gimp'
   'gparted'
-  'microsoft-edge-stable'
   'golang'
   'cmake'
   'gcc'
   'inxi'
-  'code'
   'gem'
   'luarocks'
   'fzf'
@@ -124,9 +152,9 @@ corepackages=(
   'lolcat'
   'menulibre'
   'p7zip'
-  'p7zip-plugins'
   'unzip'
   'unrar'
+  'microsoft-edge-stable'
   'nmap'
   'expect'
   'mencoder'
@@ -167,6 +195,10 @@ if [ "$ID" == "fedora" ]; then
   # Fedora specific packages
   ospackages=(
     'throttled'
+    'gnome-extensions-app'
+    'fastfetch'
+    'lm_sensors'
+    'p7zip-plugins'
     'nfs-utils'
     'intel-media-driver'
     'epapirus-icon-theme'
@@ -192,6 +224,11 @@ if [ "$ID" == "fedora" ]; then
 else
   # Debian/Ubuntu specific packages
   ospackages=(
+    'chrome-gnome-shell' 
+    'apt-transport-https'
+    'lm-sensors'
+    'neofetch'
+    'gnome-shell-extension-prefs'
     'avahi-utils'
     'nfs-common'
     'systemd-resolved'
@@ -199,13 +236,15 @@ else
     'alsa-utils'
     'intel-media-va-driver-non-free'
     'gtk2-engines-pixbuf'
+    'ulauncher'
     'gtk2-engines-murrine'
   )
   echo "Debian installer..."
 fi
 
 # install all packages
-sudo ${installer} install "${corepackages[@]}" "${ospackages[@]}"
+sudo ${installer} install "${corepackages[@]}"
+sudo ${installer} install "${ospackages[@]}"
 
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory
@@ -224,15 +263,22 @@ sys_throttled_file="/etc/throttled.conf"
 nfs_mount_point="/mnt/nfs"
 autofs_master="/etc/auto.master"
 
+# unalias cp, if it has an alias
+[[ $(type -t cp) == "alias" ]] && unalias cp
+
 # install autofs pve share file
 if [ -e "${sys_autofs_share_file}" ]; then
   echo "${sys_autofs_share_file} /etc config file exists, creating backup!"
   # command \\cp should use the unaliased version of cp (command is \cp, with \ for escape),
   # else cp is usually aliases to cp -i and below will fail
-  sudo \\cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
+  # else force run "unalias cp" command as above
+  #sudo \\cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
+  sudo cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
 fi
+
 echo "Installing /etc config file: ${source_autofs_share_file} to ${sys_autofs_share_file}"
-sudo \\cp -rf ${source_autofs_share_file} ${sys_autofs_share_file}
+#sudo \\cp -rf ${source_autofs_share_file} ${sys_autofs_share_file}
+sudo cp -rf ${source_autofs_share_file} ${sys_autofs_share_file}
 sudo mkdir -p ${nfs_mount_point}
 sudo chmod 777 ${nfs_mount_point}
 
@@ -248,18 +294,22 @@ fi
 # install tlp config file
 if [ -e "${sys_tlp_file}" ]; then
   echo "${sys_tlp_file} /etc config file exists, creating backup"
-  sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
+  #sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
+  sudo cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
 fi
 echo "Installing /etc config file: ${source_tlp_file} to ${sys_tlp_file}"
-sudo \\cp -rf ${source_tlp_file} ${sys_tlp_file}
+#sudo \\cp -rf ${source_tlp_file} ${sys_tlp_file}
+sudo cp -rf ${source_tlp_file} ${sys_tlp_file}
 
 # install throttled and UV config file
 if [ -e "${sys_throttled_file}" ]; then
   echo "${sys_throttled_file} /etc config file exists, creating backup"
-  sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
+  #sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
+  sudo cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
 fi
 echo "Installing /etc config file: ${source_throttled_file} to ${sys_throttled_file}"
-sudo \\cp -rf ${source_throttled_file} ${sys_throttled_file}
+#sudo \\cp -rf ${source_throttled_file} ${sys_throttled_file}
+sudo cp -rf ${source_throttled_file} ${sys_throttled_file}
 
 ####################################################################################
 # Install UI/Customizations
@@ -441,7 +491,9 @@ sudo systemctl disable thermald
 sudo systemctl mask thermald
 
 # change shell to zsh, need to logout and back in to take effect
+# if zsh wasn't installed, this will automatically fail, not altering current shell
 chsh -s "$(which zsh)"
+
 ####################################################################################
 # Manual install notice
 ####################################################################################
@@ -470,9 +522,10 @@ echo
 ohmyzshinstallurl="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 echo "==========================================================================================="
-read -p "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script. Installing oh-my-zsh as the last software. Press Enter to continue." -n1 -s
-#echo "==========================================================================================="
-sh -c "$(curl -fsSL ${ohmyzshinstallurl})"
+echo "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script."
+echo "Install oh-my-zsh from : https://ohmyz.sh/"
+echo "==========================================================================================="
+#sh -c "$(curl -fsSL ${ohmyzshinstallurl})"
 
 # installing oh-my-zsh will exit this script, so keep it as the last item to be installed
 ####################################################################################
