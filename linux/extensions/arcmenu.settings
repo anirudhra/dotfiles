@@ -22,6 +22,7 @@ pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id':
 power-options=[(0, false), (1, true), (2, true), (3, true), (4, true), (5, false), (6, false), (7, false)]
 prefs-visible-page=0
 quicklinks-item-icon-size='Default'
+recently-installed-apps=@as []
 right-panel-width=200
 search-entry-border-radius=(true, 25)
 search-provider-open-windows=true

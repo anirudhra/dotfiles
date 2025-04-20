@@ -25,6 +25,7 @@ pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id':
 power-options=[(0, false), (1, true), (2, true), (3, true), (4, true), (5, false), (6, false), (7, false)]
 prefs-visible-page=0
 quicklinks-item-icon-size='Default'
+recently-installed-apps=@as []
 right-panel-width=200
 search-entry-border-radius=(true, 25)
 search-provider-open-windows=true
@@ -125,9 +126,9 @@ use-buildin-icons=true
 
 [forge]
 css-last-update=uint32 37
-css-updated='1743213707983'
+css-updated='1745080859224'
 tiling-mode-enabled=true
-window-gap-hidden-on-single=true
+window-gap-hidden-on-single=false
 window-gap-size=uint32 3
 
 [forge/keybindings]
