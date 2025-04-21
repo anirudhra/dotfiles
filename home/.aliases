@@ -184,8 +184,8 @@ if [ -x "$(command -v apt-get)" ]; then
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
     alias showinstalled="sudo apt list --installed | less"
     alias showkernel="echo Active Kernel && uname -a && echo Installed Kernels && dpkg --list | grep -i kernel-"
-    # empty for now
-    alias fwupdate='fullupdate'
+    alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
+    alias checkfw='sudo fwupdmgr get-devices'
 
     #detect if running on PVE server
     # PVE go shortcuts
@@ -220,7 +220,8 @@ elif [ -x "$(command -v dnf)" ]; then
     alias checkfw='sudo fwupdmgr get-devices'
     alias showkernel='echo Active Kernel && sudo uname -a && echo && echo Installed Kernels && sudo rpm -q kernel-core'
     alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less"
-#rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
+    #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
+#macOS aliases
 elif [ -x "$(command -v diskutil)" ]; then 
     # add condition for macos specific commmand here - diskutil not available on linux, only macos
     alias brew_update='brew update && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
