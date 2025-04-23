@@ -183,7 +183,7 @@ if [ -x "$(command -v apt-get)" ]; then
     alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
     alias fullupdate='sudo apt update && sudo apt dist-upgrade'
     alias showinstalled="sudo apt list --installed | less"
-    alias showkernel="echo Active Kernel && uname -a && echo Installed Kernels && dpkg --list | grep -i kernel-"
+    alias showkernel="echo Active Kernel && uname -a && echo Installed Kernels && dpkg --list | grep -i -e kernel- -e linux-image"
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
 
