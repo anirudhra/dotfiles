@@ -40,9 +40,9 @@ L_LANG="en_US.UTF-8"
 
 TZSET=""
 if [ -f /etc/timezone ]; then
-  TZSET=`cat /etc/timezone`  
+  TZSET=$(cat /etc/timezone)
 fi
-LANGSET=`env | grep LANG`
+LANGSET=$(env | grep LANG)
 
 if [ "$ID" == "fedora" ]; then
   echo "Fedora detected!"
@@ -69,33 +69,33 @@ elif [ "$ID" == "debian" ] || [ "$ID" == "ubuntu" ] || [ "$ID" == "zorin" ]; the
 
   # add repos
   sudo add-apt-repository universe -y && sudo add-apt-repository ppa:agornostal/ulauncher -y
-  
+
   # vscode repos
   sudo apt-get install wget gpg
-  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > packages.microsoft.gpg
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
   sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-  echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" |sudo tee /etc/apt/sources.list.d/vscode.list > /dev/null
+  echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee /etc/apt/sources.list.d/vscode.list >/dev/null
   rm -f packages.microsoft.gpg
 
   # microsoft edge
   wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
   sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" -y
-  
+
   # Configure console font and size, esp. usefull for hidpi displays (select Combined Latin, Terminus, 16x32 for legibility
   # disabled for now, enable this manually if needed
   #echo "Configuring Console..."
   #sudo dpkg-reconfigure console-setup
   # Configure timezone and locale for en/UTF-8
   if [ ! ${TZSET} == ${L_TZ} ]; then
-     echo "Configuring Timezone..."
-     #sudo dpkg-reconfigure tzdata
-     sudo timedatectl set-timezone "${L_TZ}"
+    echo "Configuring Timezone..."
+    #sudo dpkg-reconfigure tzdata
+    sudo timedatectl set-timezone "${L_TZ}"
   fi
 
   if [ ! ${LANGSET} == "LANG=${L_LANG}" ]; then
-     echo "Configuring Locales..."
-     #sudo dpkg-reconfigure locales
-     sudo update-locale LANG=${L_LANG}
+    echo "Configuring Locales..."
+    #sudo dpkg-reconfigure locales
+    sudo update-locale LANG=${L_LANG}
   fi
 # unknown OS, exit
 else
@@ -167,7 +167,7 @@ corepackages=(
 )
 
 # Nerd fonts list to be installed
-nerd_font_ver='3.3.0'
+nerd_font_ver='3.4.0'
 
 fonts=(
   #'BitstreamVeraSansMono'
@@ -224,7 +224,7 @@ if [ "$ID" == "fedora" ]; then
 else
   # Debian/Ubuntu specific packages
   ospackages=(
-    'chrome-gnome-shell' 
+    'chrome-gnome-shell'
     'apt-transport-https'
     'lm-sensors'
     'neofetch'
