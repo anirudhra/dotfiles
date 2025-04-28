@@ -19,7 +19,7 @@ echo "==========================================================================
 echo "Starting automated POST-installer script. This should be run AFTER linux_install.sh script is run and "
 echo "logging out and log back in. Make sure oh-my-zsh is installed first (after creating empty .zshrc file)"
 echo
-echo "If not, Press Ctrl+C now to quit, else Press Enter to continue" -n1 -s
+echo "If not, Press Ctrl+C now to quit, else Press Enter to continue"
 read -p "================================================================================================================"
 echo
 

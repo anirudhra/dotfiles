@@ -82,8 +82,10 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
   echo "Debian or derivative detected!"
   echo
   echo "Before you run this script, enable non-free and non-free-firmware repos"
-  read -p "!!!Press Ctrl-C to quit now to enable and re-run this script!!! If enabled, press Enter" -n1 -s
+  echo "!!!Press Ctrl-C to quit now to enable and re-run this script!!! If enabled, press Enter"
   echo
+  read -p "===================================================================================="
+
   install_os="debian"
   installer="apt"
 
@@ -163,12 +165,12 @@ corepackages=(
   'gh'
   'stow'
   'vlc'
-  'golang'
-  'cmake'
-  'gcc'
+  #'golang'
+  #'cmake'
+  #'gcc'
   'inxi'
-  'gem'
-  'luarocks'
+  #'gem'
+  #'luarocks'
   'fzf'
   'fd-find'
   'python3-pip'
@@ -403,7 +405,7 @@ if [ ! -d "Tela-icon-theme" ]; then
   git clone https://github.com/vinceliuice/Tela-icon-theme
   install_ui=1
 fi
-if [ ! -d "Orchis-theme" && [ "${desktopEnv}" == "GNOME" ]; then
+if [ ! -d "Orchis-theme" ] && [ "${desktopEnv}" == "GNOME" ]; then
   git clone https://github.com/vinceliuice/Orchis-theme
   install_ui=1
 fi

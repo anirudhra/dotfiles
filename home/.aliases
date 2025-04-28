@@ -296,6 +296,7 @@ if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
   # other goto aliases
   alias gocode='cd ${HOME}/code'
   alias gogit='cd ${HOME}/code/github'
+  alias gopkg='cd ${HOME}/packages/install'
 
   # iperf3, uses daemon on pve persever
   alias iperfdown='iperf3 -Rc 10.100.100.50'
