@@ -1,17 +1,26 @@
 #!/bin/bash
-# (c) Anirudh Acharya 2024
+# (c) Anirudh Acharya 2024, 2025
+#
+# Last Update: April 27, 2025
+#
 # Fedora setup and Fedora/Debian dotfiles repo for thinkpad
 # Run this script as non-root user AFTER the linux_install.sh script
 # git config --global user.name "name"
 # git config --global user.email "email"
 # gh auth login: for browser based git login instead of token
 
+# get desktop environment
+desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
+#Xsessiontype=${XDG_SESSION_TYPE} #X11, wayland
+. /etc/os-release
+
 echo
 echo "==============================================================================================================="
 echo "Starting automated POST-installer script. This should be run AFTER linux_install.sh script is run and "
-echo "logging out and log back in. This should be run AFTER linux_install.sh script is run."
-read -p "If not, Press Ctrl+C now to quit, else Press Enter to continue" -n1 -s
-#echo "================================================================================================================"
+echo "logging out and log back in. Make sure oh-my-zsh is installed first (after creating empty .zshrc file)"
+echo
+echo "If not, Press Ctrl+C now to quit, else Press Enter to continue" -n1 -s
+read -p "================================================================================================================"
 echo
 
 # check if running from the right directory
@@ -24,9 +33,24 @@ if [[ ${install_dir} != *"/dotfiles/linux"* ]]; then
   exit
 fi
 
-#git login
-gh auth login #for browser based git login instead of token
-git config --global core.editor "nano"
+# check if oh-my-zsh is installed first
+if [ ! -d ${HOME}/.oh-my-zsh ]; then
+  echo "oh-my-zsh installation not detected!"
+  echo "Install oh-my-zsh from : https://ohmyz.sh/ before running this script!"
+  exit
+fi
+
+# git login, if not yet
+gitlogin=$(gh auth status 2>&1 | grep -i "not logged into")
+nologintext="You are not logged into any GitHub hosts. To log in, run: gh auth login"
+
+if [ "${gitlogin}" == "${nologintext}" ]; then  
+  #debug
+  echo "Not logged into git, logging in..."
+  #git login
+  gh auth login #for browser based git login instead of token
+  git config --global core.editor "nano"
+fi
 
 ####################################################################################
 # Zsh/oh-my-zsh plugins, all these are enabled in "stowed zshrc" already
@@ -38,15 +62,18 @@ if [ ! -d "${HOME}/.oh-my-zsh/custom/themes/powerlevel10k" ]; then
 fi
 
 #install oh-my-zsh plugins
-#git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM}/plugins/zsh-autosuggestions"
-#git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM}/plugins/zsh-syntax-highlighting"
-#git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM}/plugins/fast-syntax-highlighting"
-#git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM}/plugins/zsh-autocomplete"
-
-git clone https://github.com/zsh-users/zsh-autosuggestions.git "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
-git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
-git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${HOME}/.oh-my-zsh/custom/plugins/fast-syntax-highlighting"
-git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${HOME}/.oh-my-zsh/custom/plugins/zsh-autocomplete"
+if [ ! -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions" ]; then
+  git clone https://github.com/zsh-users/zsh-autosuggestions.git "${HOME}/.oh-my-zsh/custom/plugins/zsh-autosuggestions"
+fi
+if [ ! -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting" ]; then
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${HOME}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+fi
+if [ ! -d "${HOME}/.oh-my-zsh/custom/plugins/fast-syntax-highlighting" ]; then
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${HOME}/.oh-my-zsh/custom/plugins/fast-syntax-highlighting"
+fi
+if [ ! -d "${HOME}/.oh-my-zsh/custom/plugins/zsh-autocomplete" ]; then
+  git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${HOME}/.oh-my-zsh/custom/plugins/zsh-autocomplete"
+fi
 
 ####################################################################################
 # EasyEffects pipewire audio enhancer plugins
@@ -97,11 +124,23 @@ cd "${install_dir}" || exit
 # Restore GNOME shell extension sessings via config
 ####################################################################################
 
-echo "Restoring GNOME shell extension settings..."
-dconf load /org/gnome/shell/extensions/ <"${install_dir}/extensions/gnome_extensions_backup.dconf"
+if [ "${desktopEnv}" == "GNOME" ]; then
+  echo "Restoring GNOME shell extension settings..."
+  dconf load /org/gnome/shell/extensions/ <"${install_dir}/extensions/gnome_extensions_backup.dconf"
+fi
 
+echo
 echo "==========================================================================================="
-echo " All done, logout and log back in for changes to take effect."
+echo "All done, logout and log back in for changes to take effect."
+#replace fastfetch with neofetch for debian based distros
+if [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmint" ] || [ "${ID}" == "zorin" ]; then
+  if [ ! -e "/usr/bin/fastfetch" ]; then
+    echo
+    echo "Temporarily replaced neofetch with fastfetch in ${local_profile} on Debian-based systems"
+    echo "Install fastfetch from https://github.com/fastfetch-cli/fastfetch"
+    sed -i s/fastfetch/neofetch/g ${local_profile}
+  fi
+fi
 echo "==========================================================================================="
 
 ####################################################################################
