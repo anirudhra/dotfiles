@@ -316,7 +316,8 @@ alias pingrouter='ping 10.100.100.1'
 
 #ssh to LXC/VMs, always run tmux sessions for suspend-resume
 alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65 -t "tmux attach || tmux new"'
-alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70 -t "tmux attach || tmux new"'
+#alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70 -t "tmux attach || tmux new"'
+alias sshha='ssh root@10.100.100.70 -t "tmux attach || tmux new"'
 alias sshjf='ssh -o MACs=hmac-sha2-256 root@10.100.100.80 -t "tmux attach || tmux new"'
 alias sshsagat='ssh -o MACs=hmac-sha2-256 root@10.100.100.75 -t "tmux attach || tmux new"'
 alias sshvega='ssh -o MACs=hmac-sha2-256 root@10.100.100.60 -t "tmux attach || tmux new"'
