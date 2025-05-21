@@ -37,11 +37,12 @@ fi
 
 # get desktop environment
 desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
-Xsessiontype=${XDG_SESSION_TYPE} #X11, wayland
+Xsessiontype=${XDG_SESSION_TYPE}  #X11, wayland
 
 #default OS
 install_os="fedora"
 installer="dnf"
+install_options=""
 
 # get right timezone and locale/language
 L_TZ="America/Los_Angeles"
@@ -58,9 +59,13 @@ if [ "${ID}" == "fedora" ]; then
   echo "Fedora detected!"
   echo
   # don't change installer variable, use default, but keep this block for future use
+  install_options="" #skip unavailable goes here
 
   # add repos and keys
   sudo ${installer} install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
+
+  #install plugin manager first
+  sudo ${installer} install dnf-plugins-core
 
   #microsoft repos
   vscode_repo_file="/etc/yum.repos.d/vscode.repo"
@@ -76,6 +81,7 @@ if [ "${ID}" == "fedora" ]; then
   fi
 
   sudo ${installer} group upgrade core -y
+  sudo ${installer} update --refresh
 
 # Debian and derivative distros
 elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmint" ] || [ "${ID}" == "zorin" ]; then
@@ -88,6 +94,7 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
 
   install_os="debian"
   installer="apt"
+  install_options="" #skip unavailable goes here
 
   # add repos
   sudo add-apt-repository universe -y && sudo add-apt-repository ppa:agornostal/ulauncher -y
@@ -97,7 +104,7 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
   msedge_repo_file="/etc/apt/sources.list.d/miscrosoft-edge.list"
 
   if [ ! -e "${vscode_repo_file}" ]; then
-  # vscode repos
+    # vscode repos
     sudo apt-get install wget gpg
     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
     sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
@@ -106,7 +113,7 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
   fi
 
   if [ ! -e "${msedge_repo_file}" ]; then
-  # microsoft edge
+    # microsoft edge
     wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
     sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" -y
   fi
@@ -116,16 +123,16 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
   #echo "Configuring Console..."
   #sudo dpkg-reconfigure console-setup
   # Configure timezone and locale for en/UTF-8
-  if [ ! ${TZSET} == ${L_TZ} ]; then
+  if [ ! "${TZSET}" == "${L_TZ}" ]; then
     echo "Configuring Timezone..."
     #sudo dpkg-reconfigure tzdata
-    sudo timedatectl set-timezone "${L_TZ}"
+    sudo timedatectl set-timezone "${L_TZ}" #set automatically
   fi
 
-  if [ ! ${LANGSET} == ${L_LANG} ]; then
+  if [ ! "${LANGSET}" == "${L_LANG}" ]; then
     echo "Configuring Locales..."
     #sudo dpkg-reconfigure locales
-    sudo update-locale LANG=${L_LANG}
+    sudo update-locale LANG=${L_LANG} #set automatically
   fi
 
 # unknown OS, exit
@@ -165,6 +172,7 @@ corepackages=(
   'gh'
   'stow'
   'vlc'
+  'dnf-plugins-core'
   #'golang'
   #'cmake'
   #'gcc'
@@ -242,7 +250,7 @@ if [ "${ID}" == "fedora" ]; then
     'papirus-icon-theme-dark'
     'papirus-icon-theme-light'
     'ulauncher'
-    #'btrfs-assistant'
+    #'btrfs-assistant' #this needs QT libraries
     'heif-pixbuf-loader'
     'libheif-freeworld'
     'libheif'
@@ -299,17 +307,14 @@ else
 fi
 
 # install all non-gnome packages
-sudo ${installer} install "${corepackages[@]}"
-sudo ${installer} install "${ospackages[@]}"
+sudo ${installer} install "${corepackages[@]}" "${install_options}"
+sudo ${installer} install "${ospackages[@]}" "${install_options}"
 
 # on gnome, install gnome-only packages
 if [ "${desktopEnv}" == "GNOME" ]; then
-  sudo ${installer} install "${coregnomepkgs[@]}"
-  sudo ${installer} install "${osgnomepkgs[@]}"
+  sudo ${installer} install "${coregnomepkgs[@]}" "${install_options}"
+  sudo ${installer} install "${osgnomepkgs[@]}" "${install_options}"
 fi
-
-#debug: phase1
-#read -p "Phase1: Press any key to continue"
 
 ####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory
@@ -556,7 +561,7 @@ sudo tlp start
 sudo systemctl enable autofs
 sudo systemctl start autofs
 
-# only on fedora. on debian and derivatives, this happens 
+# only on fedora. on debian and derivatives, this happens
 # as part of manual installation/script
 if [ "${ID}" == "fedora" ]; then
   sudo systemctl enable throttled
