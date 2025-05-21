@@ -68,11 +68,11 @@ if [ "${ID}" == "fedora" ]; then
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
   if [ ! -e "${msedge_repo_file}" ]; then
-    echo -e "[ms-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=0\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${msedge_repo_file} >/dev/null
+    echo -e "[ms-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=0\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${msedge_repo_file}" >/dev/null
   fi
 
   if [ ! -e "${vscode_repo_file}" ]; then
-    echo -e "[vscode]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${vscode_repo_file} >/dev/null
+    echo -e "[vscode]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${vscode_repo_file}" >/dev/null
   fi
 
   sudo ${installer} group upgrade core -y
@@ -101,7 +101,7 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
     sudo apt-get install wget gpg
     wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
     sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee ${vscode_repo_file} >/dev/null
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee "${vscode_repo_file}" >/dev/null
     rm -f packages.microsoft.gpg
   fi
 
@@ -242,7 +242,7 @@ if [ "${ID}" == "fedora" ]; then
     'papirus-icon-theme-dark'
     'papirus-icon-theme-light'
     'ulauncher'
-    'btrfs-assistant'
+    #'btrfs-assistant'
     'heif-pixbuf-loader'
     'libheif-freeworld'
     'libheif'
