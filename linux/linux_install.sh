@@ -587,7 +587,7 @@ echo
 if [ "${desktopEnv}" == "GNOME" ]; then
   echo "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
   echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
-  echo "Removable Drive Menu, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
+  echo "Removable Drive Menu, OpenBar, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
   echo
   echo "Manually set GNOME Shell theme and Hum alert sound in settings"
   echo
