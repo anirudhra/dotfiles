@@ -36,10 +36,10 @@ else
   #export XCURSOR_SIZE=24
 
   #Vulkan headers
-  export VULKAN_SDK=~/code/vulkansdk/x86_64
-  export PATH=$VULKAN_SDK/bin:$PATH
-  export LD_LIBRARY_PATH=$VULKAN_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-  export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
+  #export VULKAN_SDK=~/code/vulkansdk/x86_64
+  #export PATH=$VULKAN_SDK/bin:$PATH
+  #export LD_LIBRARY_PATH=$VULKAN_SDK/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+  #export VK_LAYER_PATH=$VULKAN_SDK/etc/vulkan/explicit_layer.d
 fi
 
 # common for all
