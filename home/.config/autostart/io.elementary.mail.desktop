@@ -1,0 +1,5 @@
+[Desktop Entry]
+Type=Application
+Name=io.elementary.mail
+X-XDP-Autostart=io.elementary.mail
+Exec=io.elementary.mail --background
