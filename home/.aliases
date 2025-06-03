@@ -334,8 +334,9 @@ alias sshubuntuuser='ssh -o MACs=hmac-sha2-256 nonroot@10.100.100.85 -t "tmux at
 # alias sshfrigate=''
 
 # IFC6410 SBC
-alias sshsbcwifi='ssh root@10.100.100.66 -t "tmux attach || tmux new"' #wifi
-alias sshsbc='ssh root@10.100.100.64 -t "tmux attach || tmux new"' #ethernet
+alias sshsbceth='ssh root@10.100.100.67 -t "tmux attach || tmux new"' # onboard LAN 
+alias sshsbcwifi='ssh root@10.100.100.66 -t "tmux attach || tmux new"' # onboard wifi
+alias sshsbc='ssh root@10.100.100.64 -t "tmux attach || tmux new"' # USB ethernet
 
 # generic tmux ssh alias, usage: sshtmux <login@host>
 # alias sshtmux='ssh -t "tmux attach || tmux new"'
