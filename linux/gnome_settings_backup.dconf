@@ -6,7 +6,6 @@ window-maximized=true
 temperature-unit='centigrade'
 
 [Geary]
-images-trusted-domains=['order.homedepot.com']
 migrated-config=true
 window-maximize=true
 
@@ -258,7 +257,7 @@ last-folder-path='/home/anirudh'
 last-folder-path='/home/anirudh/Pictures/GDM'
 
 [portal/filechooser/microsoft-edge]
-last-folder-path='/home/anirudh/Downloads/Hisense TV'
+last-folder-path='/home/anirudh/Downloads'
 
 [portal/filechooser/org.gnome.Settings]
 last-folder-path='/home/anirudh/Pictures/wallpapers/ArtAbstract'
