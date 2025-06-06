@@ -59,7 +59,7 @@ if [ "${ID}" == "fedora" ]; then
   echo "Fedora detected!"
   echo
   # don't change installer variable, use default, but keep this block for future use
-  install_options="" #skip unavailable goes here
+  install_options="--skip-unavailable" #skip unavailable goes here
 
   # add repos and keys
   sudo ${installer} install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
@@ -73,11 +73,11 @@ if [ "${ID}" == "fedora" ]; then
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
 
   if [ ! -e "${msedge_repo_file}" ]; then
-    echo -e "[ms-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=0\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${msedge_repo_file}" >/dev/null
+    echo -e "[microsoft-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${msedge_repo_file}" >/dev/null
   fi
 
   if [ ! -e "${vscode_repo_file}" ]; then
-    echo -e "[vscode]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${vscode_repo_file}" >/dev/null
+    echo -e "[visualstudio-code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${vscode_repo_file}" >/dev/null
   fi
 
   sudo ${installer} group upgrade core -y
@@ -203,9 +203,9 @@ corepackages=(
 # need not install on distros w/ xfce/cinnamon
 coregnomepkgs=(
   'gparted'
-  'gimp'
-  'menulibre'
-  'geary'
+  #'gimp'
+  #'menulibre'
+  #'geary'
   'gnome-tweaks'
   'dconf-editor'
 )
