@@ -292,7 +292,7 @@ alias wget='wget -c'
 # change ownership to nobdoy:nogroup, primarily for shares 
 alias nobodyown='chown -R nobody:nogroup *'
 
-# non-PVE server commands
+# non-PVE server commands, LXC/VM/Laptop 
 if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
   
   # other goto aliases
@@ -303,7 +303,7 @@ if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
   # iperf3, uses daemon on pve persever
   alias iperfdown='iperf3 -Rc 10.100.100.50'
   alias iperfup='iperf3 -c 10.100.100.50'
-
+  
   # ping aliases
   alias pingserver='ping 10.100.100.50'
 
@@ -350,6 +350,10 @@ if [ ! -x "$(command -v diskutil)" ]; then
     alias reservice='sudo systemctl daemon-reload'
     alias serialnum='sudo dmidecode -t system'
     alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude-kernfs -e'
+
+    #ssd/nvme/hdd benchmarking
+    alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
+    alias sdaperf='sudo hdparm -Tt /dev/sda'
 
     alias upgrade='fullupdate && fullclean && fwupdate'
     alias fm='nautilus . &'
