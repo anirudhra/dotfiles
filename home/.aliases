@@ -263,6 +263,7 @@ alias gitpushall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd &
 
 # goto aliases
 alias godot='cd ${HOME}/dotfiles'
+alias goans='cd ${HOME}/dotfiles/common/ansible/scripts'
 
 # Enable syntax-highlighting in less/cat
 # Note: needs source-highlight and highlight brew packages for these to work
