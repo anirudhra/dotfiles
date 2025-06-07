@@ -1,0 +1,12 @@
+#- name: Ping all active services
+#  hosts: activeservices
+#  tasks:
+#   - name: Run ping command
+#     ansible.builtin.ping:
+
+
+- name: Ping all active machines
+  hosts: allactive
+  tasks:
+   - name: Rung ping command
+     ansible.builtin.ping:

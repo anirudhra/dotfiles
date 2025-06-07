@@ -1,2 +1,2 @@
 #!/bin/bash
-ansible-playbook -i ../repo/inventory.yaml ../repo/playbook.yaml --ask-pass
+ansible-playbook -i ../inventory.yaml ../playbooks/ping.yaml --ask-pass

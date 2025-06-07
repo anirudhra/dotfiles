@@ -51,7 +51,7 @@ router:
     ansible_user: admin
     ansible_port: 12372
     ansible_python_interpreter: /opt/bin/python3
-    
+
 sbc:
   hosts:
     sbceth:
@@ -98,3 +98,9 @@ allactive:
     activevm:
     router:
     server:
+
+upgradehosts:
+  children:
+    activelxc:
+    server:
+
