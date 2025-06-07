@@ -1,0 +1,5 @@
+- name: Ping active services
+  hosts: activeservices
+  tasks:
+   - name: Ping all active services
+     ansible.builtin.ping:

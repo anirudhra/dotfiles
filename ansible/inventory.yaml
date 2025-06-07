@@ -1,0 +1,91 @@
+dockerlxc:
+  hosts:
+    wg:
+      ansible_host: 10.100.100.55
+    vega:
+      ansible_host: 10.100.100.60
+    blanka:
+      ansible_host: 10.100.100.65
+    sagat:
+      ansible_host: 10.100.100.75
+    immich:
+      ansible_host: 10.100.100.95
+  vars:
+    ansible_user: root
+
+nondockerlxc:
+  hosts:
+    jf:
+      ansible_host: 10.100.100.80
+  vars:
+    ansible_user: root
+
+toolslxc:
+  hosts:
+    ventoy:
+      ansible_host: 10.100.100.51
+    ubuntu:
+      ansible_host: 10.100.100.85
+  vars:
+    ansible_user: root
+
+servicevm:
+  hosts:
+    ha:
+      ansible_host: 10.100.100.70
+  vars:
+    ansible_user: root
+
+server:
+  hosts:
+    pve:
+      ansible_host: 10.100.100.50 
+  vars:
+    ansible_user: root
+
+router:
+  hosts:
+    asus:
+      ansible_host: 10.100.100.1 
+  vars:
+    ansible_user: admin
+
+sbc:
+  hosts:
+    sbceth:
+      ansible_host: 10.100.100.64 
+    sbcwifi:
+      ansible_host: 10.100.100.66 
+    sbceth1:
+      ansible_host: 10.100.100.67 
+  vars:
+    ansible_user: root
+
+alllxc:
+  children:
+    dockerlxc:
+    nondockerlxc:
+    toolslxc:
+
+activelxc:
+  children:
+    dockerlxc:
+    nondockerlxc:
+
+allvm:
+  children:
+    servicevm:
+
+activevm:
+  children:
+    servicevm:
+
+allservices:
+  children:
+    alllxc:
+    allvm:
+
+activeservices:
+  children:
+    activelxc:
+    activevm:
