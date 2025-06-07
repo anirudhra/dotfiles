@@ -3,3 +3,10 @@
   tasks:
    - name: Ping all active services
      ansible.builtin.ping:
+
+
+- name: Ping all active machine
+  hosts: allactive
+  tasks:
+   - name: Ping all active machines
+     ansible.builtin.ping:

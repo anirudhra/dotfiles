@@ -49,7 +49,9 @@ router:
       ansible_host: 10.100.100.1 
   vars:
     ansible_user: admin
-
+    ansible_port: 12372
+    ansible_python_interpreter: /opt/bin/python3
+    
 sbc:
   hosts:
     sbceth:
@@ -89,3 +91,10 @@ activeservices:
   children:
     activelxc:
     activevm:
+
+allactive:
+  children:
+    activelxc:
+    activevm:
+    router:
+    server:
