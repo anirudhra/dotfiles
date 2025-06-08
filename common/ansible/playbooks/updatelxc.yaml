@@ -1,9 +1,0 @@
-- name: Update all LXCs on PVE
-  hosts: server
-  tasks:
-  - name: Run update-lxcs.sh script on PVE server
-    #ansible.builtin.ping:
-    ansible.builtin.shell: cd ${HOME} && cd scripts && ./update-lxcs.sh
-    register: out
-
-  - debug: var=out.stdout_lines
