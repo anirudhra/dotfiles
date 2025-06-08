@@ -1,0 +1,9 @@
+- name: Fix IoT IP addresses on HA after router reboot
+  hosts: ha
+  tasks:
+  - name: Restore device entries from backup file
+    #ansible.builtin.ping:
+    ansible.builtin.shell: cd && cd homeassistant/.storage && cp -f ./core.config_entries.backup ./core.config_entries && reboot now
+    register: out
+
+  - debug: var=out.stdout_lines
