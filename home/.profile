@@ -18,7 +18,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
   export GTK_PATH=/usr/local/lib/gtk-2.0
   #export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
-  export PATH="${HOME}/.local/bin:/usr/local/sbin:${PATH}"
+  export PATH="./:${HOME}/.local/bin:/usr/local/sbin:${PATH}"
 
   LESSPIPE=$(which src-hilite-lesspipe.sh)
   export LESSOPEN="| ${LESSPIPE} %s"
@@ -31,6 +31,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   echo
 else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
+  export PATH="./:${PATH}"
 fi
 
 # common for all
