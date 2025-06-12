@@ -195,6 +195,7 @@ if [ -x "$(command -v apt-get)" ]; then
       alias gonvme='cd /mnt/nvme-ssd/nvme-data'
       alias godocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
       alias goscripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
+      alias upgrade='fullupdate && fullclean && fwupdate'
     else
       # LXC/VM go shortcuts
       alias gomedia='cd /mnt/pve-sata-ssd/ssd-media/media'
@@ -222,6 +223,7 @@ elif [ -x "$(command -v dnf)" ]; then
     alias checkfw='sudo fwupdmgr get-devices'
     alias showkernel='echo Active Kernel && sudo uname -a && echo && echo Installed Kernels && sudo rpm -q kernel-core'
     alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less"
+    alias upgrade='fullupdate && fullclean && fwupdate && flatpak update -y'
     #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
 #macOS aliases
 elif [ -x "$(command -v diskutil)" ]; then 
@@ -356,7 +358,6 @@ if [ ! -x "$(command -v diskutil)" ]; then
     alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
     alias sdaperf='sudo hdparm -Tt /dev/sda'
 
-    alias upgrade='fullupdate && fullclean && fwupdate'
     alias fm='nautilus . &'
     alias gvim='vim'
     alias gnome_ext_backup="dconf dump /org/gnome/shell/extensions/ > ./gnome_extensions_backup.dconf"
