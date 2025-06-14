@@ -99,8 +99,12 @@ allactive:
     router:
     server:
 
-upgradehosts:
+upgradepveactive:
   children:
     activelxc:
     server:
 
+upgradepveall:
+  children:
+    alllxc:
+    server:

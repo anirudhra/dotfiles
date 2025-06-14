@@ -1,5 +1,5 @@
-- name: Update all active services
-  hosts: upgradehosts
+- name: Update all PVE services
+  hosts: upgradepveall
   tasks:
   - name: Run upgrade.sh script on remote services hosts
     #ansible.builtin.ping:
