@@ -43,3 +43,19 @@ Post installation script:
 cd $HOME/dotfiles/macos
 ./macos_post_install.sh
 ```
+
+### tmux config (on remote machines)
+
+Install Catppuccin theme:
+```
+mkdir -p ~/.config/tmux/plugins/catppuccin
+git clone -b v2.1.3 https://github.com/catppuccin/tmux.git ~/.config/tmux/plugins/catppuccin/tmux
+```
+
+Add the following to ~/.config/tmux/tmux.conf to enable mouse scrolling/up and invoke theme
+```
+set -g mouse on
+run ~/.config/tmux/plugins/catppuccin/tmux/catppuccin.tmux
+```
+
+Relogin to enable/reload settings.
