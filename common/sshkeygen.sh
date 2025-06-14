@@ -14,6 +14,6 @@ ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.80
 ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.95
 ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.85
 ssh-copy-id -i ~/.ssh/id_rsa.pub nonroot@10.100.100.85
-#ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.64
-#ssh-copy-id -i ~/.ssh/id_rsa.pub admin@10.100.100.64
-#ssh-copy-id -i ~/.ssh/id_rsa.pub admin@10.100.100.1
+ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.64
+ssh-copy-id -i ~/.ssh/id_rsa.pub admin@10.100.100.64
+ssh-copy-id -p 12372 -i ~/.ssh/id_rsa.pub admin@10.100.100.1
