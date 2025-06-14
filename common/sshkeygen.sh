@@ -4,7 +4,7 @@ ssh-keygen -t rsa
 
 # copy over keys to servers: pve, lxc, vm
 ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.50
-ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.51
+#ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.51
 ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.55
 ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.60
 ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.65
