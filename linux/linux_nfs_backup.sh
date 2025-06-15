@@ -5,13 +5,16 @@
 # Create folders in destination
 #
 
-backup_base_dir="/mnt/nfs/ssd-data/backup/linux"
+backup_base_dir="/mnt/nfs/sata-ssd/ssd-data/backup/linux"
 backup_home_source_dir=${HOME}
 backup_etc_source_dir="/etc"
 backup_dst_home_dir="${backup_base_dir}/home"
 backup_dst_etc_dir="${backup_base_dir}/etc"
 # add all backup exclusion regex to the file below
 backup_exclude_list="./exclude_linux_nfs_backup.txt"
+
+# timestamp
+now=$(date)
 
 #confirm external storage/destination is mounted correctly before proceeding
 echo
@@ -45,8 +48,6 @@ mkdir -p "${backup_dst_etc_dir}"
 
 mkdir -p "${backup_dst_etc_dir}/udev"
 mkdir -p "${backup_dst_etc_dir}/systemd"
-# timestamp
-today=$(date -I)
 
 # run backup commands
 echo
@@ -76,13 +77,13 @@ etc_files=(
 # backup /etc/ directories
 for i in "${etc_dirs[@]}"; do
   #don't forget trailing '/' for destination!
-  rsync -avHPAX --delete /etc/"${i}" ${backup_dst_etc_dir}/
+  sudo rsync -avHPAX --delete /etc/"${i}" ${backup_dst_etc_dir}/
 done
 
 # backup /etc/ files
 for j in "${etc_files[@]}"; do
   #don't forget trailing '/' for destination!
-  rsync -avHPAX --delete /etc/"${j}" ${backup_dst_etc_dir}/
+  sudo rsync -avHPAX --delete /etc/"${j}" ${backup_dst_etc_dir}/
 done
 
 # run home backup commands
@@ -94,7 +95,13 @@ echo
 rsync -avHPAX --delete --exclude-from=${backup_exclude_list} "${backup_home_source_dir}" "${backup_dst_home_dir}"
 
 echo
-echo "Done! Backup complete: ${today}"
+echo "Backing up GNOME settings..."
+echo
+dconf dump /org/gnome/ >"${backup_dst_home_dir}/gnome_settings_backup.dconf"
+
+echo
+echo "Done! Backup complete: ${now}"
+echo "Lastbackup: ${now}" >"${backup_dst_home_dir}/lastbackup.log"
 echo
 # end of script
 #

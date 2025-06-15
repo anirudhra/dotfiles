@@ -20,6 +20,9 @@
 *var*
 *dotfiles*
 *code/github*
+*packages/install*
+*Templates*
+*Public*
 *Code*
 *google-chrome*
 *chromium*
