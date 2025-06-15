@@ -416,6 +416,7 @@ dockerupdateall()
         find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
         docker image prune -a -f
         docker system prune --volumes -f
+        cd -
       fi
     fi
 }
