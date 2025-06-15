@@ -1,2 +1,24 @@
 #!/bin/bash
-sudo cp -r kora* /usr/share/icons
+
+##---------------git specific part-----------------------------------------#
+giturl="https://github.com/bikass/kora"
+gitdir="kora-icon-theme"
+
+installupdate() {
+  sudo cp -r kora* /usr/share/icons
+}
+
+##---------------common installation/update script-------------------------#
+# sync if repo doesn't exist
+if [ ! -d "./${gitdir}" ]; then
+  echo "Repo clone: ${giturl}"
+  git clone "${giturl}" "${gitdir}"
+fi
+
+# only install/update if sync was successful
+if [ -d "./${gitdir}/.git" ]; then
+  cd "${gitdir}" || exit
+  git pull
+  installupdate
+  cd - || exit
+fi

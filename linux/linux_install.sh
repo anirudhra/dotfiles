@@ -176,7 +176,7 @@ corepackages=(
   #'golang'
   #'cmake'
   #'gcc'
-  'inxi'
+  #'inxi'
   #'gem'
   #'luarocks'
   'fzf'
@@ -257,6 +257,9 @@ if [ "${ID}" == "fedora" ]; then
     'easyeffects'
     'fuse'
     'fuse-libs'
+    'inxi'
+    'meson'
+    'ninja'
   )
 
   osgnomepkgs=(
@@ -386,6 +389,9 @@ sudo cp -rf ${source_throttled_file} ${sys_throttled_file}
 ####################################################################################
 
 echo "Current directory: ${install_dir}"
+# Install GTK and Icon themes in the following directory
+pkg_install_dir="${HOME}/packages/install"
+mkdir -p "${pkg_install_dir}"
 
 # Replace audio alert file
 audio_alert_file="/usr/share/sounds/gnome/default/alerts/hum.ogg"
@@ -399,106 +405,16 @@ if [ ! -e ${audio_alert_bak_file} ]; then
   sudo cp ${audio_alert_source_file} ${audio_alert_file}
 fi
 
-# Install GTK and Icon themes in the following directory
-pkg_install_dir="${HOME}/packages/install"
-mkdir -p "${pkg_install_dir}"
 cd "${pkg_install_dir}" || exit
-install_ui=0 #default flag, if at least one is pulled, set this below
-
-# check if exists, else pull
-if [ ! -d "Tela-icon-theme" ]; then
-  git clone https://github.com/vinceliuice/Tela-icon-theme
-  install_ui=1
-fi
-if [ ! -d "Orchis-theme" ] && [ "${desktopEnv}" == "GNOME" ]; then
-  git clone https://github.com/vinceliuice/Orchis-theme
-  install_ui=1
-fi
-if [ ! -d "Magnetic-gtk-theme" ] && [ "${desktopEnv}" == "GNOME" ]; then
-  git clone https://github.com/vinceliuice/Magnetic-gtk-theme
-  install_ui=1
-fi
-if [ ! -d "Qogir-theme" ] && [ "${desktopEnv}" == "GNOME" ]; then
-  git clone https://github.com/vinceliuice/Qogir-theme
-  install_ui=1
-fi
-if [ ! -d "Qogir-icon-theme" ]; then
-  git clone https://github.com/vinceliuice/Qogir-icon-theme
-  install_ui=1
-fi
-if [ ! -d "Jasper-gtk-theme" ] && [ "${desktopEnv}" == "GNOME" ]; then
-  git clone https://github.com/vinceliuice/Jasper-gtk-theme
-  install_ui=1
-fi
-if [ ! -d "Fluent-gtk-theme" ] && [ "${desktopEnv}" == "GNOME" ]; then
-  git clone https://github.com/vinceliuice/Fluent-gtk-theme
-  install_ui=1
-fi
-if [ ! -d "Fluent-icon-theme" ]; then
-  git clone https://github.com/vinceliuice/Fluent-icon-theme
-  install_ui=1
-fi
-
-# -------------------
-# kora, marble, elementary OS and Zorin OS assets
-# no installation scripts for them, need to manually install each
-
-if [ ! -d "kora-icon-theme" ]; then
-  git clone https://github.com/bikass/kora kora-icon-theme
-  # no install script for now
-  #install_ui=1
-fi
-
-if [ ! -d "Marble-shell-theme" ] && [ "${desktopEnv}" == "GNOME" ]; then
-  git clone https://github.com/Fausto-Korpsvart/Marble-shell-theme
-  # no install script for now
-  #install_ui=1
-fi
-
-# elementary OS assets icons theme: no standard install; pull the repos for manual install
-if [ ! -d "elementary-icon-theme" ]; then
-  git clone https://github.com/elementary/icons elementary-icon-theme
-  # no install script for now
-  #install_ui=1
-fi
-
-# elementary OS assets: no standard install; pull the repos for manual install
-if [ ! -d "elementary-sound-theme" ]; then
-  git clone https://github.com/elementary/sound-theme elementary-sound-theme
-  # no install script for now
-  #install_ui=1
-fi
-
-# zorin OS assets - icons
-if [ ! -d "zorin-icon-themes" ]; then
-  git clone https://github.com/ZorinOS/zorin-icon-themes
-  # no install script for now
-  #install_ui=1
-fi
-
-# zorin OS assets - gtk
-if [ ! -d "zorin-desktop-themes" ] && [ "${desktopEnv}" == "GNOME" ]; then
-  git clone https://github.com/ZorinOS/zorin-desktop-themes
-  # no install script for now
-  #install_ui=1
-fi
-# -------------------
 
 # for debian and derivatives, also sync throttled repo for manual install
-if [ ! -d "throttled" ]; then
+if [ ! -d "throttled" ] && [ "${install_os}" == "debian" ]; then
   git clone https://github.com/erpalma/throttled.git
-  #sudo ./throttled/install.sh
-fi
-
-# execute install.sh script from each directory above where supported, if at least one was sync'd
-if [ ${install_ui} -eq 1 ]; then
-  echo "Executing UI installation scripts"
-  find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && pwd && ./install.sh" \;
+  sudo /bin/bash ./throttled/install.sh
 fi
 
 # Install Nerd fonts, cleanup and update font cache
 source_nerd_font_dir="./nerd_font_install"
-cd "${pkg_install_dir}" || exit
 mkdir -p "${source_nerd_font_dir}"
 cd "${source_nerd_font_dir}" || exit
 
@@ -518,6 +434,12 @@ for font in "${fonts[@]}"; do
 done
 find "${fonts_dir}" -name '*Windows Compatible*' -delete
 fc-cache -fv
+
+## install gtk themes
+echo "Installing GTK themes..."
+# change back to original installation directory
+cd "${install_dir}" || exit
+/bin/bash ./gtkthemes.sh
 
 if [ "${desktopEnv}" == "GNOME" ]; then
   # set GTK and icon themes

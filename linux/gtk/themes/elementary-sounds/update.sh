@@ -1,12 +1,15 @@
 #!/bin/bash
 
 ##---------------git specific part-----------------------------------------#
-giturl="https://github.com/vinceliuice/Fluent-icon-theme"
-gitdir="Fluent-icon-theme"
+giturl="https://github.com/elementary/sound-theme"
+gitdir="elementary-sounds"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/icons
-  #sudo ./install.sh -d /usr/share/themes -s standard -i fedora
+  # update/install per dir commands
+  meson build --prefix=/usr
+  cd build || exit
+  ninja
+  sudo ninja install
 }
 
 ##---------------common installation/update script-------------------------#
