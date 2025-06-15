@@ -206,7 +206,7 @@ if [ -x "$(command -v apt-get)" ]; then
         #alias godocker='cd /mnt/nfs/sata-ssd/ssd-data/dockerapps && cd ${HOSTNAME}'
         alias godocker='cd /opt/dockerapps'
         #alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}.tar.gz /mnt/nfs/sata-ssd/ssd-data/dockerapps/ifc6410'
-        alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}.tar.gz /opt/dockerapps'
+        alias dockerbackup='sudo tar -zcvf /mnt/nfs/sata-ssd/ssd-data/dockerapps/dockerapps_backup_${HOSTNAME}.tar.gz /opt/dockerapps'
       else # LXC/VM debian 
         alias gomedia='cd /mnt/pve-sata-ssd/ssd-media/media'
         alias godata='cd /mnt/pve-sata-ssd/ssd-data'
