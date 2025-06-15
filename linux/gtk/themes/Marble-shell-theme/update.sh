@@ -14,24 +14,14 @@ installupdate() {
 }
 
 ##---------------common installation/update script-------------------------#
-install="no"
+source "${HOME}/dotfiles/linux/gitfuncs.sh"
 
-# sync if repo doesn't exist
-if [ ! -d "./${gitdir}" ]; then
-  echo "Repo clone: ${giturl}"
-  git clone "${giturl}" "${gitdir}"
-  install="yes"
-fi
+clonerepo ${giturl} ${gitdir}
+clone=$?
+updaterepo ${giturl} ${gitdir}
+update=$?
 
-# only install/update if sync was successful
-if [ -d "./${gitdir}/.git" ]; then
+if [ "${clone}" == 1 ] || [ "${update}" == 1 ]; then
   cd "${gitdir}" || exit
-  syncstatus=$(git pull)
-  if [ ! "${syncstatus}" == "Already up to date." ] || [ ${install} == "yes" ]; then
-    echo "First install or repo updates. Running installer/updater..."
-    installupdate
-  else
-    echo "No new updates, skipping installer/updater..."
-  fi
-  cd - || exit
+  installupdate
 fi
