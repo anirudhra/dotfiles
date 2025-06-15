@@ -197,21 +197,30 @@ if [ -x "$(command -v apt-get)" ]; then
       alias goscripts='cd /mnt/sata-ssd/pve_server/pve_lxc_scripts/maintenance'
       alias upgrade='fullupdate && fullclean && fwupdate'
     else
-      # LXC/VM go shortcuts
-      alias gomedia='cd /mnt/pve-sata-ssd/ssd-media/media'
-      alias godata='cd /mnt/pve-sata-ssd/ssd-data'
-      alias gonvme='cd /mnt/pve-nvme-ssd/nvme-data'
-      alias godocker='cd /mnt/pve-sata-ssd/ssd-data/dockerapps && cd $HOSTNAME'
+      # LXC/VM and SBC shortcuts
+      # SBC debian 
+      if [ "${HOSTNAME}" == "ifc6410" ||  "${HOSTNAME}" == "IFC6410" ]; then
+        alias gomedia='cd /mnt/nfs/sata-ssd/ssd-media/media'
+        alias godata='cd /mnt/nfs/sata-ssd/ssd-data'
+        alias gonvme='cd /mnt/nfs/nvme-ssd/nvme-data'
+        #alias godocker='cd /mnt/nfs/sata-ssd/ssd-data/dockerapps && cd ${HOSTNAME}'
+        alias godocker='cd /opt/dockerapps'
+        #alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}.tar.gz /mnt/nfs/sata-ssd/ssd-data/dockerapps/ifc6410'
+        alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}.tar.gz /opt/dockerapps'
+      else # LXC/VM debian 
+        alias gomedia='cd /mnt/pve-sata-ssd/ssd-media/media'
+        alias godata='cd /mnt/pve-sata-ssd/ssd-data'
+        alias gonvme='cd /mnt/pve-nvme-ssd/nvme-data'
+        alias godocker='cd /mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}'
+        alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}.tar.gz /mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}'
+      fi 
+      
       alias upgrade="fullupdate && fullclean && dockerupdateall"
-
-      # following to be run on LXC/VM guests only, not server
       alias dockerup='docker compose up -d'
       alias dockerdown='docker compose down'
       alias dockerrestart='docker compose down && docker compose up -d'
       alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-      alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /mnt/pve-sata-ssd/ssd-data/dockerapps'
       alias dockerclean='docker system prune --volumes'
-      #alias dockerbackup='sudo tar -zcvf ~/dockerapps.tar.gz /opt/dockerapps'
     fi
 #Fedora Linux only below
 elif [ -x "$(command -v dnf)" ]; then 
@@ -331,10 +340,6 @@ alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55 -t "tmux attach || tmu
 alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95 -t "tmux attach || tmux new"'
 alias sshubuntu='ssh -o MACs=hmac-sha2-256 root@10.100.100.85 -t "tmux attach || tmux new"'
 alias sshubuntuuser='ssh -o MACs=hmac-sha2-256 nonroot@10.100.100.85 -t "tmux attach || tmux new"'
-# alias sshpaperless=''
-# alias sshnc=''
-# alias sshkodi=''
-# alias sshfrigate=''
 
 # IFC6410 SBC
 alias sshsbceth='ssh root@10.100.100.67 -t "tmux attach || tmux new"' # onboard LAN 
@@ -403,8 +408,11 @@ dockerupdateall()
 {
     if [ ! -x "$(command -v pveversion)" ]; then #ensure it's not the server 
       if [ -x "$(command -v docker)" ]; then #ensure docker is installed on host 
-        cd /mnt/pve-sata-ssd/ssd-data/dockerapps || exit
-        cd "$(hostname)" || exit
+        if [ "${HOSTNAME}" == "ifc6410" ||  "${HOSTNAME}" == "IFC6410" ]; then
+          cd /opt/dockerapps || exit
+        else 
+          cd "/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}" || exit
+        fi
         find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
         docker image prune -a -f
         docker system prune --volumes -f
