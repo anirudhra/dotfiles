@@ -306,7 +306,9 @@ alias nobodyown='chown -R nobody:nogroup *'
 
 # non-PVE server commands, LXC/VM/Laptop 
 if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
-  
+
+  alias gtkupdate="cd ${HOME}/dotfiles/linux && ./gtkthemes.sh && cd -"
+
   # other goto aliases
   alias gocode='cd ${HOME}/code'
   alias gogit='cd ${HOME}/code/github'
