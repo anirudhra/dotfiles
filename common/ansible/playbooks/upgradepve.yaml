@@ -1,7 +1,7 @@
-- name: Update ifc6410 SBC
-  hosts: sbceth
+- name: Update PVE Server
+  hosts: pve
   tasks:
-  - name: Run upgrade.sh script on remote host
+  - name: Run upgrade.sh script on PVE Server
     #ansible.builtin.ping:
     ansible.builtin.shell: cd ${HOME} && ./upgrade.sh
     register: out
