@@ -199,7 +199,7 @@ if [ -x "$(command -v apt-get)" ]; then
     else
       # LXC/VM and SBC shortcuts
       # SBC debian 
-      if [ "${HOSTNAME}" == "ifc6410" ||  "${HOSTNAME}" == "IFC6410" ]; then
+      if [ "${HOSTNAME}" == "ifc6410" ] ||  [ "${HOSTNAME}" == "IFC6410" ]; then
         alias gomedia='cd /mnt/nfs/sata-ssd/ssd-media/media'
         alias godata='cd /mnt/nfs/sata-ssd/ssd-data'
         alias gonvme='cd /mnt/nfs/nvme-ssd/nvme-data'
@@ -408,7 +408,7 @@ dockerupdateall()
 {
     if [ ! -x "$(command -v pveversion)" ]; then #ensure it's not the server 
       if [ -x "$(command -v docker)" ]; then #ensure docker is installed on host 
-        if [ "${HOSTNAME}" == "ifc6410" ||  "${HOSTNAME}" == "IFC6410" ]; then
+        if [ "${HOSTNAME}" == "ifc6410" ] || [ "${HOSTNAME}" == "IFC6410" ]; then
           cd /opt/dockerapps || exit
         else 
           cd "/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}" || exit
