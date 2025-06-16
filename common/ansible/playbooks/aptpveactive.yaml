@@ -1,0 +1,9 @@
+- name: Apt Update and clean all active pve services
+  hosts: upgradepveactive
+  tasks:
+  - name: Run apt update and clean commands on remote services hosts
+    #ansible.builtin.ping:
+    ansible.builtin.shell: sudo apt update -y && sudo apt dist-upgrade -y ; sudo apt clean ; sudo apt autoclean ; sudo apt autoremove
+    register: out
+
+  - debug: var=out.stdout_lines
