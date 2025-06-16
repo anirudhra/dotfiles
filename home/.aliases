@@ -462,14 +462,29 @@ cleankernels()
 }
 
 #manually move rocbkbox themes
-copyrockboxthemes()
+copyrockboxtheme()
 {
-    ipoddir="/run/media/anirudh/IPOD7G"
+    ipoddir="/run/media/anirudh/IPOD7G/.rockbox"
+    #ipoddir="/run/media/anirudh/IPOD5G/.rockbox"
     # change to locally extracted .rockbox directory
-    cp -r backdrops/* ${ipoddir}/backdrops
-    cp -r fonts/* ${ipoddir}/fonts
-    cp -r icons/* ${ipoddir}/icons
-    cp -r themes/* ${ipoddir}/themes
-    cp -r wps/* ${ipoddir}/wps
+    cp -r backdrops/* ${ipoddir}/backdrops/
+    cp -r fonts/* ${ipoddir}/fonts/
+    cp -r icons/* ${ipoddir}/icons/
+    cp -r themes/* ${ipoddir}/themes/
+    cp -r wps/* ${ipoddir}/wps/
 }
 
+# use this when you have multiple themes extracted to a root folder with the dir structure
+# ./theme1/.rockbox, ./theme2/.rockbox etc.
+copyallrockboxthemes() {
+  ipoddir="/run/media/anirudh/IPOD7G/.rockbox"
+  #ipoddir="/run/media/anirudh/IPOD5G/.rockbox"
+  # change to locally extracted .rockbox directory
+  find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && cd .rockbox && pwd ; \
+  cp -r backdrops/* ${ipoddir}/backdrops/ ; \
+  cp -r fonts/* ${ipoddir}/fonts/ ; \
+  cp -r icons/* ${ipoddir}/icons/ ; \
+  cp -r themes/* ${ipoddir}/themes/ ; \
+  cp -r wps/* ${ipoddir}/wps/ \
+  " \;
+}
