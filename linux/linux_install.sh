@@ -295,6 +295,8 @@ else
     'python3-cairo-dev'
     'python3-venv'
     'python3-wheel'
+    #    'unattended-upgrades'
+    #    'apt-listchanges'
   )
 
   osgnomepkgs=(
