@@ -376,8 +376,8 @@ if [ ! -x "$(command -v diskutil)" ]; then
     # yocto kernel macros
     alias bbmenu="bitbake -c menuconfig virtual/kernel"
     alias bbbuild="bitbake core-image-minimal"
-    alias bb="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env"
-
+    alias bb="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom"
+    alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
 fi
 ######## functions ######################
 
