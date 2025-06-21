@@ -234,6 +234,13 @@ elif [ -x "$(command -v dnf)" ]; then
     alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less"
     alias upgrade='fullupdate && fullclean && fwupdate && flatpak update -y'
     #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
+
+
+    alias gomedia='cd /mnt/nfs/sata-ssd/ssd-media/media'
+    alias godata='cd /mnt/nfs/sata-ssd/ssd-data'
+    alias gonvme='cd /mnt/nfs/nvme-ssd/nvme-data'
+    #alias godocker='cd /mnt/nfs/sata-ssd/ssd-data/dockerapps && cd ${HOSTNAME}'
+
 #macOS aliases
 elif [ -x "$(command -v diskutil)" ]; then 
     # add condition for macos specific commmand here - diskutil not available on linux, only macos
@@ -494,4 +501,80 @@ copyallrockboxthemes() {
   cp -r themes/* ${ipoddir}/themes/ ; \
   cp -r wps/* ${ipoddir}/wps/ \
   " \;
+}
+getkernels(){
+	# this function copies the compiled kernel image and modules archives into "artifacts" directory
+	# and creates 3 versions of the kernel image to boot from: sdcard, emmc and USB1/SATA
+  # Run this script on the host that builds the Linux kernel 
+  DATE=$(date +%Y%m%d)
+	KERNEL_VER="6.6.9"
+
+	KERNEL_IMG_BUILDNAME="boot-qcom-apq8064-ifc6410-qcom-armv7a.img"
+        MODULES_TAR_BUILDNAME="modules-qcom-armv7a.tgz"
+        KERNEL_IMG_BASE="boot-ifc6410-armv7a-${KERNEL_VER}-${DATE}"
+	MODULES_TAR="modules-ifc6410-armv7a-${KERNEL_VER}-${DATE}.tgz"
+	
+        KERNEL_IMG_SDA1="${KERNEL_IMG_BASE}-sda1.img"
+        KERNEL_IMG_SDCARD="${KERNEL_IMG_BASE}-sdcard.img"
+        KERNEL_IMG_EMMC="${KERNEL_IMG_BASE}-emmc.img"
+
+	BOOTCFG_BASE="bootimg"
+	BOOTCFG="${BOOTCFG_BASE}.cfg"
+	BOOTCFG_SDA1="${BOOTCFG_BASE}-sda1.cfg"
+	BOOTCFG_SDCARD="${BOOTCFG_BASE}-sdcard.cfg"
+	BOOTCFG_EMMC="${BOOTCFG_BASE}-emmc.cfg"
+
+	# packaged kernel and initird
+	ZIMAGE="zImage"
+	INITRDIMAGE="initrd.img"
+
+	BASE_DIR="/mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky/build/qcom-armv7a"
+	ARTIFACTS_DIR="artifacts"
+        BUILD_DIR="../tmp/deploy/images/qcom-armv7a"
+	KERNEL_CONFIG="../tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
+	KERNEL_DEFCONFIG="defconfig"
+	WORKING_DIR="."
+
+        # create a backup if directory already exists
+        if [ -d "${BASE_DIR}/${ARTIFACTS_DIR}" ] ; then
+		rm -rf "${BASE_DIR}/${ARTIFACTS_DIR}_backup"
+		mv -f "${BASE_DIR}/${ARTIFACTS_DIR}" "${BASE_DIR}/${ARTIFACTS_DIR}_backup"
+	fi
+
+	# copy build artifacts
+        mkdir "${BASE_DIR}/${ARTIFACTS_DIR}"
+	cd "${BASE_DIR}/${ARTIFACTS_DIR}" || exit
+        sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${WORKING_DIR}/"
+        sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${WORKING_DIR}/"
+        sudo cp -f "${KERNEL_CONFIG}" "${WORKING_DIR}/${KERNEL_DEFCONFIG}"
+	echo "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
+
+	# fix permisisons
+        #sudo chown -R nobody:nogroup *
+        sudo chown -R nonroot:nonroot *
+	
+	# rename build artifacts with kernel version and timestamp
+	mv -f "${MODULES_TAR_BUILDNAME}" "${MODULES_TAR}"
+	cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDA1}"
+	cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDCARD}"
+	mv -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_EMMC}"
+
+	# extract default built image and cleanup
+	abootimg -x "${KERNEL_IMG_SDA1}"
+	rm -rf "${ZIMAGE}"
+	rm -rf "${INITRDIMAGE}"
+	cp -f "${BOOTCFG}" "${BOOTCFG_SDA1}"
+	cp -f "${BOOTCFG}" "${BOOTCFG_SDCARD}"
+	mv -f "${BOOTCFG}" "${BOOTCFG_EMMC}"
+
+	# replace root partitions in cfg files
+        sed -i 's|root=/dev/sda1|root=/dev/mmcblk0p1|g' ${BOOTCFG_SDCARD}
+        sed -i 's|root=/dev/sda1|root=/dev/mmcblk2p13|g' ${BOOTCFG_EMMC}
+
+        # repackage kernel files with new kernel command line
+	abootimg -u "${KERNEL_IMG_SDCARD}" -f "${BOOTCFG_SDCARD}"
+	abootimg -u "${KERNEL_IMG_EMMC}" -f "${BOOTCFG_EMMC}"
+
+	# done
+	cd .. || exit
 }
