@@ -331,34 +331,34 @@ if [ ! -x "$(command -v pveversion)" ]; then # detect if running on PVE
   alias pingserver='ping 10.100.100.50'
 
   # by default always open a tmux session for PVE server, use sshserver for non-tmux version
-  alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux attach || tmux new"'
+  alias sshpve='ssh -o MACs=hmac-sha2-256 root@10.100.100.50 -t "tmux -2 attach || tmux -2 new"'
   alias sshserver='ssh -o MACs=hmac-sha2-256 root@10.100.100.50' #non-tmux version
 fi
 
 #router
-alias sshrouter='ssh admin@10.100.100.1 -p 12372 -t "tmux attach || tmux new"'
+alias sshrouter='ssh admin@10.100.100.1 -p 12372 -t "tmux -2 attach || tmux -2 new"'
 alias pingrouter='ping 10.100.100.1'
 
 #ssh to LXC/VMs, always run tmux sessions for suspend-resume
-alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65 -t "tmux attach || tmux new"'
-#alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70 -t "tmux attach || tmux new"'
-alias sshha='ssh root@10.100.100.70 -t "tmux attach || tmux new"'
-alias sshjf='ssh -o MACs=hmac-sha2-256 root@10.100.100.80 -t "tmux attach || tmux new"'
-alias sshsagat='ssh -o MACs=hmac-sha2-256 root@10.100.100.75 -t "tmux attach || tmux new"'
-alias sshvega='ssh -o MACs=hmac-sha2-256 root@10.100.100.60 -t "tmux attach || tmux new"'
-alias sshventoy='ssh -o MACs=hmac-sha2-256 root@10.100.100.51 -t "tmux attach || tmux new"'
-alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55 -t "tmux attach || tmux new"'
-alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95 -t "tmux attach || tmux new"'
-alias sshubuntu='ssh -o MACs=hmac-sha2-256 root@10.100.100.85 -t "tmux attach || tmux new"'
-alias sshubuntuuser='ssh -o MACs=hmac-sha2-256 nonroot@10.100.100.85 -t "tmux attach || tmux new"'
+alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65 -t "tmux -2 attach || tmux -2 new"'
+#alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70 -t "tmux -2 attach || tmux -2 new"'
+alias sshha='ssh root@10.100.100.70 -t "tmux -2 attach || tmux -2 new"'
+alias sshjf='ssh -o MACs=hmac-sha2-256 root@10.100.100.80 -t "tmux -2 attach || tmux -2 new"'
+alias sshsagat='ssh -o MACs=hmac-sha2-256 root@10.100.100.75 -t "tmux -2 attach || tmux -2 new"'
+alias sshvega='ssh -o MACs=hmac-sha2-256 root@10.100.100.60 -t "tmux -2 attach || tmux -2 new"'
+alias sshventoy='ssh -o MACs=hmac-sha2-256 root@10.100.100.51 -t "tmux -2 attach || tmux -2 new"'
+alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55 -t "tmux -2 attach || tmux -2 new"'
+alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95 -t "tmux -2 attach || tmux -2 new"'
+alias sshubuntu='ssh -o MACs=hmac-sha2-256 root@10.100.100.85 -t "tmux -2 attach || tmux -2 new"'
+alias sshubuntuuser='ssh -o MACs=hmac-sha2-256 nonroot@10.100.100.85 -t "tmux -2 attach || tmux -2 new"'
 
 # IFC6410 SBC
-alias sshsbceth='ssh root@10.100.100.67 -t "tmux attach || tmux new"' # onboard LAN 
-alias sshsbcwifi='ssh root@10.100.100.66 -t "tmux attach || tmux new"' # onboard wifi
-alias sshsbc='ssh root@10.100.100.64 -t "tmux attach || tmux new"' # USB ethernet
+alias sshsbceth='ssh root@10.100.100.67 -t "tmux -2 attach || tmux -2 new"' # onboard LAN 
+alias sshsbcwifi='ssh root@10.100.100.66 -t "tmux -2 attach || tmux -2 new"' # onboard wifi
+alias sshsbc='ssh root@10.100.100.64 -t "tmux -2 attach || tmux -2 new"' # USB ethernet
 
 # generic tmux ssh alias, usage: sshtmux <login@host>
-# alias sshtmux='ssh -t "tmux attach || tmux new"'
+# alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
 
 # generic linux-only, distro agnostic; not applicable to macOS
 if [ ! -x "$(command -v diskutil)" ]; then
