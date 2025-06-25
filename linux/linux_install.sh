@@ -173,6 +173,7 @@ corepackages=(
   'stow'
   'vlc'
   'dnf-plugins-core'
+  'vifm'
   #'golang'
   #'cmake'
   #'gcc'

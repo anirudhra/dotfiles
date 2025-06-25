@@ -151,6 +151,8 @@ else
   alias edit="nano"
 fi
 
+# would automatically be one of the above
+export EDITOR='vim'
 alias v='vim'
 
 # pager and readme aliases
