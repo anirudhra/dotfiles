@@ -2,5 +2,6 @@
 # pct set <lxc_id> -mp0 /mnt/host_dir,mp=/mnt/guest_dir
 # nfs mounts are ONLY supported on privileged containers
 # following to directly /mnt to get paths like /mnt/ssd-media etc.
-/mnt -fstype=nfs,rw 10.100.100.50:/mnt/sata-ssd
+/mnt/nfs/sata-ssd -fstype=nfs,rw 10.100.100.50:/mnt/sata-ssd
+/mnt/nfs/nvme-ssd -fstype=nfs,rw 10.100.100.50:/mnt/nvme-ssd
 
