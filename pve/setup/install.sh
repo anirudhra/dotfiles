@@ -122,6 +122,7 @@ serve_nfs_exports="/etc/exports"
 client_auto_master="/etc/auto.master"
 client_auto_pveshare="/etc/auto.pveshare"
 
+# PVE server-only ops and packages
 if [ "${mode}" = "pve" ]; then
   echo "Installing Server specific packages..."
   ${installer} install "${pve_packages[@]}"
@@ -129,7 +130,8 @@ if [ "${mode}" = "pve" ]; then
   # check and export each mount
   echo "Exporting server NFS automounts"
   for mount in "${server_mounts[@]}"; do
-    mount_nfs="/mnt/nfs/${mount}"
+    # must be inside /mnt directory, for e.g., /mnt/sata-ssd
+    mount_nfs="/mnt/${mount}"
     if grep -wq "${mount_nfs} ${server_subnet}" ${serve_nfs_exports}; then
       echo "NFS share mount ${server_subnet}:${mount_nfs} already exists in ${serve_nfs_exports}!"
       echo
@@ -141,7 +143,9 @@ if [ "${mode}" = "pve" ]; then
       echo "${mount_nfs} ${server_subnet}(rw,sync,no_subtree_check,no_root_squash,no_all_squash)" >>${serve_nfs_exports}
     fi
   done
-#guest side ops and packages - LXC or VMs
+
+  # TODO: Add /etc config automation for server
+# GuestOS-only ops and packages - LXC or VMs
 else
   echo "Installing Guest specific packages..."
   ${installer} install "${guest_packages[@]}"
@@ -149,9 +153,10 @@ else
   # NFS shares and mounts, LXC clients need to be privileged, else this will fail!
   for mount in "${server_mounts[@]}"; do
 
-    mount_nfs="/mnt/nfs/${mount}"
-    # create base directory
-    mkdir -p /mnt/nfs
+    base_nfs="/mnt/nfs"
+    mount_nfs="${base_nfs}/${mount}"
+    # create base directory, all server exportes will be mounted in /mnt/nfs directory, foe g.e., /mnt/nfs/sata-ssd
+    mkdir -p "${base_nfs}"
     if grep -wq "${mount_nfs} -fstype=nfs" ${client_auto_pveshare}; then
       echo "NFS share mount ${mount_nfs} already exists in ${client_auto_pveshare}! Check ${client_auto_master} if it does not work!"
       echo
@@ -174,6 +179,7 @@ else
       echo "${mount_nfs} -fstype=nfs,rw ${server_ip}:${mount}" >>${client_auto_pveshare}
     fi
   done
+  # TODO: Add /etc config automation for guest
 fi
 
 #restart autofs
