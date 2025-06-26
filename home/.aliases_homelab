@@ -119,10 +119,16 @@ manualstow() {
     '.vifm'
   )
 
-  for file in "${homefiles[@]}"; do
-    local src="${HOME}/dotfiles/home/${file}"
+  # TODO: force copy all files and directories recursively for now
+  local srcdir="${HOME}/dotfiles/home"
+  local destdir="${HOME}"
+
+  cp -a -f "${srcdir}/.*" "${destdir}"
+    
+  #for file in "${homefiles[@]}"; do
+    #local src="${HOME}/dotfiles/home/${file}"
     #local dest="${HOME}/${file}"
-    local dest="${HOME}"
+    #local dest="${HOME}"
     
     # TODO: following doesn't work all the time, need to debug
     #if [ -e "${dest}" ]; then
@@ -130,18 +136,17 @@ manualstow() {
     #  info "Backed up ${dest} to ${dest}.bak"
     #fi
     #if [ -e "${src}" ]; then
-      cp -f "${src}" "${dest}"
-      info "Copied ${src} to ${dest}"
+    #  cp -f "${src}" "${dest}"
+    #  info "Copied ${src} to ${dest}"
     #else
     #  info "Source file ${src} does not exist, skipping."
     #fi
-  done
+  #done
 
-  for dir in "${homedirs[@]}"; do
-    local src="${HOME}/dotfiles/home/${dir}"
-    local dest="${HOME}/${dir}"
+  #for dir in "${homedirs[@]}"; do
+  #  local src="${HOME}/dotfiles/home/${dir}"
+  #  local dest="${HOME}/${dir}"
     
-
     # TODO: following doesn't work all the time, need to debug
     #if [ -d "${dest}" ]; then
     #  cp -a "${dest}" "${dest}.bak"
@@ -149,15 +154,15 @@ manualstow() {
     #fi
     #if [ -d "${src}" ]; then
     #  # create destination directory if it doesn't exist
-      mkdir -p "${dest}"
-    #  # copy all files and directories recursively
-      cp -a "${src}/" "${dest}/"
-      info "Copied ${src} to ${dest}"
+      #mkdir -p "${dest}"
+    # # copy all files and directories recursively
+      #cp -a "${src}/" "${dest}/"
+      #info "Copied ${src} to ${dest}"
     #else
     #  info "Source directory ${src} does not exist, skipping."
     #fi
-  done
-}
+  #done
+#}
 
 #create timelapse from set of images in a directory
 timelapse()
