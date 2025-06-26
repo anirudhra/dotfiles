@@ -1,0 +1,157 @@
+#!/bin/bash
+# Helper functions for dotfiles
+
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_HELPERFUNCS ]]; then
+    return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_HELPERFUNCS=1
+
+# Logging functions
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+NC='\033[0m' # No Color
+
+info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+debuglog() {
+    echo -e "${CYAN}[DEBUG $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+}
+
+log() {
+    echo -e "${GREEN}[$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+}
+
+error() {
+    echo -e "${RED}[ERROR]${NC} $1" >&2
+    exit 1
+}
+
+warn() {
+    echo -e "${YELLOW}[WARNING]${NC} $1"
+}
+
+debuglog "Helper functions sourced"
+
+# Detect the operating system type
+# Returns:
+#   - "macos" for macOS
+#   - "debian" for Debian-based systems
+#   - "fedora" for Fedora-based systems
+#   - "unknown" for other systems
+detect_os_type() {
+  if [[ "$(uname)" == "Darwin" ]]; then
+    echo "macos"
+    return "macos"
+  elif [[ -f /etc/os-release ]]; then
+    . /etc/os-release
+    case "$ID" in
+      debian|ubuntu|linuxmint|pop|elementary|kali|raspbian|zorin)
+        echo "debian"
+        return "debian"
+        ;;
+      fedora|rhel|centos|rocky|almalinux|ol|oracle)
+        echo "fedora"
+        return "fedora"
+        ;;
+      *)
+        # Try ID_LIKE for derivatives
+        if [[ "$ID_LIKE" == *debian* ]]; then
+          echo "debian"
+          return "debian"
+        elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
+          echo "fedora"
+          return "fedora"
+        else
+          echo "unknown"
+          return "unknown"
+        fi
+        ;;
+    esac
+  else
+    echo "unknown"
+    return "unknown"
+  fi
+}
+
+# Detect the architecture type
+# Returns:
+#   - "x86_64" for x86_64
+#   - "aarch64" for aarch64
+#   - "arm64" for arm64
+#   - "armv7l" for armv7l
+#   - "armv7h" for armv7h
+#   - "unknown" for other architectures
+detect_arch_type() {
+  log "Detecting architecture type"
+  if [[ "$(uname -m)" == "x86_64" ]]; then
+    echo "x86_64"
+    return "x86_64"
+  elif [[ "$(uname -m)" == "aarch64" ]]; then
+    echo "aarch64"
+    return "aarch64"
+  elif [[ "$(uname -m)" == "arm64" ]]; then
+    echo "aarch64"
+    return "aarch64"
+  elif [[ "$(uname -m)" == "armv7l" ]]; then
+    echo "armv7l"
+    return "armv7l"
+  elif [[ "$(uname -m)" == "armv7h" ]]; then
+    echo "armv7h"
+    return "armv7h"
+  else
+    echo "unknown"
+    return "unknown"
+  fi
+}
+
+# Detect the shell type
+# Returns:
+#   - "bash" for bash
+#   - "zsh" for zsh
+#   - "unknown" for other shells
+detect_shell_type() {
+  log "Detecting shell type"
+  local shell=""
+  if [[ "$SHELL" == "/bin/bash" ]]; then
+    echo "bash"
+    return "bash"
+  elif [[ "$SHELL" == "/bin/zsh" ]]; then
+    echo "zsh"
+    return "zsh"
+  else
+    echo "unknown"
+    return "unknown"
+  fi
+}
+
+# Detect the PVE server type
+# Returns:
+#   - "pveserver" for PVE Server
+#   - "pveguest" for PVE Guest
+#   - "client" for Client
+detect_pve_server() {
+  log "Detecting machine type"
+  if [ -f /proc/1/environ ]; then
+    if [ -x "$(command -v pveversion >/dev/null 2>&1)" ]; then
+        echo "pveserver"
+        return "pveserver" # PVE Server
+    else 
+        echo "pveguest"
+        return "pveguest" #  PVE Guest
+    fi
+  elif [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
+    echo "sbc"
+    return "sbc" # SBC
+  else
+    echo "client"
+    return "client" # Client
+  fi
+}

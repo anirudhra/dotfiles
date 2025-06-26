@@ -1,0 +1,44 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for macos; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_ALIASES_MACOS ]]; then
+    return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_MACOS=1
+
+debuglog "macOS aliases sourced"
+
+# add condition for macos specific commmand here - diskutil not available on linux, only macos
+alias brew_update='brew update && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+
+# all other macos aliases/macros
+alias showkext="kextstat | grep -E"
+alias gvim='vimr'
+    
+#finder hidden files
+alias showhidden='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
+alias hidehidden='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder /System/Library/CoreServices/Finder.app'
+alias finder='open'
+alias shuf='gshuf'
+
+# Desktop Programs
+alias preview="open -a '$PREVIEW'"
+alias xcode="open -a '/Applications/XCode.app'"
+alias edge="open -a '/Applications/Microsoft\ Edge.app'"
+alias filemerge="open -a '/Developer/Applications/Utilities/FileMerge.app'"
+alias safari="open -a safari"
+alias firefox="open -a firefox"
+alias chrome="open -a google\ chrome"
+alias textedit='open -a TextEdit'
+
+#monitor cpu clock
+alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
+
+# jupyterlab aliases
+alias ipy="jupyter lab ~/code/github/jupyternb"
+alias gooc='cd ~/code/OpenCore'
+

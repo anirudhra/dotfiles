@@ -9,7 +9,7 @@ installupdate() {
 }
 
 ##---------------common installation/update script-------------------------#
-source ${HOME}/dotfiles/linux/gitfuncs.sh
+source ${HOME}/.gitfuncs
 
 # clone or update the repo
 syncrepo ${giturl} ${gitdir}

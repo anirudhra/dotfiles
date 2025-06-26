@@ -5,6 +5,16 @@
 #   updaterepo <giturl> <localdir>
 #   syncrepo <giturl> <localdir>
 
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_GITFUNCS ]]; then
+    return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_GITFUNCS=1
+
+debuglog "Git functions sourced"
+
 # Clone a repo if it doesn't exist
 clonerepo() {
   local giturl="$1"

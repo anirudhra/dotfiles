@@ -1,0 +1,114 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for linux; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_ALIASES_LINUX ]]; then
+    return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_LINUX=1
+
+source ${HOME}/.helperfuncs
+
+OS_TYPE=$(detect_os_type) # this is the OS of the machine running the script
+MACHINE_TYPE=$(detect_pve_server) # this is the machine type of the machine running the script
+
+debuglog "Linux aliases sourced"
+
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
+    source ${HOME}/.aliases_linux_${OS_TYPE}
+fi
+
+if [ -x "$(command -v fwupdmgr)" ]; then  
+    alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
+    alias checkfw='sudo fwupdmgr get-devices'
+else
+    alias fwupdate=warn "fwupdmgr not found, skipping fwupdate"
+    alias checkfw=warn "fwupdmgr not found, skipping checkfw"
+fi
+
+# other linux-only aliases
+alias booterrors='sudo journalctl  -b 0 -p 3'
+alias sysinfo='sudo inxi -Fzx'
+alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
+alias reservice='sudo systemctl daemon-reload'
+alias serialnum='sudo dmidecode -t system'
+alias ncdu='ncdu -e -2 --color dark-bg --show-graph --show-itemcount' # better default ncdu
+
+#ssd/nvme/hdd benchmarking
+alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
+alias sdaperf='sudo hdparm -Tt /dev/sda'
+
+alias fm='nautilus . &'
+alias gnome_ext_backup="dconf dump /org/gnome/shell/extensions/ > ./gnome_extensions_backup.dconf"
+alias gnome_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf"
+alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+alias gnome_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
+alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+
+# generic  aliases
+alias gomedia='cd ${MEDIADIR}'
+alias godata='cd ${DATADIR}'
+alias gonvme='cd ${NVMEDIR}'
+alias godocker='cd ${DOCKERDIR}'
+alias gopve='cd ${PVEDIR}'
+
+######## functions ######################
+
+#intended to be run on PVE guests/SBC/Client only
+movemovie()
+{
+    if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] || [[ "${MACHINE_TYPE}" == "client" ]]; then
+      case $# in
+      1)
+          chmod 777 "$1"
+          chown -R nobody:nogroup "$1"
+          mv "$1" ${MEDIADIR}/video/MyMovies
+          ;;
+      *)
+          info "USAGE : movemovie <movie_dir>"
+          ;;
+      esac
+    fi
+}
+
+#intended to be run on linux only
+cleanlocales()
+{
+    sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
+}
+
+copyrockboxtheme()
+{
+    if [[ "${MACHINE_TYPE}" == "client" ]]; then
+        local mountbasedir="/run/media/anirudh"
+        local ipoddir="${mountbasedir}/IPOD7G/.rockbox"
+        #ipoddir="${mountbasedir}/IPOD5G/.rockbox"
+        # change to locally extracted .rockbox directory
+        cp -r backdrops/* ${ipoddir}/backdrops/
+        cp -r fonts/* ${ipoddir}/fonts/
+        cp -r icons/* ${ipoddir}/icons/
+        cp -r themes/* ${ipoddir}/themes/
+        cp -r wps/* ${ipoddir}/wps/
+    fi
+}
+
+# use this when you have multiple themes extracted to a root folder with the dir structure
+# ./theme1/.rockbox, ./theme2/.rockbox etc.
+copyallrockboxthemes() {
+    if [[ "${MACHINE_TYPE}" == "client" ]]; then
+        local mountbasedir="/run/media/anirudh"
+        local ipoddir="${mountbasedir}/IPOD7G/.rockbox"
+        #ipoddir="${mountbasedir}/IPOD5G/.rockbox"
+        # change to locally extracted .rockbox directory
+        find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && cd .rockbox && pwd ; \
+        cp -r backdrops/* ${ipoddir}/backdrops/ ; \
+        cp -r fonts/* ${ipoddir}/fonts/ ; \
+        cp -r icons/* ${ipoddir}/icons/ ; \
+        cp -r themes/* ${ipoddir}/themes/ ; \
+        cp -r wps/* ${ipoddir}/wps/ \
+        " \;
+    fi
+}

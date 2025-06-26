@@ -1,0 +1,174 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for Homelab, common for macOS and Linux; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_ALIASES_HOMELAB ]]; then
+    return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_HOMELAB=1
+
+debuglog "Homelab aliases sourced"
+
+# hosts
+export SBCHOST="ifc6410"
+export ROUTER="10.100.100.1"
+export ROUTERPORT="12372"
+
+export PVESERVER="10.100.100.50"
+export PVEVENTOY="10.100.100.51"
+export PVWG="10.100.100.55"
+export PVEVEGA="10.100.100.60"
+export PVEBLANKA="10.100.100.65"
+export PVEHA="10.100.100.70"
+export PVESAGAT="10.100.100.75"
+export PVEJF="10.100.100.80"
+export PVEUBUNTU="10.100.100.85"
+export PVEIMM="10.100.100.95"
+
+export SBC="10.100.100.64"
+export SBCWIFI="10.100.100.66"
+export SBCETH="10.100.100.67"
+
+export ROUTERUSER="admin"
+export SSHROOT="root"
+export SSHNONROOT="nonroot"
+export SSHTMUX="tmux -2 attach || tmux -2 new"
+export SSHMAC="hmac-sha2-256"
+
+# ssh aliases
+alias sshpve='ssh -o MACs=${SSHMAC} ${SSHROOT}@${PVESERVER} -t "${SSHTMUX}"'
+alias sshserver='ssh -o MACs=${SSHMAC} ${SSHROOT}@${PVESERVER}' #non-tmux version
+
+alias sshrouter='ssh ${ROUTERUSER}@${ROUTER} -p ${ROUTERPORT} -t "${SSHTMUX}"'
+
+alias sshsbcwifi='ssh ${SSHROOT}@${SBCWIFI} -t "${SSHTMUX}"'
+alias sshsbceth='ssh ${SSHROOT}@${SBCETH} -t "${SSHTMUX}"'
+alias sshsbc='ssh ${SSHROOT}@${SBCHOST} -t "${SSHTMUX}"'
+
+alias sshwg='ssh ${SSHROOT}@${PVWG} -t "${SSHTMUX}"'
+alias sshventoy='ssh ${SSHROOT}@${PVEVENTOY} -t "${SSHTMUX}"'
+alias sshvega='ssh ${SSHROOT}@${PVEVEGA} -t "${SSHTMUX}"'
+alias sshblanka='ssh ${SSHROOT}@${PVEBLANKA} -t "${SSHTMUX}"' 
+alias sshha='ssh ${SSHROOT}@${PVEHA} -t "${SSHTMUX}"'
+alias sshjf='ssh ${SSHROOT}@${PVEJF} -t "${SSHTMUX}"'
+alias sshsagat='ssh ${SSHROOT}@${PVESAGAT} -t "${SSHTMUX}"'
+alias sshimm='ssh ${SSHROOT}@${PVEIMM} -t "${SSHTMUX}"'
+alias sshubuntu='ssh ${SSHROOT}@${PVEUBUNTU} -t "${SSHTMUX}"'
+alias sshubuntuuser='ssh ${SSHNONROOT}@${PVEUBUNTU} -t "${SSHTMUX}"'
+
+# generic tmux ssh aliases
+# alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
+
+# ping aliases
+alias pingrouter='ping ${ROUTER}'
+alias pingserver='ping ${PVESERVER}'
+
+# iperf3 aliases for network testing
+alias iperfdown='iperf3 -Rc ${PVESERVER}'
+alias iperfup='iperf3 -c ${PVESERVER}'
+
+# goto aliases
+alias gocode='cd ${HOME}/code'
+alias gogit='cd ${HOME}/code/github'
+alias gopkg='cd ${HOME}/packages/install'
+alias godot='cd ${HOME}/dotfiles'
+alias goans='cd ${HOME}/dotfiles/common/ansible/scripts'
+
+#git
+alias gitpush="git pull && git add * && git commit -a && git push"
+alias gitpullall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull\" \;"
+alias gitpushall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull && git add * && git commit -a && git push\" \;"
+
+# change ownership to nobdoy:nogroup, primarily for shares 
+alias nobodyown='chown -R nobody:nogroup *'
+
+# Create m3u playlist from file listing in current directory recursively
+alias createplaylist="find . -type f -iname \"*.mp3\" -or -iname \"*.flac\" -or -iname \"*.alac\" -or -iname \"*.m4a\" > Playlist.m3u"
+
+#stow aliases
+if [ -x "$(command -v stow)" ]; then
+  alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
+  alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
+else
+  # call the manual stow function
+  alias restow=manualstow 
+fi
+
+######## functions ######################
+
+# for machines without gnu stow
+manualstow() {
+  local homefiles=(
+    '.aliases'
+    '.profile'
+    '.profile.${HOSTNAME}'
+    '.zshrc'
+    '.bashrc'
+    '.bash_profile'
+    '.vimrc'
+  )
+
+  local homedirs=(
+    '.vim'
+    '.config'
+    '.vifm'
+  )
+
+  for local file in "${homefiles[@]}"; do
+    local src="${HOME}/dotfiles/home/${localfile}"
+    local dest="${HOME}/${localfile}"
+    if [ -e "${dest}" ]; then
+      cp -f "${dest}" "${dest}.bak"
+      info "Backed up ${dest} to ${dest}.bak"
+    fi
+    if [ -e "${src}" ]; then
+      cp -f "${src}" "${dest}"
+      info "Copied ${src} to ${dest}"
+    else
+      info "Source file ${src} does not exist, skipping."
+    fi
+  done
+
+for local dir in "${homedirs[@]}"; do
+    local src="${HOME}/dotfiles/home/${localdir}"
+    local dest="${HOME}/${localdir}"
+    if [ -d "${dest}" ]; then
+      cp -a "${dest}" "${dest}.bak"
+      info "Backed up ${dest} to ${dest}.bak"
+    fi
+    if [ -d "${src}" ]; then
+      # create destination directory if it doesn't exist
+      mkdir -p "${dest}"
+      # copy all files and directories recursively
+      cp -a "${src}" "${dest}"
+      info "Copied ${src} to ${dest}"
+    else
+      info "Source directory ${src} does not exist, skipping."
+    fi
+  done
+}
+
+#create timelapse from set of images in a directory
+timelapse()
+{
+   if [ -x "$(command -v mencoder)" ]; then
+    if [ -x "$(command -v ffmpeg)" ]; then
+        #10fps should be good, but adjust as needed
+        info "Place all images in current directory sorted in ascending order by file name"
+        ls -1tr | grep -v files.txt > files.txt
+        mencoder -nosound -noskip -oac copy -ovc copy -o output.avi -mf fps=10 'mf://@files.txt'
+        #ffmpeg -i output.avi -vf scale=1920:1440,crop=1920:1080 output-final.avi
+        # adjust res and codec manually
+        ffmpeg -i output.avi output-final.avi
+        info "Done. You may delete original output.avi and files.txt"
+    else
+      warn "ffmpeg not found, please install it"
+    fi
+    else
+      warn "mencoder not found, please install it" #ffmpeg is a dependency of mencoder
+   fi
+}
+
