@@ -421,6 +421,7 @@ manualstow() {
   homedirs=(
     '.vim'
     '.config'
+    '.vifm'
   )
 
   for file in "${homefiles[@]}"; do
