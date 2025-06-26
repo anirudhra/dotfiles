@@ -120,36 +120,42 @@ manualstow() {
   )
 
   for file in "${homefiles[@]}"; do
-    local src="${HOME}/dotfiles/home/${localfile}"
-    local dest="${HOME}/${localfile}"
-    if [ -e "${dest}" ]; then
-      cp -f "${dest}" "${dest}.bak"
-      info "Backed up ${dest} to ${dest}.bak"
-    fi
-    if [ -e "${src}" ]; then
+    local src="${HOME}/dotfiles/home/${file}"
+    #local dest="${HOME}/${file}"
+    local dest="${HOME}"
+    
+    # TODO: following doesn't work all the time, need to debug
+    #if [ -e "${dest}" ]; then
+    #  cp -f "${dest}" "${dest}.bak"
+    #  info "Backed up ${dest} to ${dest}.bak"
+    #fi
+    #if [ -e "${src}" ]; then
       cp -f "${src}" "${dest}"
       info "Copied ${src} to ${dest}"
-    else
-      info "Source file ${src} does not exist, skipping."
-    fi
+    #else
+    #  info "Source file ${src} does not exist, skipping."
+    #fi
   done
 
-for dir in "${homedirs[@]}"; do
-    local src="${HOME}/dotfiles/home/${localdir}"
-    local dest="${HOME}/${localdir}"
-    if [ -d "${dest}" ]; then
-      cp -a "${dest}" "${dest}.bak"
-      info "Backed up ${dest} to ${dest}.bak"
-    fi
-    if [ -d "${src}" ]; then
-      # create destination directory if it doesn't exist
+  for dir in "${homedirs[@]}"; do
+    local src="${HOME}/dotfiles/home/${dir}"
+    local dest="${HOME}/${dir}"
+    
+
+    # TODO: following doesn't work all the time, need to debug
+    #if [ -d "${dest}" ]; then
+    #  cp -a "${dest}" "${dest}.bak"
+    #  info "Backed up ${dest} to ${dest}.bak"
+    #fi
+    #if [ -d "${src}" ]; then
+    #  # create destination directory if it doesn't exist
       mkdir -p "${dest}"
-      # copy all files and directories recursively
-      cp -a "${src}" "${dest}"
+    #  # copy all files and directories recursively
+      cp -a "${src}/" "${dest}/"
       info "Copied ${src} to ${dest}"
-    else
-      info "Source directory ${src} does not exist, skipping."
-    fi
+    #else
+    #  info "Source directory ${src} does not exist, skipping."
+    #fi
   done
 }
 

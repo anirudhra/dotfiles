@@ -126,7 +126,7 @@ cd "${install_dir}" || exit
 
 if [ "${desktopEnv}" == "GNOME" ]; then
   echo "Restoring GNOME shell extension settings..."
-  dconf load /org/gnome/shell/extensions/ <"${install_dir}/extensions/gnome_extensions_backup.dconf"
+  dconf load /org/gnome/shell/extensions/ <"${install_dir}/config/extensions/gnome_extensions_backup.dconf"
 fi
 
 echo
@@ -136,9 +136,9 @@ echo "All done, logout and log back in for changes to take effect."
 if [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmint" ] || [ "${ID}" == "zorin" ]; then
   if [ ! -e "/usr/bin/fastfetch" ]; then
     echo
-    echo "Temporarily replaced neofetch with fastfetch in ${local_profile} on Debian-based systems"
+    #echo "Temporarily replaced neofetch with fastfetch in ${local_profile} on Debian-based systems"
     echo "Install fastfetch from https://github.com/fastfetch-cli/fastfetch"
-    sed -i s/fastfetch/neofetch/g ${local_profile}
+    #sed -i s/fastfetch/neofetch/g ${local_profile}
   fi
 fi
 echo "==========================================================================================="

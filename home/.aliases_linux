@@ -14,6 +14,7 @@ source ${HOME}/.helperfuncs
 
 OS_TYPE=$(detect_os_type) # this is the OS of the machine running the script
 MACHINE_TYPE=$(detect_pve_server) # this is the machine type of the machine running the script
+desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 
 debuglog "Linux aliases sourced"
 
@@ -41,12 +42,15 @@ alias ncdu='ncdu -e -2 --color dark-bg --show-graph --show-itemcount' # better d
 alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
 alias sdaperf='sudo hdparm -Tt /dev/sda'
 
-alias fm='nautilus . &'
-alias gnome_ext_backup="dconf dump /org/gnome/shell/extensions/ > ./gnome_extensions_backup.dconf"
-alias gnome_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf"
-alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
-alias gnome_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
-alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+if [[ "${desktopEnv}" == "GNOME" ]]; then
+    alias fm='nautilus . &'
+    alias gnome_ext_backup="dconf dump /org/gnome/shell/extensions/ > ./gnome_extensions_backup.dconf"
+    alias gnome_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf"
+    alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+    alias gnome_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
+    alias gnome_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+    alias gtkupdate="cd ${HOME}/dotfiles/linux && ./gtk/gtkthemes.sh && cd -"
+fi
 
 # generic  aliases
 alias gomedia='cd ${MEDIADIR}'

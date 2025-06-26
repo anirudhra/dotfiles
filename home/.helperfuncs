@@ -48,34 +48,41 @@ debuglog "Helper functions sourced"
 #   - "unknown" for other systems
 detect_os_type() {
   if [[ "$(uname)" == "Darwin" ]]; then
+    debuglog "Detected macOS"
     echo "macos" # combination of echo and return used to return strings in functions
     return
   elif [[ -f /etc/os-release ]]; then
     . /etc/os-release
     case "$ID" in
       debian|ubuntu|linuxmint|pop|elementary|kali|raspbian|zorin)
+        debuglog "Detected Debian-based system"
         echo "debian" # combination of echo and return used to return strings in functions
         return
         ;;
       fedora|rhel|centos|rocky|almalinux|ol|oracle)
+        debuglog "Detected Fedora-based system"
         echo "fedora" # combination of echo and return used to return strings in functions
         return
         ;;
       *)
         # Try ID_LIKE for derivatives
         if [[ "$ID_LIKE" == *debian* ]]; then
+          debuglog "Detected Debian-based system"
           echo "debian" # combination of echo and return used to return strings in functions
           return
         elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
+          debuglog "Detected Fedora-based system"
           echo "fedora" # combination of echo and return used to return strings in functions
           return
         else
+          debuglog "Unknown system"
           echo "unknown" # combination of echo and return used to return strings in functions
           return
         fi
         ;;
     esac
   else
+    debuglog "Unknown system"
     echo "unknown" # combination of echo and return used to return strings in functions
     return
   fi
@@ -90,23 +97,29 @@ detect_os_type() {
 #   - "armv7h" for armv7h
 #   - "unknown" for other architectures
 detect_arch_type() {
-  log "Detecting architecture type"
+  debuglog "Detecting architecture type"
   if [[ "$(uname -m)" == "x86_64" ]]; then
+    debuglog "Detected x86_64 architecture"
     echo "x86_64" # combination of echo and return used to return strings in functions
     return
   elif [[ "$(uname -m)" == "aarch64" ]]; then
+    debuglog "Detected aarch64 architecture"
     echo "aarch64" # combination of echo and return used to return strings in functions
     return "aarch64"
   elif [[ "$(uname -m)" == "arm64" ]]; then
+    debuglog "Detected arm64 architecture"
     echo "aarch64" # combination of echo and return used to return strings in functions
     return
   elif [[ "$(uname -m)" == "armv7l" ]]; then
+    debuglog "Detected armv7l architecture"
     echo "armv7l" # combination of echo and return used to return strings in functions
     return
   elif [[ "$(uname -m)" == "armv7h" ]]; then
+    debuglog "Detected armv7h architecture"
     echo "armv7h" # combination of echo and return used to return strings in functions
     return
   else
+    debuglog "Unknown architecture"
     echo "unknown" # combination of echo and return used to return strings in functions
     return
   fi
@@ -118,15 +131,18 @@ detect_arch_type() {
 #   - "zsh" for zsh
 #   - "unknown" for other shells
 detect_shell_type() {
-  log "Detecting shell type"
+  debuglog "Detecting shell type"
   local shell=""
   if [[ "$SHELL" == "/bin/bash" ]]; then
+    debuglog "Detected bash shell"
     echo "bash" # combination of echo and return used to return strings in functions
     return
   elif [[ "$SHELL" == "/bin/zsh" ]]; then
+    debuglog "Detected zsh shell"
     echo "zsh" # combination of echo and return used to return strings in functions
     return
   else
+    debuglog "Unknown shell"
     echo "unknown" # combination of echo and return used to return strings in functions
     return
   fi
@@ -138,19 +154,23 @@ detect_shell_type() {
 #   - "pveguest" for PVE Guest
 #   - "client" for Client
 detect_pve_server() {
-  log "Detecting machine type"
+  debuglog "Detecting machine type"
   if [ -f /proc/1/environ ]; then
     if [ -x "$(command -v pveversion >/dev/null 2>&1)" ]; then
+        debuglog "Detected PVE server"
         echo "pveserver" # combination of echo and return used to return strings in functions
         return
     else 
+        debuglog "Detected PVE guest"
         echo "pveguest" # combination of echo and return used to return strings in functions
         return
     fi
   elif [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
+    debuglog "Detected SBC"
     echo "sbc" # combination of echo and return used to return strings in functions
     return
   else
+    debuglog "Detected client"
     echo "client" # combination of echo and return used to return strings in functions
     return
   fi

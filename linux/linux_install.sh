@@ -299,8 +299,8 @@ else
     'python3-cairo-dev'
     'python3-venv'
     'python3-wheel'
-    #    'unattended-upgrades'
-    #    'apt-listchanges'
+    #'unattended-upgrades'
+    #'apt-listchanges'
   )
 
   osgnomepkgs=(
@@ -333,11 +333,11 @@ fi
 ####################################################################################
 # Install /etc config files
 ####################################################################################
-source_autofs_share_file="./etc/auto.pveshare"
+source_autofs_share_file="./config/etc/auto.pveshare"
 sys_autofs_share_file="/etc/auto.pveshare"
-source_tlp_file="./etc/tlp.conf"
+source_tlp_file="./config/etc/tlp.conf"
 sys_tlp_file="/etc/tlp.conf"
-source_throttled_file="./etc/throttled.conf"
+source_throttled_file="./config/etc/throttled.conf"
 sys_throttled_file="/etc/throttled.conf"
 nfs_mount_point="/mnt/nfs"
 autofs_master="/etc/auto.master"
@@ -402,7 +402,7 @@ mkdir -p "${pkg_install_dir}"
 # Replace audio alert file
 audio_alert_file="/usr/share/sounds/gnome/default/alerts/hum.ogg"
 audio_alert_bak_file="/usr/share/sounds/gnome/default/alerts/hum_og.ogg"
-audio_alert_source_file="./sounds/hum.ogg"
+audio_alert_source_file="./gtk/sounds/hum.ogg"
 
 if [ ! -e ${audio_alert_bak_file} ]; then
   echo "Installing audio alert file replacement"
@@ -445,7 +445,7 @@ fc-cache -fv
 echo "Installing GTK themes..."
 # change back to original installation directory
 cd "${install_dir}" || exit
-/bin/bash ./gtkthemes.sh
+/bin/bash ./gtk/gtkthemes.sh
 
 if [ "${desktopEnv}" == "GNOME" ]; then
   # set GTK and icon themes

@@ -13,8 +13,6 @@ SOURCED_ALIASES_LINUX_FEDORA=1
 
 debuglog "Fedora aliases sourced"
 
-alias gtkupdate="cd ${HOME}/dotfiles/linux && ./gtkthemes.sh && cd -"
-
 # add condition for fedora specific command here
 alias fullclean='sudo dnf clean all && sudo dnf autoremove && sudo flatpak uninstall --unused'
 alias fullupdate='sudo dnf update --refresh && sudo dnf upgrade -y && sudo flatpak upgrade -y'
