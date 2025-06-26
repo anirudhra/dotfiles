@@ -13,14 +13,17 @@ installupdate() {
 }
 
 ##---------------common installation/update script-------------------------#
-source "${HOME}/dotfiles/linux/gitfuncs.sh"
+source ${HOME}/dotfiles/linux/gitfuncs.sh
 
-clonerepo ${giturl} ${gitdir}
-clone=$?
-updaterepo ${giturl} ${gitdir}
-update=$?
+# clone or update the repo
+syncrepo ${giturl} ${gitdir}
 
-if [ "${clone}" == 1 ] || [ "${update}" == 1 ]; then
-  cd "${gitdir}" || exit
-  installupdate
+# only install/update if clone/pull was successful
+if [ $? -eq 0 ]; then
+  cd ${gitdir} || exit 1
+  installupdate # run the install/update script
+  exit 0
+else
+  echo "Install/update script not run: ${giturl}"
+  exit 1
 fi

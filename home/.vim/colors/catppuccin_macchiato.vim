@@ -1,4 +1,4 @@
-" Name: catppuccin_latte.vim
+" Name: catppuccin_macchiato.vim
 
 set background=dark
 hi clear
@@ -7,37 +7,37 @@ if exists('syntax on')
     syntax reset
 endif
 
-let g:colors_name='catppuccin_latte'
+let g:colors_name='catppuccin_macchiato'
 set t_Co=256
 
-let s:rosewater = "#DC8A78"
-let s:flamingo = "#DD7878"
-let s:pink = "#EA76CB"
-let s:mauve = "#8839EF"
-let s:red = "#D20F39"
-let s:maroon = "#E64553"
-let s:peach = "#FE640B"
-let s:yellow = "#DF8E1D"
-let s:green = "#40A02B"
-let s:teal = "#179299"
-let s:sky = "#04A5E5"
-let s:sapphire = "#209FB5"
-let s:blue = "#1E66F5"
-let s:lavender = "#7287FD"
+let s:rosewater = "#F4DBD6"
+let s:flamingo = "#F0C6C6"
+let s:pink = "#F5BDE6"
+let s:mauve = "#C6A0F6"
+let s:red = "#ED8796"
+let s:maroon = "#EE99A0"
+let s:peach = "#F5A97F"
+let s:yellow = "#EED49F"
+let s:green = "#A6DA95"
+let s:teal = "#8BD5CA"
+let s:sky = "#91D7E3"
+let s:sapphire = "#7DC4E4"
+let s:blue = "#8AADF4"
+let s:lavender = "#B7BDF8"
 
-let s:text = "#4C4F69"
-let s:subtext1 = "#5C5F77"
-let s:subtext0 = "#6C6F85"
-let s:overlay2 = "#7C7F93"
-let s:overlay1 = "#8C8FA1"
-let s:overlay0 = "#9CA0B0"
-let s:surface2 = "#ACB0BE"
-let s:surface1 = "#BCC0CC"
-let s:surface0 = "#CCD0DA"
+let s:text = "#CAD3F5"
+let s:subtext1 = "#B8C0E0"
+let s:subtext0 = "#A5ADCB"
+let s:overlay2 = "#939AB7"
+let s:overlay1 = "#8087A2"
+let s:overlay0 = "#6E738D"
+let s:surface2 = "#5B6078"
+let s:surface1 = "#494D64"
+let s:surface0 = "#363A4F"
 
-let s:base = "#EFF1F5"
-let s:mantle = "#E6E9EF"
-let s:crust = "#DCE0E8"
+let s:base = "#24273A"
+let s:mantle = "#1E2030"
+let s:crust = "#181926"
 
 function! s:hi(group, guisp, guifg, guibg, gui, cterm)
   let cmd = ""
@@ -67,9 +67,9 @@ call s:hi("Normal", "NONE", s:text, s:base, "NONE", "NONE")
 call s:hi("Visual", "NONE", "NONE", s:surface1,"bold", "bold")
 call s:hi("Conceal", "NONE", s:overlay1, "NONE", "NONE", "NONE")
 call s:hi("ColorColumn", "NONE", "NONE", s:surface0, "NONE", "NONE")
-call s:hi("Cursor", "NONE", s:base, s:text, "NONE", "NONE")
-call s:hi("lCursor", "NONE", s:base, s:text, "NONE", "NONE")
-call s:hi("CursorIM", "NONE", s:base, s:text, "NONE", "NONE")
+call s:hi("Cursor", "NONE", s:base, s:rosewater, "NONE", "NONE")
+call s:hi("lCursor", "NONE", s:base, s:rosewater, "NONE", "NONE")
+call s:hi("CursorIM", "NONE", s:base, s:rosewater, "NONE", "NONE")
 call s:hi("CursorColumn", "NONE", "NONE", s:mantle, "NONE", "NONE")
 call s:hi("CursorLine", "NONE", "NONE", s:surface0, "NONE", "NONE")
 call s:hi("Directory", "NONE", s:blue, "NONE", "NONE", "NONE")
@@ -98,12 +98,14 @@ call s:hi("Question", "NONE", s:blue, "NONE", "NONE", "NONE")
 call s:hi("QuickFixLine", "NONE", "NONE", s:surface1, "bold", "bold")
 call s:hi("Search", "NONE", s:pink, s:surface1, "bold", "bold")
 call s:hi("SpecialKey", "NONE", s:subtext0, "NONE", "NONE", "NONE")
-call s:hi("SpellBad", s:red, "NONE", "NONE", "underline", "underline")
-call s:hi("SpellCap", s:yellow, "NONE", "NONE", "underline", "underline")
-call s:hi("SpellLocal", s:blue, "NONE", "NONE", "underline", "underline")
-call s:hi("SpellRare", s:green, "NONE", "NONE", "underline", "underline")
+call s:hi("SpellBad", "NONE", s:base, s:red, "NONE", "NONE")
+call s:hi("SpellCap", "NONE", s:base, s:yellow, "NONE", "NONE")
+call s:hi("SpellLocal", "NONE", s:base, s:blue, "NONE", "NONE")
+call s:hi("SpellRare", "NONE", s:base, s:green, "NONE", "NONE")
 call s:hi("StatusLine", "NONE", s:text, s:mantle, "NONE", "NONE")
 call s:hi("StatusLineNC", "NONE", s:surface1, s:mantle, "NONE", "NONE")
+call s:hi("StatusLineTerm", "NONE", s:text, s:mantle, "NONE", "NONE")
+call s:hi("StatusLineTermNC", "NONE", s:surface1, s:mantle, "NONE", "NONE")
 call s:hi("TabLine", "NONE", s:surface1, s:mantle, "NONE", "NONE")
 call s:hi("TabLineFill", "NONE", "NONE", s:mantle, "NONE", "NONE")
 call s:hi("TabLineSel", "NONE", s:green, s:surface1, "NONE", "NONE")
@@ -111,7 +113,7 @@ call s:hi("Title", "NONE", s:blue, "NONE", "bold", "bold")
 call s:hi("VisualNOS", "NONE", "NONE", s:surface1, "bold", "bold")
 call s:hi("WarningMsg", "NONE", s:yellow, "NONE", "NONE", "NONE")
 call s:hi("WildMenu", "NONE", "NONE", s:overlay0, "NONE", "NONE")
-call s:hi("Comment", "NONE", s:surface2, "NONE", "NONE", "NONE")
+call s:hi("Comment", "NONE", s:overlay0, "NONE", "NONE", "NONE")
 call s:hi("Constant", "NONE", s:peach, "NONE", "NONE", "NONE")
 call s:hi("Identifier", "NONE", s:flamingo, "NONE", "NONE", "NONE")
 call s:hi("Statement", "NONE", s:mauve, "NONE", "NONE", "NONE")
@@ -120,7 +122,7 @@ call s:hi("Type", "NONE", s:blue, "NONE", "NONE", "NONE")
 call s:hi("Special", "NONE", s:pink, "NONE", "NONE", "NONE")
 call s:hi("Underlined", "NONE", s:text, s:base, "underline", "underline")
 call s:hi("Error", "NONE", s:red, "NONE", "NONE", "NONE")
-call s:hi("Todo", "NONE", s:base, s:yellow, "bold", "bold")
+call s:hi("Todo", "NONE", s:base, s:flamingo, "bold", "bold")
 
 call s:hi("String", "NONE", s:green, "NONE", "NONE", "NONE")
 call s:hi("Character", "NONE", s:teal, "NONE", "NONE", "NONE")
@@ -156,6 +158,6 @@ hi link Ignore Comment
 
 " Set terminal colors for playing well with plugins like fzf
 let g:terminal_ansi_colors = [
-  \ s:subtext1, s:red, s:green, s:yellow, s:blue, s:pink, s:teal, s:surface2,
-  \ s:subtext0, s:red, s:green, s:yellow, s:blue, s:pink, s:teal, s:surface1
+  \ s:surface1, s:red, s:green, s:yellow, s:blue, s:pink, s:teal, s:subtext1,
+  \ s:surface2, s:red, s:green, s:yellow, s:blue, s:pink, s:teal, s:subtext0
 \ ]

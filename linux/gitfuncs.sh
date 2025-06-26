@@ -1,47 +1,60 @@
 #!/bin/bash
 # git clone, pull helper functions
-# used/sourced in other scripts
-#
+# Usage:
+#   clonerepo <giturl> <localdir>
+#   updaterepo <giturl> <localdir>
+#   syncrepo <giturl> <localdir>
 
-##---------------common installation/update script-------------------------#
-# syntax: clonerepo(giturl, localdirecotry)
-# retuns 1 if fresh clone was performed, else 0
+# Clone a repo if it doesn't exist
 clonerepo() {
-  cloned=0
-
-  giturl=$1
-  gitdir=$2
-
-  # sync if repo doesn't exist
-  if [ ! -d "./${gitdir}" ]; then
-    echo "Repo cloned: ${giturl}"
-    git clone "${giturl}" "${gitdir}"
-    cloned=1
+  local giturl="$1"
+  local gitdir="$2"
+  if [ ! -d "$gitdir/.git" ]; then
+    echo "Cloning repo: $giturl -> $gitdir"
+    if git clone "$giturl" "$gitdir"; then
+      return 0
+    else
+      echo "Clone failed!"
+      return 1
+    fi
   else
-    echo "Repo exists. Run update function to check for any new updates."
+    echo "Repo exists: $gitdir"
+    return 1
   fi
-
-  return "${cloned}"
 }
 
-# syntax: updaterepo(giturl, localdirecotry)
-# retuns 1 if repo was updated, else 0
+# Update a repo if it exists
 updaterepo() {
-  update=0
-  # only install/update if sync was successful
-  if [ -d "./${gitdir}/.git" ]; then
-    cd "${gitdir}" || exit
+  local giturl="$1"
+  local gitdir="$2"
+  if [ -d "$gitdir/.git" ]; then
+    cd "$gitdir" >/dev/null 2>&1 || { echo "Failed to enter $gitdir"; return 1; }
+    local syncstatus
     syncstatus=$(git pull)
-    if [ ! "${syncstatus}" == "Already up to date." ]; then
-      update=1
-      echo "Repo updated: ${giturl}"
+    if [[ "$syncstatus" != "Already up to date." ]]; then
+      echo "Repo updated: $giturl"
+      cd - >/dev/null 2>&1
+      return 0
     else
       echo "No new updates."
+      cd - >/dev/null 2>&1
+      return 1
     fi
-    cd - || exit
   else
-    echo "Repo does not exist. Run clone function first."
+    echo "Repo does not exist: $gitdir"
+    return 1
   fi
+}
 
-  return "${update}"
+# Clone or update a repo; return 0 if cloned or updated, 1 if no new updates
+syncrepo() {
+  local giturl="$1"
+  local gitdir="$2"
+  if clonerepo "$giturl" "$gitdir"; then
+    return 0
+  elif updaterepo "$giturl" "$gitdir"; then
+    return 0
+  else
+    return 1
+  fi
 }

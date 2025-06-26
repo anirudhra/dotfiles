@@ -4,6 +4,7 @@
 giturl="https://github.com/elementary/icons"
 gitdir="elementary-icons"
 
+# provide custom installupdate() function per theme
 installupdate() {
   # update/install per dir commands
   meson build --prefix=/usr
@@ -13,24 +14,18 @@ installupdate() {
 }
 
 ##---------------common installation/update script-------------------------#
-install="no"
+source ${HOME}/dotfiles/linux/gitfuncs.sh
 
-# sync if repo doesn't exist
-if [ ! -d "./${gitdir}" ]; then
-  echo "Repo clone: ${giturl}"
-  git clone "${giturl}" "${gitdir}"
-  install="yes"
+# clone or update the repo
+syncrepo ${giturl} ${gitdir}
+
+# only install/update if clone/pull was successful
+if [ $? -eq 0 ]; then
+  cd ${gitdir} || exit 1
+  installupdate # run the install/update script
+  exit 0
+else
+  echo "Install/update script not run: ${giturl}"
+  exit 1
 fi
 
-# only install/update if sync was successful
-if [ -d "./${gitdir}/.git" ]; then
-  cd "${gitdir}" || exit
-  syncstatus=$(git pull)
-  if [ ! "${syncstatus}" == "Already up to date." ] || [ ${install} == "yes" ]; then
-    echo "First install or repo updates. Running installer/updater..."
-    installupdate
-  else
-    echo "No new updates, skipping installer/updater..."
-  fi
-  cd - || exit
-fi
