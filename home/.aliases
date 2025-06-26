@@ -410,7 +410,8 @@ cd "$1"
 manualstow() {
   homefiles=(
     '.aliases'
-    '.profile*'
+    '.profile'
+    '.profile.${HOSTNAME}'
     '.zshrc'
     '.bashrc'
     '.bash_profile'
