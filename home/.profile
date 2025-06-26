@@ -17,15 +17,12 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export EDITOR='nvim'
 
   export GTK_PATH=/usr/local/lib/gtk-2.0
-  #export PKG_CONFIG_PATH=/usr/local/Cellar/cairo/1.10.2/lib/pkgconfig
   export PATH="./:${HOME}/.local/bin:/usr/local/sbin:${PATH}"
 
   LESSPIPE=$(which src-hilite-lesspipe.sh)
   export LESSOPEN="| ${LESSPIPE} %s"
   export LESS=' -R -X -F '
 
-  #shortcut for manim source
-  . "$HOME/.local/bin/env"
   echo
   cowsay $(fortune -s)
   echo
@@ -34,8 +31,5 @@ else
   export PATH="./:${PATH}"
 fi
 
-# common for all
-#fastfetch --config groups #enable only if presets are correctly installed both macos/linux, else failsafe below
-fastfetch
-#neofetch
-echo
+# hostname specific
+. "${HOME}/.profile.${HOSTNAME}"
