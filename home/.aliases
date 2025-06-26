@@ -445,7 +445,10 @@ manualstow() {
       echo "Backed up $dest to ${dest}.bak"
     fi
     if [ -d "$src" ]; then
-      cp -a "$src" "$dest"
+      # create destination directory if it doesn't exist
+      mkdir -p "$dest"
+      # copy all files and directories recursively
+      cp -a "$src/" "$dest"
       echo "Copied $src to $dest"
     else
       echo "Source directory $src does not exist, skipping."
