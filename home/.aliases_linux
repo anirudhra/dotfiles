@@ -26,8 +26,8 @@ if [ -x "$(command -v fwupdmgr)" ]; then
     alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
     alias checkfw='sudo fwupdmgr get-devices'
 else
-    alias fwupdate=warn "fwupdmgr not found, skipping fwupdate"
-    alias checkfw=warn "fwupdmgr not found, skipping checkfw"
+    alias fwupdate="echo fwupdmgr not found, skipping fwupdate"
+    alias checkfw="echo fwupdmgr not found, skipping checkfw"
 fi
 
 # other linux-only aliases
