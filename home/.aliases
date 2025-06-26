@@ -196,7 +196,7 @@ if [ -x "$(command -v apt-get)" ]; then
       alias godata='cd /mnt/sata-ssd/ssd-data'
       alias gonvme='cd /mnt/nvme-ssd/nvme-data'
       alias godocker='cd /mnt/sata-ssd/ssd-data/dockerapps'
-      alias gopve='cd ${HOME}/dotfiles/pve/pve_lxc_scripts/maintenance'
+      alias gopve='cd ${HOME}/dotfiles/pve/maintenance'
       alias upgrade='fullupdate && fullclean && fwupdate'
     else
       # LXC/VM and SBC shortcuts
