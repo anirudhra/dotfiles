@@ -69,7 +69,10 @@ common_packages=(
 )
 
 pve_packages=(
-  'inxi'
+  #'inxi'
+  'iotop'
+  'atop'
+  'iftop'
   'git'
   'gh'
   'alsa-utils'
