@@ -123,7 +123,7 @@ manualstow() {
   local srcdir="${HOME}/dotfiles/home"
   local destdir="${HOME}"
 
-  cp -a -f "${srcdir}/.*" "${destdir}"
+  cp -f "${srcdir}/.*" "${destdir}"
     
   #for file in "${homefiles[@]}"; do
     #local src="${HOME}/dotfiles/home/${file}"
@@ -143,25 +143,25 @@ manualstow() {
     #fi
   #done
 
-  #for dir in "${homedirs[@]}"; do
-  #  local src="${HOME}/dotfiles/home/${dir}"
-  #  local dest="${HOME}/${dir}"
+  for dir in "${homedirs[@]}"; do
+    local src="${HOME}/dotfiles/home/${dir}"
+    local dest="${HOME}/${dir}"
     
     # TODO: following doesn't work all the time, need to debug
-    #if [ -d "${dest}" ]; then
-    #  cp -a "${dest}" "${dest}.bak"
-    #  info "Backed up ${dest} to ${dest}.bak"
-    #fi
-    #if [ -d "${src}" ]; then
-    #  # create destination directory if it doesn't exist
-      #mkdir -p "${dest}"
-    # # copy all files and directories recursively
-      #cp -a "${src}/" "${dest}/"
-      #info "Copied ${src} to ${dest}"
-    #else
-    #  info "Source directory ${src} does not exist, skipping."
-    #fi
-  #done
+    if [ -d "${dest}" ]; then
+      cp -a "${dest}" "${dest}.bak"
+      info "Backed up ${dest} to ${dest}.bak"
+    fi
+    if [ -d "${src}" ]; then
+      # create destination directory if it doesn't exist
+      mkdir -p "${dest}"
+      # copy all files and directories recursively
+      cp -a "${src}/" "${dest}/"
+      info "Copied ${src} to ${dest}"
+    else
+      info "Source directory ${src} does not exist, skipping."
+    fi
+  done
 }
 
 #create timelapse from set of images in a directory
