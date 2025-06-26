@@ -147,7 +147,32 @@ if [ "${mode}" = "pve" ]; then
     fi
   done
 
-  # TODO: Add /etc config automation for server
+  # Copy all files in /dotfiles/pve/setup/config/pve to host machine's relevant paths
+  echo "Copying PVE config files to host..."
+  CONFIG_SRC="$(dirname "$0")/config/pve"
+  # etc files
+  if [ -d "$CONFIG_SRC/etc" ]; then
+    find "$CONFIG_SRC/etc" -type f | while read -r srcfile; do
+      relpath="${srcfile#$CONFIG_SRC/}" # strip leading config path
+      destfile="/${relpath}"
+      destdir="$(dirname "$destfile")"
+      echo "Copying $srcfile to $destfile"
+      mkdir -p "$destdir"
+      cp -a "$srcfile" "$destfile"
+    done
+  fi
+  # usr/lib files
+  if [ -d "$CONFIG_SRC/usr/lib" ]; then
+    find "$CONFIG_SRC/usr/lib" -type f | while read -r srcfile; do
+      relpath="${srcfile#$CONFIG_SRC/}" # strip leading config path
+      destfile="/${relpath}"
+      destdir="$(dirname "$destfile")"
+      echo "Copying $srcfile to $destfile"
+      mkdir -p "$destdir"
+      cp -a "$srcfile" "$destfile"
+    done
+  fi
+
 # GuestOS-only ops and packages - LXC or VMs
 else
   echo "Installing Guest specific packages..."
@@ -182,7 +207,20 @@ else
       echo "${mount_nfs} -fstype=nfs,rw ${server_ip}:${mount}" >>${client_auto_pveshare}
     fi
   done
-  # TODO: Add /etc config automation for guest
+
+  # Copy all files in /dotfiles/pve/setup/config/lxc to host machine's relevant paths
+  echo "Copying LXC config files to guest..."
+  CONFIG_SRC="$(dirname "$0")/config/lxc"
+  if [ -d "$CONFIG_SRC/etc" ]; then
+    find "$CONFIG_SRC/etc" -type f | while read -r srcfile; do
+      relpath="${srcfile#$CONFIG_SRC/}" # strip leading config path
+      destfile="/${relpath}"
+      destdir="$(dirname "$destfile")"
+      echo "Copying $srcfile to $destfile"
+      mkdir -p "$destdir"
+      cp -a "$srcfile" "$destfile"
+    done
+  fi
 fi
 
 #restart autofs
@@ -210,7 +248,7 @@ else
   # source aliases in shell profile after creating backup
   cp "${shell_profile}" "${shell_profile}.bak"
   echo "${source_aliases}" >>"${shell_profile}"
-  cp ../../home/.aliase "${HOME}/.aliases"
+  cp ../../home/.aliases "${HOME}/.aliases"
 fi
 
 echo
