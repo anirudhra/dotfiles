@@ -32,4 +32,6 @@ else
 fi
 
 # hostname specific
-. "${HOME}/.profile.${HOSTNAME}"
+if [ -e "${HOME}/.profile.${HOSTNAME}" ]; then
+  . "${HOME}/.profile.${HOSTNAME}"
+fi
