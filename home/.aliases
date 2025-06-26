@@ -410,7 +410,7 @@ cd "$1"
 manualstow() {
   homefiles=(
     '.aliases'
-    '.profile'
+    '.profile*'
     '.zshrc'
     '.bashrc'
     '.bash_profile'
@@ -419,7 +419,7 @@ manualstow() {
 
   homedirs=(
     '.vim'
-    '.config/tmux'
+    '.config'
   )
 
   for file in "${homefiles[@]}"; do
@@ -448,7 +448,7 @@ manualstow() {
       # create destination directory if it doesn't exist
       mkdir -p "$dest"
       # copy all files and directories recursively
-      cp -r "$src/" "$dest"
+      cp -a "$src" "$dest"
       echo "Copied $src to $dest"
     else
       echo "Source directory $src does not exist, skipping."
