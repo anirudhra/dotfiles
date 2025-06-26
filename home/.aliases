@@ -214,6 +214,8 @@ cd "$1"
 #   OS specific aliases
 ################################################################################################
 
+debuglog "OS_TYPE: ${OS_TYPE}"
+
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
   debuglog "Linux OS Detected: ${OS_TYPE}"
   source ${HOME}/.aliases_linux 
