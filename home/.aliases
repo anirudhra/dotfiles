@@ -76,12 +76,12 @@ alias c='clear'
 alias dir='ls'
 
 #stow aliases
-if [  -x "$(command -v stow)" ]; then
+if [ -x "$(command -v stow)" ]; then
   alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
   alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
 else
-  alias stow='cp -f ${HOME}/dotfiles/home/.aliases ${HOME}/.aliases'
-  alias restow='cp -f ${HOME}/.aliases ${HOME}/.aliases.bak && cp -f ${HOME}/dotfiles/home/.aliases ${HOME}/.aliases'
+  # call the manual stow function
+  alias restow=manualstow 
 fi
 
 alias path='echo -e ${PATH//:/\\n}'
@@ -398,12 +398,59 @@ mkcd()
     case $# in
     1)
         mkdir -p "$1"
-        cd "$1"
+cd "$1"
         ;;
     *)
         echo "USAGE : mkcd <directory>"
         ;;
     esac
+}
+
+# for machines without gnu stow
+manualstow() {
+  homefiles=(
+    '.aliases'
+    '.profile'
+    '.zshrc'
+    '.bashrc'
+    '.bash_profile'
+    '.vimrc'
+  )
+
+  homedirs=(
+    '.vim'
+    '.config/tmux'
+  )
+
+  for file in "${homefiles[@]}"; do
+    src="${HOME}/dotfiles/home/${file}"
+    dest="${HOME}/${file}"
+    if [ -e "$dest" ]; then
+      cp -f "$dest" "${dest}.bak"
+      echo "Backed up $dest to ${dest}.bak"
+    fi
+    if [ -e "$src" ]; then
+      cp -f "$src" "$dest"
+      echo "Copied $src to $dest"
+    else
+      echo "Source file $src does not exist, skipping."
+    fi
+  done
+
+  for dir in "${homedirs[@]}"; do
+    src="${HOME}/dotfiles/home/${dir}"
+    dest="${HOME}/${dir}"
+    if [ -d "$dest" ]; then
+      cp -a "$dest" "${dest}.bak"
+      echo "Backed up $dest to ${dest}.bak"
+    fi
+    if [ -d "$src" ]; then
+      cp -a "$src" "$dest"
+      echo "Copied $src to $dest"
+    else
+      echo "Source directory $src does not exist, skipping."
+    fi
+  done
 }
 
 #intended to be run on PVE guests only
