@@ -162,7 +162,7 @@ manualstow() {
     #  info "Source directory ${src} does not exist, skipping."
     #fi
   #done
-#}
+}
 
 #create timelapse from set of images in a directory
 timelapse()
