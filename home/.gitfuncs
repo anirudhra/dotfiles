@@ -13,6 +13,8 @@ fi
 # Set the guard variable
 SOURCED_GITFUNCS=1
 
+source ${HOME}/.helperfuncs
+
 debuglog "Git functions sourced"
 
 # Clone a repo if it doesn't exist
@@ -20,15 +22,15 @@ clonerepo() {
   local giturl="$1"
   local gitdir="$2"
   if [ ! -d "$gitdir/.git" ]; then
-    echo "Cloning repo: $giturl -> $gitdir"
+    info "Cloning repo: $giturl -> $gitdir"
     if git clone "$giturl" "$gitdir"; then
       return 0
     else
-      echo "Clone failed!"
+      warn "Clone failed!"
       return 1
     fi
   else
-    echo "Repo exists: $gitdir"
+    info "Repo exists: $gitdir"
     return 1
   fi
 }
@@ -42,16 +44,16 @@ updaterepo() {
     local syncstatus
     syncstatus=$(git pull)
     if [[ "$syncstatus" != "Already up to date." ]]; then
-      echo "Repo updated: $giturl"
+      info "Repo updated: $giturl"
       cd - >/dev/null 2>&1
       return 0
     else
-      echo "No new updates."
+      info "No new updates."
       cd - >/dev/null 2>&1
       return 1
     fi
   else
-    echo "Repo does not exist: $gitdir"
+    warn "Repo does not exist: $gitdir"
     return 1
   fi
 }

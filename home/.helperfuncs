@@ -48,36 +48,36 @@ debuglog "Helper functions sourced"
 #   - "unknown" for other systems
 detect_os_type() {
   if [[ "$(uname)" == "Darwin" ]]; then
-    echo "macos"
-    return "macos"
+    echo "macos" # combination of echo and return used to return strings in functions
+    return
   elif [[ -f /etc/os-release ]]; then
     . /etc/os-release
     case "$ID" in
       debian|ubuntu|linuxmint|pop|elementary|kali|raspbian|zorin)
-        echo "debian"
-        return "debian"
+        echo "debian" # combination of echo and return used to return strings in functions
+        return
         ;;
       fedora|rhel|centos|rocky|almalinux|ol|oracle)
-        echo "fedora"
-        return "fedora"
+        echo "fedora" # combination of echo and return used to return strings in functions
+        return
         ;;
       *)
         # Try ID_LIKE for derivatives
         if [[ "$ID_LIKE" == *debian* ]]; then
-          echo "debian"
-          return "debian"
+          echo "debian" # combination of echo and return used to return strings in functions
+          return
         elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
-          echo "fedora"
-          return "fedora"
+          echo "fedora" # combination of echo and return used to return strings in functions
+          return
         else
-          echo "unknown"
-          return "unknown"
+          echo "unknown" # combination of echo and return used to return strings in functions
+          return
         fi
         ;;
     esac
   else
-    echo "unknown"
-    return "unknown"
+    echo "unknown" # combination of echo and return used to return strings in functions
+    return
   fi
 }
 
@@ -92,23 +92,23 @@ detect_os_type() {
 detect_arch_type() {
   log "Detecting architecture type"
   if [[ "$(uname -m)" == "x86_64" ]]; then
-    echo "x86_64"
-    return "x86_64"
+    echo "x86_64" # combination of echo and return used to return strings in functions
+    return
   elif [[ "$(uname -m)" == "aarch64" ]]; then
-    echo "aarch64"
+    echo "aarch64" # combination of echo and return used to return strings in functions
     return "aarch64"
   elif [[ "$(uname -m)" == "arm64" ]]; then
-    echo "aarch64"
-    return "aarch64"
+    echo "aarch64" # combination of echo and return used to return strings in functions
+    return
   elif [[ "$(uname -m)" == "armv7l" ]]; then
-    echo "armv7l"
-    return "armv7l"
+    echo "armv7l" # combination of echo and return used to return strings in functions
+    return
   elif [[ "$(uname -m)" == "armv7h" ]]; then
-    echo "armv7h"
-    return "armv7h"
+    echo "armv7h" # combination of echo and return used to return strings in functions
+    return
   else
-    echo "unknown"
-    return "unknown"
+    echo "unknown" # combination of echo and return used to return strings in functions
+    return
   fi
 }
 
@@ -121,14 +121,14 @@ detect_shell_type() {
   log "Detecting shell type"
   local shell=""
   if [[ "$SHELL" == "/bin/bash" ]]; then
-    echo "bash"
-    return "bash"
+    echo "bash" # combination of echo and return used to return strings in functions
+    return
   elif [[ "$SHELL" == "/bin/zsh" ]]; then
-    echo "zsh"
-    return "zsh"
+    echo "zsh" # combination of echo and return used to return strings in functions
+    return
   else
-    echo "unknown"
-    return "unknown"
+    echo "unknown" # combination of echo and return used to return strings in functions
+    return
   fi
 }
 
@@ -141,17 +141,17 @@ detect_pve_server() {
   log "Detecting machine type"
   if [ -f /proc/1/environ ]; then
     if [ -x "$(command -v pveversion >/dev/null 2>&1)" ]; then
-        echo "pveserver"
-        return "pveserver" # PVE Server
+        echo "pveserver" # combination of echo and return used to return strings in functions
+        return
     else 
-        echo "pveguest"
-        return "pveguest" #  PVE Guest
+        echo "pveguest" # combination of echo and return used to return strings in functions
+        return
     fi
   elif [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
-    echo "sbc"
-    return "sbc" # SBC
+    echo "sbc" # combination of echo and return used to return strings in functions
+    return
   else
-    echo "client"
-    return "client" # Client
+    echo "client" # combination of echo and return used to return strings in functions
+    return
   fi
 }

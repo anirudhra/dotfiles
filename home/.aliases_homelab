@@ -119,7 +119,7 @@ manualstow() {
     '.vifm'
   )
 
-  for local file in "${homefiles[@]}"; do
+  for file in "${homefiles[@]}"; do
     local src="${HOME}/dotfiles/home/${localfile}"
     local dest="${HOME}/${localfile}"
     if [ -e "${dest}" ]; then
@@ -134,7 +134,7 @@ manualstow() {
     fi
   done
 
-for local dir in "${homedirs[@]}"; do
+for dir in "${homedirs[@]}"; do
     local src="${HOME}/dotfiles/home/${localdir}"
     local dest="${HOME}/${localdir}"
     if [ -d "${dest}" ]; then
