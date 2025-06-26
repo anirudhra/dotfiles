@@ -102,13 +102,15 @@ fi
 # for machines without gnu stow
 manualstow() {
   local homefiles=(
-    '.aliases'
+    '.aliases*'
     '.profile'
     '.profile.${HOSTNAME}'
     '.zshrc'
     '.bashrc'
     '.bash_profile'
     '.vimrc'
+    '.gitfuncs'
+    '.helperfuncs'
   )
 
   local homedirs=(
