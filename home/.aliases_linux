@@ -16,6 +16,7 @@ OS_TYPE=$(detect_os_type)         # this is the OS of the machine running the sc
 MACHINE_TYPE=$(detect_pve_server) # this is the machine type of the machine running the script
 desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 
+debuglog "Machine Type: ${MACHINE_TYPE}"
 debuglog "Linux aliases sourced"
 
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
@@ -29,8 +30,6 @@ else
   alias fwupdate="echo fwupdmgr not found, skipping fwupdate"
   alias checkfw="echo fwupdmgr not found, skipping checkfw"
 fi
-
-debuglog "Machine Type: ${MACHINE_TYPE}"
 
 # other linux-only aliases
 alias booterrors='sudo journalctl  -b 0 -p 3'
