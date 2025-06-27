@@ -123,7 +123,7 @@ manualstow() {
   local srcdir="${HOME}/dotfiles/home"
   local destdir="${HOME}"
 
-  cp -f "${srcdir}/.*" "${destdir}"
+  cp -f "${srcdir}/*" "${destdir}"
     
   #for file in "${homefiles[@]}"; do
     #local src="${HOME}/dotfiles/home/${file}"
