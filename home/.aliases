@@ -17,6 +17,9 @@ SHELL_TYPE=$(detect_shell_type)
 source ${HOME}/.aliases_homelab
 ################################################
 
+alias getdot="git clone --depth 1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
+alias redot="cd ${HOME}/dotfiles && git pull"
+
 ## ls aliases
 ## Colorize the ls output ##
 alias ls='ls --color=auto -FG'
