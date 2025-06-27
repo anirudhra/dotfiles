@@ -3,10 +3,10 @@
 ## useful aliases
 
 # source helpers
-source ${HOME}/.helperfuncs
+source "${HOME}/.helperfuncs"
 
 OS_TYPE=$(detect_os_type)
-SHELL_TYPE=$(detect_shell_type)
+#SHELL_TYPE=$(detect_shell_type)
 
 ################################################################################################
 #   OS agnostic aliases
@@ -14,11 +14,11 @@ SHELL_TYPE=$(detect_shell_type)
 
 ################################################
 # aliases common to all OSes for home computers
-source ${HOME}/.aliases_homelab
+source "${HOME}/.aliases_homelab"
 ################################################
 
 alias getdot="git clone --depth 1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
-alias redot="cd ${HOME}/dotfiles && git pull && restow"
+alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 
 ## ls aliases
 ## Colorize the ls output ##
@@ -171,7 +171,7 @@ alias more='less'
 alias table='column -t -s'
 
 #dumps directory contents to file, usage dir2file <filename>
-alias dir2file="find \"$PWD\" -iname \"*\" >"
+alias dir2file="find \"${PWD}\" -iname \"*\" >"
 
 #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
 alias refresh='watch --interval=3'
@@ -199,7 +199,7 @@ mkcd() {
   case $# in
   1)
     mkdir -p "$1"
-    cd "$1"
+    cd "$1" || return
     ;;
   *)
     info "USAGE : mkcd <directory>"
@@ -215,17 +215,16 @@ mkcd() {
 #   OS specific aliases
 ################################################################################################
 
-debuglog "OS Type: ${OS_TYPE}"
-
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
   debuglog "Linux OS Detected: ${OS_TYPE}"
-  source ${HOME}/.aliases_linux
+  source "${HOME}/.aliases_linux"
 elif [[ "${OS_TYPE}" == "macos" ]]; then
   debuglog "MacOS OS Detected: ${OS_TYPE}"
-  source ${HOME}/.aliases_macos
+  source "${HOME}/.aliases_macos"
+else
+  debuglog "Unknown OS Type: ${OS_TYPE}"
 fi
 
 ################################################################################################
 #   END: OS specific aliases
 ################################################################################################
-

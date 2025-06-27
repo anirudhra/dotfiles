@@ -5,13 +5,13 @@
 
 # Guard variable to ensure sourcing only once
 if [[ -v SOURCED_ALIASES_LINUX_DEBIAN ]]; then
-    return 0 # Exit the script if already sourced
+  return 0 # Exit the script if already sourced
 fi
 
 # Set the guard variable
 SOURCED_ALIASES_LINUX_DEBIAN=1
 
-source ${HOME}/.helperfuncs
+source "${HOME}/.helperfuncs"
 
 MACHINE_TYPE=$(detect_pve_server) # this is the machine type of the machine running the script
 
@@ -24,143 +24,142 @@ alias showinstalled="sudo apt list --installed | less"
 alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && dpkg --list | grep -i -e kernel- -e linux-image"
 
 #Separate out PVE and non-PVE/SBC/Client shortcuts
-if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then  
-    # PVE go shortcuts
-    export MEDIADIR="/mnt/sata-ssd/ssd-media/media"
-    export DATADIR="/mnt/sata-ssd/ssd-data"
-    export NVMEDIR="/mnt/nvme-ssd/nvme-data"
-    export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
-    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
-    alias upgrade='fullupdate && fullclean && fwupdate'
+if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+  # PVE go shortcuts
+  export MEDIADIR="/mnt/sata-ssd/ssd-media/media"
+  export DATADIR="/mnt/sata-ssd/ssd-data"
+  export NVMEDIR="/mnt/nvme-ssd/nvme-data"
+  export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
+  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+  alias upgrade='fullupdate && fullclean && fwupdate'
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
-    # LXC/VM and SBC shortcuts
-    if [ "${HOSTNAME}" == "${SBCHOST}" ]; then # SBC debian
-        export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
-        export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
-        export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
-        export DOCKERDIR="/opt/dockerapps"
-        export PVEDIR="${HOME}/dotfiles/pve/maintenance"
-        alias dockerbackup='sudo tar -zcvf /mnt/nfs/sata-ssd/ssd-data/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
-    else # LXC/VM/Client debian 
-        export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
-        export DATADIR="/mnt/pve-sata-ssd/ssd-data"
-        export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
-        export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
-        export PVEDIR="${HOME}/dotfiles/pve/maintenance"
-        alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}_$(date -I).tar.gz ${DOCKERDIR}'
-    fi 
-    
-    #  Other common non-PVE aliases
-    alias upgrade="fullupdate && fullclean && dockerupdateall"
-    alias dockerup='docker compose up -d'
-    alias dockerdown='docker compose down'
-    alias dockerrestart='docker compose down && docker compose up -d'
-    alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-    alias dockerclean='docker system prune --volumes'
+  # LXC/VM and SBC shortcuts
+  if [ "${HOSTNAME}" == "${SBCHOST}" ]; then # SBC debian
+    export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
+    export DOCKERDIR="/opt/dockerapps"
+    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+    alias dockerbackup='sudo tar -zcvf /mnt/nfs/sata-ssd/ssd-data/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
+  else # LXC/VM/Client debian
+    export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/pve-sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
+    export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
+    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+    alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}_$(date -I).tar.gz ${DOCKERDIR}'
+  fi
 
-    alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
+  #  Other common non-PVE aliases
+  alias upgrade="fullupdate && fullclean && dockerupdateall"
+  alias dockerup='docker compose up -d'
+  alias dockerdown='docker compose down'
+  alias dockerrestart='docker compose down && docker compose up -d'
+  alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+  alias dockerclean='docker system prune --volumes'
 
-    # yocto kernel macros
-    alias bbmenu="bitbake -c menuconfig virtual/kernel"
-    alias bbbuild="bitbake core-image-minimal"
-    alias bbsync="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && git pull && cd meta-qcom && git pull && cd .."
-    alias bbinit="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom"
-    alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
+  alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
+
+  # yocto kernel macros
+  alias bbmenu="bitbake -c menuconfig virtual/kernel"
+  alias bbbuild="bitbake core-image-minimal"
+  alias bbsync="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && git pull && cd meta-qcom && git pull && cd .."
+  alias bbinit="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom"
+  alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
 else
-    # Client only aliases
-    alias upgrade='fullupdate && fullclean && fwupdate'
+  # Client only aliases
+  alias upgrade='fullupdate && fullclean && fwupdate'
 fi
 
 ######## functions ######################
 
 #intended to be run on PVE guests/SBC only
-dockerupdateall()
-{
-    if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
-      if [ -x "$(command -v docker)" ]; then #ensure docker is installed on host 
-        cd ${DOCKERDIR} || exit
-        find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
-        docker image prune -a -f
-        docker system prune --volumes -f
-        cd -
-      fi
+dockerupdateall() {
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+    if [ -x "$(command -v docker)" ]; then #ensure docker is installed on host
+      cd "${DOCKERDIR}" || exit
+      find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
+      docker image prune -a -f
+      docker system prune --volumes -f
+      cd - || return
     fi
+  fi
 }
 
 # this function copies the compiled kernel image and modules archives into "artifacts" directory
 # and creates 3 versions of the kernel image to boot from: sdcard, emmc and USB1/SATA
-# Run this on the host that builds the Linux kernel 
-getkernels(){
-    if [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
-        local DATE=$(date +%Y%m%d)
-        local KERNEL_VER="6.6.9"
+# Run this on the host that builds the Linux kernel
+getkernels() {
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
+    local DATE=$(date +%Y%m%d)
+    local KERNEL_VER="6.6.9"
 
-        local KERNEL_IMG_BUILDNAME="boot-qcom-apq8064-ifc6410-qcom-armv7a.img"
-        local MODULES_TAR_BUILDNAME="modules-qcom-armv7a.tgz"
-        local KERNEL_IMG_BASE="boot-ifc6410-armv7a-${KERNEL_VER}-${DATE}"
-        local MODULES_TAR="modules-ifc6410-armv7a-${KERNEL_VER}-${DATE}.tgz"
-        
-        local KERNEL_IMG_SDA1="${KERNEL_IMG_BASE}-sda1.img"
-        local KERNEL_IMG_SDCARD="${KERNEL_IMG_BASE}-sdcard.img"
-        local KERNEL_IMG_EMMC="${KERNEL_IMG_BASE}-emmc.img"
+    local KERNEL_IMG_BUILDNAME="boot-qcom-apq8064-ifc6410-qcom-armv7a.img"
+    local MODULES_TAR_BUILDNAME="modules-qcom-armv7a.tgz"
+    local KERNEL_IMG_BASE="boot-ifc6410-armv7a-${KERNEL_VER}-${DATE}"
+    local MODULES_TAR="modules-ifc6410-armv7a-${KERNEL_VER}-${DATE}.tgz"
 
-        local BOOTCFG_BASE="bootimg"
-        local BOOTCFG="${BOOTCFG_BASE}.cfg"
-        local BOOTCFG_SDA1="${BOOTCFG_BASE}-sda1.cfg"
-        local BOOTCFG_SDCARD="${BOOTCFG_BASE}-sdcard.cfg"
-        local BOOTCFG_EMMC="${BOOTCFG_BASE}-emmc.cfg"
+    local KERNEL_IMG_SDA1="${KERNEL_IMG_BASE}-sda1.img"
+    local KERNEL_IMG_SDCARD="${KERNEL_IMG_BASE}-sdcard.img"
+    local KERNEL_IMG_EMMC="${KERNEL_IMG_BASE}-emmc.img"
 
-        # packaged kernel and initird
-        local ZIMAGE="zImage"
-        local INITRDIMAGE="initrd.img"
+    local BOOTCFG_BASE="bootimg"
+    local BOOTCFG="${BOOTCFG_BASE}.cfg"
+    local BOOTCFG_SDA1="${BOOTCFG_BASE}-sda1.cfg"
+    local BOOTCFG_SDCARD="${BOOTCFG_BASE}-sdcard.cfg"
+    local BOOTCFG_EMMC="${BOOTCFG_BASE}-emmc.cfg"
 
-        local BUILD_DIR="../tmp/deploy/images/qcom-armv7a"
-        local ARTIFACTS_DIR="artifacts"
-        local KERNEL_CONFIG="../tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
-        local KERNEL_DEFCONFIG="defconfig"
-        local WORKING_DIR="."
+    # packaged kernel and initird
+    local ZIMAGE="zImage"
+    local INITRDIMAGE="initrd.img"
 
-        # create a backup if directory already exists
-        if [ -d "${BUILD_DIR}/${ARTIFACTS_DIR}" ] ; then
-            rm -rf "${BUILD_DIR}/${ARTIFACTS_DIR}_backup"
-            mv -f "${BUILD_DIR}/${ARTIFACTS_DIR}" "${BUILD_DIR}/${ARTIFACTS_DIR}_backup"
-        fi
+    local BUILD_DIR="../tmp/deploy/images/qcom-armv7a"
+    local ARTIFACTS_DIR="artifacts"
+    local KERNEL_CONFIG="../tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
+    local KERNEL_DEFCONFIG="defconfig"
+    local WORKING_DIR="."
 
-        # copy build artifacts
-        mkdir -p "${BUILD_DIR}/${ARTIFACTS_DIR}"
-        cd "${BUILD_DIR}/${ARTIFACTS_DIR}" || exit
-        sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${WORKING_DIR}/"
-        sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${WORKING_DIR}/"
-        sudo cp -f "${KERNEL_CONFIG}" "${WORKING_DIR}/${KERNEL_DEFCONFIG}"
-        info "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
-
-        # fix permisisons
-        #sudo chown -R nobody:nogroup *
-        sudo chown -R nonroot:nonroot *
-        
-        # rename build artifacts with kernel version and timestamp
-        mv -f "${MODULES_TAR_BUILDNAME}" "${MODULES_TAR}"
-        cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDA1}"
-        cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDCARD}"
-        mv -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_EMMC}"
-
-        # extract default built image and cleanup
-        abootimg -x "${KERNEL_IMG_SDA1}"
-        rm -rf "${ZIMAGE}"
-        rm -rf "${INITRDIMAGE}"
-        cp -f "${BOOTCFG}" "${BOOTCFG_SDA1}"
-        cp -f "${BOOTCFG}" "${BOOTCFG_SDCARD}"
-        mv -f "${BOOTCFG}" "${BOOTCFG_EMMC}"
-
-        # replace root partitions in cfg files
-        sed -i 's|root=/dev/sda1|root=/dev/mmcblk0p1|g' ${BOOTCFG_SDCARD}
-        sed -i 's|root=/dev/sda1|root=/dev/mmcblk2p13|g' ${BOOTCFG_EMMC}
-
-        # repackage kernel files with new kernel command line
-        abootimg -u "${KERNEL_IMG_SDCARD}" -f "${BOOTCFG_SDCARD}"
-        abootimg -u "${KERNEL_IMG_EMMC}" -f "${BOOTCFG_EMMC}"
-
-        # done
-        cd .. || exit
+    # create a backup if directory already exists
+    if [ -d "${BUILD_DIR}/${ARTIFACTS_DIR}" ]; then
+      rm -rf "${BUILD_DIR}/${ARTIFACTS_DIR}_backup"
+      mv -f "${BUILD_DIR}/${ARTIFACTS_DIR}" "${BUILD_DIR}/${ARTIFACTS_DIR}_backup"
     fi
+
+    # copy build artifacts
+    mkdir -p "${BUILD_DIR}/${ARTIFACTS_DIR}"
+    cd "${BUILD_DIR}/${ARTIFACTS_DIR}" || exit
+    sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${WORKING_DIR}/"
+    sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${WORKING_DIR}/"
+    sudo cp -f "${KERNEL_CONFIG}" "${WORKING_DIR}/${KERNEL_DEFCONFIG}"
+    info "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
+
+    # fix permisisons
+    #sudo chown -R nobody:nogroup *
+    sudo chown -R nonroot:nonroot *
+
+    # rename build artifacts with kernel version and timestamp
+    mv -f "${MODULES_TAR_BUILDNAME}" "${MODULES_TAR}"
+    cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDA1}"
+    cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDCARD}"
+    mv -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_EMMC}"
+
+    # extract default built image and cleanup
+    abootimg -x "${KERNEL_IMG_SDA1}"
+    rm -rf "${ZIMAGE}"
+    rm -rf "${INITRDIMAGE}"
+    cp -f "${BOOTCFG}" "${BOOTCFG_SDA1}"
+    cp -f "${BOOTCFG}" "${BOOTCFG_SDCARD}"
+    mv -f "${BOOTCFG}" "${BOOTCFG_EMMC}"
+
+    # replace root partitions in cfg files
+    sed -i 's|root=/dev/sda1|root=/dev/mmcblk0p1|g' ${BOOTCFG_SDCARD}
+    sed -i 's|root=/dev/sda1|root=/dev/mmcblk2p13|g' ${BOOTCFG_EMMC}
+
+    # repackage kernel files with new kernel command line
+    abootimg -u "${KERNEL_IMG_SDCARD}" -f "${BOOTCFG_SDCARD}"
+    abootimg -u "${KERNEL_IMG_EMMC}" -f "${BOOTCFG_EMMC}"
+
+    # done
+    cd .. || exit
+  fi
 }

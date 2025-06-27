@@ -20,7 +20,10 @@ fi
 pkg_install_dir="${HOME}/packages/install"
 mkdir -p "${pkg_install_dir}"
 cp -r "${install_dir}/gtk/themes" "${pkg_install_dir}/"
-cd "${pkg_install_dir}/themes" || { echo "Failed to enter themes directory!"; exit 1; }
+cd "${pkg_install_dir}/themes" || {
+  echo "Failed to enter themes directory!"
+  exit 1
+}
 
 # run update.sh script from each directory above where supported, if at least one was sync'd
 echo "Installing GTK UI themes..."
@@ -34,13 +37,3 @@ find . -maxdepth 1 -type d ! -name . | while read -r theme_dir; do
 done
 
 exit 0
-
-# retaining old code for reference
-# Install GTK and Icon themes in the following directory
-#pkg_install_dir="${HOME}/packages/install"
-#mkdir -p "${pkg_install_dir}"
-#cp -r "${install_dir}/gtk/themes" "${pkg_install_dir}/"
-#cd "${pkg_install_dir}/themes" || exit
-# execute install.sh script from each directory above where supported, if at least one was sync'd
-#echo "Installing GTK UI themes"
-#find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && pwd && ./update.sh" \;

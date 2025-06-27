@@ -109,7 +109,7 @@ manualstow() {
     '.aliases_homelab'
     '.aliases_macos'
     '.profile'
-    '.profile.${HOSTNAME}'
+    ".profile.${HOSTNAME}"
     '.zshrc'
     '.bashrc'
     '.bash_profile'
@@ -128,7 +128,6 @@ manualstow() {
     local src="${HOME}/dotfiles/home/${file}"
     local dest="${HOME}/${file}"
 
-    # TODO: following doesn't work all the time, need to debug
     if [ -e "${dest}" ]; then
       cp -f "${dest}" "${dest}.bak"
       info "Backed up ${dest} to ${dest}.bak"
@@ -145,7 +144,6 @@ manualstow() {
     local src="${HOME}/dotfiles/home/${dir}"
     local dest="${HOME}/${dir}"
 
-    # TODO: following doesn't work all the time, need to debug
     if [ -d "${dest}" ]; then
       cp -a "${dest}" "${dest}.bak"
       info "Backed up ${dest} to ${dest}.bak"
