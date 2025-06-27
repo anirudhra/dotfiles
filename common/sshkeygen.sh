@@ -1,4 +1,16 @@
 #!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## generate and copy ssh keys to servers
+
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_SSHKEYGEN ]]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_SSHKEYGEN=1
+
+source "${HOME}/.aliases_hosts"
 
 show_help() {
     echo "Usage: $0 [gen|--generate]"
@@ -13,35 +25,37 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
     exit 0
 fi
 
+SSHKEY_FILE="${HOME}/.ssh/id_rsa"
+
 if [[ "$1" == "gen" || "$1" == "--generate" ]]; then
     # interactive, choose options within
     ssh-keygen -t rsa
 
     # copy over keys to servers: pve, lxc, vm
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.50
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.51
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.55
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.60
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.65
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.70
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.75
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.80
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.95
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.85
-    ssh-copy-id -i ~/.ssh/id_rsa.pub nonroot@10.100.100.85
-    ssh-copy-id -i ~/.ssh/id_rsa.pub root@10.100.100.64
-    ssh-copy-id -i ~/.ssh/id_rsa.pub admin@10.100.100.64
-    ssh-copy-id -p 12372 -i ~/.ssh/id_rsa.pub admin@10.100.100.1
+    ssh-copy-id -p "${ROUTERPORT}" -i "${SSHKEY_FILE}.pub" "${ROUTERUSER}@${ROUTER}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVESERVER}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEVENTOY}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVWG}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEVEGA}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEBLANKA}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEHA}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVESAGAT}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEJF}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEIMM}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHNONROOT}@${PVEUBUNTU}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBC}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBCWIFI}"
+    ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBCETH}"
 fi
 
 # run ssh-agent and add keys
 if [[ "$(uname)" == "Darwin" ]]; then
     # macOS: add key to Apple keychain and also to ssh-agent for CLI
     eval "$(ssh-agent -s)"
-    ssh-add --apple-use-keychain ~/.ssh/id_rsa
+    ssh-add --apple-use-keychain "${SSHKEY_FILE}"
 else
     # Linux and other systems: start agent and add key
     eval "$(ssh-agent -s)"
-    ssh-add ~/.ssh/id_rsa
+    ssh-add "${SSHKEY_FILE}"
 fi
 

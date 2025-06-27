@@ -1,5 +1,7 @@
 #!/bin/bash
+# (c) Anirudh Acharya 2025
 # Place this script in the root home directory of clients
+# intended to be run on PVE server and guests only
 
 fullclean() {
   sudo apt clean
@@ -24,14 +26,14 @@ dockerupdateall() {
   if [ ! -x "$(command -v pveversion)" ]; then #ensure it's not the server
     if [ -x "$(command -v docker)" ]; then     #ensure docker is installed on the client LXC/VM/SBC
       if [ "${HOSTNAME}" == "ifc6410" ] || [ "${HOSTNAME}" == "IFC6410" ]; then
-        cd "/opt/dockerapps" || exit
+        cd "/opt/dockerapps" || exit 1
       else
-        cd "/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}" || exit
+        cd "/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}" || exit 1
       fi
       find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
       docker image prune -a -f
       docker system prune --volumes -f
-      cd -
+      cd - || exit 1
     fi
   fi
 }

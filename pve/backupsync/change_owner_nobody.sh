@@ -8,7 +8,7 @@ echo "the current hierarchy to nobody:nobody. If that was not the intention, pre
 echo "to quit now, else press any other key to continue."
 echo "====================================================================================="
 echo
-read ans #dummy variable
+read ANSWER #dummy variable
 
 sudo chown -R nobody:nobody *
 sudo chmod -R 755 *

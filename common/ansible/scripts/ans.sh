@@ -1,5 +1,6 @@
 #!/bin/bash
 # quick ansible playbook command
+# (c) Anirudh Acharya 2025
 
 if [ $# -ne 1 ]; then
   echo

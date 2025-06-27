@@ -35,7 +35,7 @@ for dir in "${DEST_DIRS[@]}"; do
   # create symlinks for each of the folders
   for item in "${SUBLINKS[@]}"; do
     # Create the symbolic link
-    rm ${dest_dir}/${item}
+    rm "${dest_dir}/${item}"
     ln -s "$(realpath "${TARGET_THEME_DIR}")/${dir}/${item}" "${dest_dir}/${item}"
   done
 done

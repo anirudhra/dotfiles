@@ -5,34 +5,34 @@
 # this script can be run standalone (after installation to update) or as part of the dotfiles setup process
 
 # Ensure the script is run from the dotfiles/linux directory hierarchy
-install_dir="$(pwd)"
-expected_subdir="/dotfiles/linux"
+INSTALL_DIR="$(pwd)"
+EXPECTED_SUBDIR="/dotfiles/linux"
 
-if [[ "$install_dir" != *"$expected_subdir"* ]]; then
+if [[ "$INSTALL_DIR" != *"$EXPECTED_SUBDIR"* ]]; then
   echo "Script invoked from incorrect directory!"
-  echo "The current directory is: $install_dir"
-  echo "Please run this script from a directory within $expected_subdir"
+  echo "The current directory is: $INSTALL_DIR"
+  echo "Please run this script from a directory within $EXPECTED_SUBDIR"
   echo
   exit 1
 fi
 
 # copy the gtk/themes directory to the packages/install directory
-pkg_install_dir="${HOME}/packages/install"
-mkdir -p "${pkg_install_dir}"
-cp -r "${install_dir}/gtk/themes" "${pkg_install_dir}/"
-cd "${pkg_install_dir}/themes" || {
+PKG_INSTALL_DIR="${HOME}/packages/install"
+mkdir -p "${PKG_INSTALL_DIR}"
+cp -r "${INSTALL_DIR}/gtk/themes" "${PKG_INSTALL_DIR}/"
+cd "${PKG_INSTALL_DIR}/themes" || {
   echo "Failed to enter themes directory!"
   exit 1
 }
 
 # run update.sh script from each directory above where supported, if at least one was sync'd
 echo "Installing GTK UI themes..."
-find . -maxdepth 1 -type d ! -name . | while read -r theme_dir; do
-  if [[ -x "$theme_dir/update.sh" ]]; then
-    echo "Updating theme in $theme_dir"
-    (cd "$theme_dir" && ./update.sh)
+find . -maxdepth 1 -type d ! -name . | while read -r THEME_DIR; do
+  if [[ -x "$THEME_DIR/update.sh" ]]; then
+    echo "Updating theme in $THEME_DIR"
+    (cd "$THEME_DIR" && ./update.sh)
   else
-    echo "No update.sh found in $theme_dir, skipping."
+    echo "No update.sh found in $THEME_DIR, skipping."
   fi
 done
 

@@ -3,6 +3,27 @@
 # macOS installer script
 # Run this script as non-root user
 
+source "../home/.helperfuncs"
+OS_TYPE=$(detect_os_type)
+
+# only run this script on macOS
+if [[ "${OS_TYPE}" != "macos" ]]; then
+  err "This script is only supported for macOS"
+  err "Please do not run this script from Linux/Windows etc."
+  err
+  exit 1
+fi
+
+# check if running from the right directory
+INSTALL_DIR=$(pwd)
+if [[ ${INSTALL_DIR} != *"/dotfiles/macos"* ]]; then
+  err "Script invoked from incorrect directory!"
+  err "The current directory is: ${INSTALL_DIR}"
+  err "Please run this script from .../dotfiles/macos directory"
+  err
+  exit 1
+fi
+
 # installs homebrew, oh-my-zsh, powerlevel10k
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 brew install homebrew/cask/brew-cask

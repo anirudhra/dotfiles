@@ -1,0 +1,39 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for Homelab hosts/ssh/etc; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_ALIASES_HOSTS ]]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_HOSTS=1
+
+debuglog "Hosts aliases sourced"
+
+# hosts
+export ROUTER="10.100.100.1"
+export ROUTERPORT="12372"
+
+export PVESERVER="10.100.100.50"
+export PVEVENTOY="10.100.100.51"
+export PVWG="10.100.100.55"
+export PVEVEGA="10.100.100.60"
+export PVEBLANKA="10.100.100.65"
+export PVEHA="10.100.100.70"
+export PVESAGAT="10.100.100.75"
+export PVEJF="10.100.100.80"
+export PVEUBUNTU="10.100.100.85"
+export PVEIMM="10.100.100.95"
+
+export SBC="10.100.100.64"
+export SBCWIFI="10.100.100.66"
+export SBCETH="10.100.100.67"
+export SBCHOST="ifc6410"
+
+export ROUTERUSER="admin"
+export SSHROOT="root"
+export SSHNONROOT="nonroot"
+export SSHTMUX="tmux -2 attach || tmux -2 new"
+export SSHMAC="hmac-sha2-256"

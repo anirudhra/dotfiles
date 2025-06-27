@@ -12,12 +12,99 @@
 # git config --global user.email "email"
 # gh auth login: for browser based git login instead of token
 
+source "../home/.helperfuncs"
+OS_TYPE=$(detect_os_type)
+MACHINE_TYPE=$(detect_machine_type)
+
 ####################################################################################
-# Detect Linux Distribution and update repos
+# Functions
 ####################################################################################
-# . acts as source and is POSIX compliant
-. /etc/os-release
-#echo $PRETTY_NAME $ID #debug
+
+# Function to safely backup and install files
+install_file() {
+  local source_file="$1"
+  local dest_file="$2"
+  local description="$3"
+
+  # Check if source file exists
+  if [[ ! -f "$source_file" ]]; then
+    err "Warning: Source file $source_file does not exist, skipping $description"
+    return 1
+  fi
+
+  # Backup existing file if it exists
+  if [[ -e "$dest_file" ]]; then
+    info "Backing up existing $description: $dest_file"
+    sudo cp -f "$dest_file" "${dest_file}.bak" || {
+      err "Error: Failed to backup $dest_file"
+      return 1
+    }
+  fi
+
+  info "Installing $description: $source_file -> $dest_file"
+  sudo cp -f "$source_file" "$dest_file" || {
+    err "Error: Failed to install $description"
+    return 1
+  }
+
+  info "Successfully installed $description"
+  return 0
+}
+
+# Function to add entry to file if not present
+append_entry_to_file() {
+  local entry="$1"
+  local file="$2"
+  local description="$3"
+
+  if grep -Fq "$entry" "$file" 2>/dev/null; then
+    warn "$description already exists in $file"
+  else
+    info "Adding $description to $file"
+    info "# Adding $description" | sudo tee -a "$file"
+    info "$entry" | sudo tee -a "$file"
+  fi
+}
+
+# Generic function to create repository file
+create_repo_file() {
+  local repo_file="$1"
+  local repo_content="$2"
+  local os_type="$3"
+
+  if [[ ! -e "$repo_file" ]]; then
+    echo "Creating repository file: $repo_file"
+    if [[ "$os_type" == "debian" ]]; then
+      # For Debian/Ubuntu, use add-apt-repository
+      echo "$repo_content" | sudo add-apt-repository -y
+    else
+      # For Fedora/RHEL, create repo file
+      echo -e "$repo_content" | sudo tee "$repo_file" >/dev/null
+    fi
+  else
+    echo "Repository file already exists: $repo_file"
+  fi
+}
+
+# Generic function to backup existing files or directories
+backup_system_items() {
+  local type="$1"
+  local items_array=("${!2}")
+
+  echo "Backing up existing $type items..."
+
+  for item in "${items_array[@]}"; do
+    if [[ "$type" == "file" && -e "$item" ]]; then
+      sudo cp -rf "$item" "${item}.bak"
+      echo "Backed up file: $item"
+    elif [[ "$type" == "dir" && -d "$item" ]]; then
+      sudo mv "$item" "${item}.bak"
+      echo "Backed up directory: $item"
+    fi
+  done
+}
+
+####################################################################################
 
 echo
 echo "===================================================================================="
@@ -25,66 +112,80 @@ echo "Starting automated installer..."
 echo "===================================================================================="
 echo
 
-# check if running from the right directory
-install_dir=$(pwd)
-if [[ ${install_dir} != *"/dotfiles/linux"* ]]; then
-  echo "Script invoked from incorrect directory!"
-  echo "The current directory is: ${install_dir}"
-  echo "Please run this script from .../dotfiles/linux directory"
-  echo
-  exit
+# check if running from the right directory, OS and machine type
+INSTALL_DIR=$(pwd)
+if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
+  err "Script invoked from incorrect directory!"
+  err "The current directory is: ${INSTALL_DIR}"
+  err "Please run this script from .../dotfiles/linux directory"
+  err
+  exit 1
+fi
+
+if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
+  err "This script is only supported for Linux Client machines"
+  err "Please do not run this script from PVE Server/Guest/SBCs"
+  err
+  exit 1
+fi
+
+if [[ ! "${OS_TYPE}" == "fedora" ]] || [[ ! "${OS_TYPE}" == "debian" ]]; then
+  err "This script is only supported for Fedora and Debian based Linux machines"
+  err "Please do not run this script from macOS/FreeBSD/Windows etc."
+  err
+  exit 1
 fi
 
 # get desktop environment
 desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
-Xsessiontype=${XDG_SESSION_TYPE}  #X11, wayland
+#Xsessiontype=${XDG_SESSION_TYPE}  #X11, wayland
 
-#default OS
-install_os="fedora"
-installer="dnf"
-install_options=""
+# get OS info
+INSTALL_OS=${OS_TYPE}
+INSTALLER=""
+INSTALL_OPTIONS=""
 
 # get right timezone and locale/language
 L_TZ="America/Los_Angeles"
 L_LANG="en_US.UTF-8"
 
 TZSET=""
-if [ -f /etc/timezone ]; then
+if [[ -f /etc/timezone ]]; then
   TZSET=$(cat /etc/timezone)
 fi
 # LANG is env. variable
 LANGSET=${LANG}
 
-if [ "${ID}" == "fedora" ]; then
+if [[ "${INSTALL_OS}" == "fedora" ]]; then
   echo "Fedora detected!"
   echo
-  # don't change installer variable, use default, but keep this block for future use
-  install_options="--skip-unavailable" #skip unavailable goes here
+  INSTALLER="dnf"
+  INSTALL_OPTIONS="--skip-unavailable" #skip unavailable goes here
 
   # add repos and keys
-  sudo ${installer} install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
+  sudo ${INSTALLER} install -y https://mirrors.rpmfusion.org/free/fedora/rpmfusion-free-release-"$(rpm -E %fedora)".noarch.rpm https://mirrors.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-"$(rpm -E %fedora)".noarch.rpm
 
   #install plugin manager first
-  sudo ${installer} install dnf-plugins-core
+  sudo ${INSTALLER} install dnf-plugins-core
 
   #microsoft repos
-  vscode_repo_file="/etc/yum.repos.d/vscode.repo"
-  msedge_repo_file="/etc/yum.repos.d/microsoft-edge.repo"
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
+  VSCODE_REPO_FILE="/etc/yum.repos.d/vscode.repo"
+  MSEDGE_REPO_FILE="/etc/yum.repos.d/microsoft-edge.repo"
 
-  if [ ! -e "${msedge_repo_file}" ]; then
-    echo -e "[microsoft-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${msedge_repo_file}" >/dev/null
-  fi
+  # Define repository contents
+  MSEDGE_REPO_CONTENT="[microsoft-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc"
+  VSCODE_REPO_CONTENT="[visualstudio-code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc"
 
-  if [ ! -e "${vscode_repo_file}" ]; then
-    echo -e "[visualstudio-code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee "${vscode_repo_file}" >/dev/null
-  fi
+  # Call the function for both repositories
+  create_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT"
+  create_repo_file "$VSCODE_REPO_FILE" "$VSCODE_REPO_CONTENT"
 
-  sudo ${installer} group upgrade core -y
-  sudo ${installer} update --refresh
+  sudo ${INSTALLER} group upgrade core -y
+  sudo ${INSTALLER} update --refresh
 
 # Debian and derivative distros
-elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmint" ] || [ "${ID}" == "zorin" ]; then
+elif [[ "${INSTALL_OS}" == "debian" ]]; then
   echo "Debian or derivative detected!"
   echo
   echo "Before you run this script, enable non-free and non-free-firmware repos"
@@ -92,44 +193,44 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
   echo
   read -p "===================================================================================="
 
-  install_os="debian"
-  installer="apt"
-  install_options="" #skip unavailable goes here
+  INSTALL_OS="debian"
+  INSTALLER="apt"
+  INSTALL_OPTIONS="" #skip unavailable goes here
 
   # add repos
   sudo add-apt-repository universe -y && sudo add-apt-repository ppa:agornostal/ulauncher -y
+  sudo apt-get install wget gpg
+
+  #install/refresh microsoft repo keys
+  wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
+  sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
+  wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+  rm -f packages.microsoft.gpg
 
   #micrsoft vscode and edge
-  vscode_repo_file="/etc/apt/sources.list.d/vscode.list"
-  msedge_repo_file="/etc/apt/sources.list.d/miscrosoft-edge.list"
+  VSCODE_REPO_FILE="/etc/apt/sources.list.d/vscode.list"
+  MSEDGE_REPO_FILE="/etc/apt/sources.list.d/miscrosoft-edge.list"
 
-  if [ ! -e "${vscode_repo_file}" ]; then
-    # vscode repos
-    sudo apt-get install wget gpg
-    wget -qO- https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor >packages.microsoft.gpg
-    sudo install -D -o root -g root -m 644 packages.microsoft.gpg /etc/apt/keyrings/packages.microsoft.gpg
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main" | sudo tee "${vscode_repo_file}" >/dev/null
-    rm -f packages.microsoft.gpg
-  fi
+  # Define repository contents for Debian
+  VSCODE_REPO_CONTENT="deb [arch=amd64 signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+  MSEDGE_REPO_CONTENT="deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main"
 
-  if [ ! -e "${msedge_repo_file}" ]; then
-    # microsoft edge
-    wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-    sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main" -y
-  fi
+  # Call the function for both repositories (debian type)
+  create_repo_file "$VSCODE_REPO_FILE" "$VSCODE_REPO_CONTENT" "$INSTALL_OS"
+  create_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT" "$INSTALL_OS"
 
   # Configure console font and size, esp. usefull for hidpi displays (select Combined Latin, Terminus, 16x32 for legibility
   # disabled for now, enable this manually if needed
   #echo "Configuring Console..."
   #sudo dpkg-reconfigure console-setup
   # Configure timezone and locale for en/UTF-8
-  if [ ! "${TZSET}" == "${L_TZ}" ]; then
+  if [[ ! "${TZSET}" == "${L_TZ}" ]]; then
     echo "Configuring Timezone..."
     #sudo dpkg-reconfigure tzdata
     sudo timedatectl set-timezone "${L_TZ}" #set automatically
   fi
 
-  if [ ! "${LANGSET}" == "${L_LANG}" ]; then
+  if [[ ! "${LANGSET}" == "${L_LANG}" ]]; then
     echo "Configuring Locales..."
     #sudo dpkg-reconfigure locales
     sudo update-locale LANG=${L_LANG} #set automatically
@@ -137,19 +238,19 @@ elif [ "${ID}" == "debian" ] || [ "${ID}" == "ubuntu" ] || [ "${ID}" == "linuxmi
 
 # unknown OS, exit
 else
-  echo "Unknown OS, cannot proceed; exiting"
-  exit
+  err "Unknown OS, cannot proceed; exiting"
+  exit 1
 fi
 
 # refresh again to be sure
-sudo ${installer} update && sudo ${installer} upgrade
+sudo ${INSTALLER} update && sudo ${INSTALLER} upgrade
 
 ####################################################################################
 # Install packages
 ####################################################################################
 
 # list of core packages
-corepackages=(
+CORE_PACKAGES=(
   'tmux'
   'duf'
   'code'
@@ -205,7 +306,7 @@ corepackages=(
 
 # seperate out core gnome packages
 # need not install on distros w/ xfce/cinnamon
-coregnomepkgs=(
+CORE_GNOME_PKGS=(
   'gparted'
   #'gimp'
   #'menulibre'
@@ -216,10 +317,10 @@ coregnomepkgs=(
 
 # Nerd fonts list to be installed
 # Update to lastest version from: https://github.com/ryanoasis/nerd-fonts
-nerd_font_ver='3.4.0'
+NERD_FONT_VER='3.4.0'
 
 # enable the nerd fonts to be installed
-fonts=(
+NERD_FONTS=(
   #'BitstreamVeraSansMono'
   #'CodeNewRoman'
   #'DroidSansMono'
@@ -241,9 +342,9 @@ fonts=(
 )
 
 # OS specific packages are listed in this block
-if [ "${ID}" == "fedora" ]; then
+if [ "${INSTALL_OS}" == "fedora" ]; then
   # Fedora specific packages
-  ospackages=(
+  OS_PACKAGES=(
     'throttled'
     'fastfetch'
     'lm_sensors'
@@ -266,20 +367,20 @@ if [ "${ID}" == "fedora" ]; then
     'ninja'
   )
 
-  osgnomepkgs=(
+  OS_GNOME_PKGS=(
     'gtk-murrine-engine'
     'gnome-extensions-app'
     'gtk2-engines'
   )
 
-  echo "Fedora installer..."
+  echo "${INSTALL_OS} installer..."
 
   # following conflicts with throttled
-  sudo ${installer} remove thermald -y
-  sudo ${installer} copr enable abn/throttled -y
+  sudo ${INSTALLER} remove thermald -y
+  sudo ${INSTALLER} copr enable abn/throttled -y
 else
   # Debian/Ubuntu specific packages
-  ospackages=(
+  OS_PACKAGES=(
     'apt-transport-https'
     'lm-sensors'
     'neofetch'
@@ -303,26 +404,26 @@ else
     #'apt-listchanges'
   )
 
-  osgnomepkgs=(
+  OS_GNOME_PKGS=(
     'gtk2-engines-murrine'
     'gtk2-engines-pixbuf'
     'chrome-gnome-shell'
     'gnome-shell-extension-prefs'
   )
 
-  echo "Debian installer..."
-  sudo ${installer} remove thermald -y
+  echo "${INSTALL_OS} installer..."
+  sudo ${INSTALLER} remove thermald -y
 
 fi
 
 # install all non-gnome packages
-sudo ${installer} install "${corepackages[@]}" "${install_options}"
-sudo ${installer} install "${ospackages[@]}" "${install_options}"
+sudo ${INSTALLER} install "${CORE_PACKAGES[@]}" "${INSTALL_OPTIONS}"
+sudo ${INSTALLER} install "${OS_PACKAGES[@]}" "${INSTALL_OPTIONS}"
 
 # on gnome, install gnome-only packages
 if [ "${desktopEnv}" == "GNOME" ]; then
-  sudo ${installer} install "${coregnomepkgs[@]}" "${install_options}"
-  sudo ${installer} install "${osgnomepkgs[@]}" "${install_options}"
+  sudo ${INSTALLER} install "${CORE_GNOME_PKGS[@]}" "${INSTALL_OPTIONS}"
+  sudo ${INSTALLER} install "${OS_GNOME_PKGS[@]}" "${INSTALL_OPTIONS}"
 fi
 
 ####################################################################################
@@ -333,121 +434,100 @@ fi
 ####################################################################################
 # Install /etc config files
 ####################################################################################
-source_autofs_share_file="./config/etc/auto.pveshare"
-sys_autofs_share_file="/etc/auto.pveshare"
-source_tlp_file="./config/etc/tlp.conf"
-sys_tlp_file="/etc/tlp.conf"
-source_throttled_file="./config/etc/throttled.conf"
-sys_throttled_file="/etc/throttled.conf"
-nfs_mount_point="/mnt/nfs"
-autofs_master="/etc/auto.master"
+# Configuration file paths
+SOURCE_AUTOFS_SHARE_FILE="./config/etc/auto.pveshare"
+SYS_AUTOFS_SHARE_FILE="/etc/auto.pveshare"
+SOURCE_TLP_FILE="./config/etc/tlp.conf"
+SYS_TLP_FILE="/etc/tlp.conf"
+SOURCE_THROTTLED_FILE="./config/etc/throttled.conf"
+SYS_THROTTLED_FILE="/etc/throttled.conf"
+NFS_MOUNT_POINT="/mnt/nfs"
+AUTOFS_MASTER="/etc/auto.master"
 
-# unalias cp, if it has an alias
-[[ $(type -t cp) == "alias" ]] && unalias cp
+# Define arrays for backup
+system_files_to_backup=(
+  "$SYS_AUTOFS_SHARE_FILE"
+  "$SYS_TLP_FILE"
+  "$SYS_THROTTLED_FILE"
+)
 
-# install autofs pve share file
-if [ -e "${sys_autofs_share_file}" ]; then
-  echo "${sys_autofs_share_file} /etc config file exists, creating backup!"
-  # command \\cp should use the unaliased version of cp (command is \cp, with \ for escape),
-  # else cp is usually aliases to cp -i and below will fail
-  # else force run "unalias cp" command as above
-  #sudo \\cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
-  sudo cp -rf ${sys_autofs_share_file} "${sys_autofs_share_file}.bak"
-fi
+# Backup existing system configuration files
+backup_system_items "file" system_files_to_backup[@]
 
-echo "Installing /etc config file: ${source_autofs_share_file} to ${sys_autofs_share_file}"
-#sudo \\cp -rf ${source_autofs_share_file} ${sys_autofs_share_file}
-sudo cp -rf ${source_autofs_share_file} ${sys_autofs_share_file}
-sudo mkdir -p ${nfs_mount_point}
-sudo chmod 777 ${nfs_mount_point}
+# Create NFS mount point with proper permissions
+echo "Creating NFS mount point: $NFS_MOUNT_POINT"
+sudo mkdir -p "$NFS_MOUNT_POINT" || {
+  err "Error: Failed to create NFS mount point"
+  exit 1
+}
+sudo chmod 755 "$NFS_MOUNT_POINT" || {
+  err "Error: Failed to set NFS mount point permissions"
+  exit 1
+}
 
-# add auto mount pve to auto.master file
-if grep -wq "/- ${sys_autofs_share_file}" "${autofs_master}"; then
-  echo "${autofs_master} already has PVE share NFS entry, restart autofs service if server isn't mounted"
-else
-  echo "Appending PVE entry to ${autofs_master} file"
-  echo "# Adding PVE server NFS entry mount" | sudo tee -a ${autofs_master}
-  echo "/- ${sys_autofs_share_file}" | sudo tee -a ${autofs_master}
-fi
+# Add auto mount PVE to auto.master file
+append_entry_to_file "/- $SYS_AUTOFS_SHARE_FILE" "$AUTOFS_MASTER" "PVE server NFS entry mount"
 
-# install tlp config file
-if [ -e "${sys_tlp_file}" ]; then
-  echo "${sys_tlp_file} /etc config file exists, creating backup"
-  #sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
-  sudo cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
-fi
-echo "Installing /etc config file: ${source_tlp_file} to ${sys_tlp_file}"
-#sudo \\cp -rf ${source_tlp_file} ${sys_tlp_file}
-sudo cp -rf ${source_tlp_file} ${sys_tlp_file}
+# Install autofs PVE share file
+install_file "$SOURCE_AUTOFS_SHARE_FILE" "$SYS_AUTOFS_SHARE_FILE" "AutoFS share configuration"
 
-# install throttled and UV config file
-if [ -e "${sys_throttled_file}" ]; then
-  echo "${sys_throttled_file} /etc config file exists, creating backup"
-  #sudo \\cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
-  sudo cp -rf ${sys_tlp_file} "${sys_tlp_file}.bak"
-fi
-echo "Installing /etc config file: ${source_throttled_file} to ${sys_throttled_file}"
-#sudo \\cp -rf ${source_throttled_file} ${sys_throttled_file}
-sudo cp -rf ${source_throttled_file} ${sys_throttled_file}
+# Install TLP config file
+install_file "$SOURCE_TLP_FILE" "$SYS_TLP_FILE" "TLP configuration"
+
+# Install throttled config file
+install_file "$SOURCE_THROTTLED_FILE" "$SYS_THROTTLED_FILE" "Throttled configuration"
 
 ####################################################################################
 # Install UI/Customizations
 ####################################################################################
 
-echo "Current directory: ${install_dir}"
-# Install GTK and Icon themes in the following directory
-pkg_install_dir="${HOME}/packages/install"
-mkdir -p "${pkg_install_dir}"
+echo "Current directory: ${INSTALL_DIR}"
 
 # Replace audio alert file
-audio_alert_file="/usr/share/sounds/gnome/default/alerts/hum.ogg"
-audio_alert_bak_file="/usr/share/sounds/gnome/default/alerts/hum_og.ogg"
-audio_alert_source_file="./gtk/sounds/hum.ogg"
+AUDIO_ALERT_FILE="/usr/share/sounds/gnome/default/alerts/hum.ogg"
+AUDIO_ALERT_SOURCE_FILE="./gtk/sounds/hum.ogg"
 
-if [ ! -e ${audio_alert_bak_file} ]; then
-  echo "Installing audio alert file replacement"
-  echo
-  sudo cp ${audio_alert_file} ${audio_alert_bak_file}
-  sudo cp ${audio_alert_source_file} ${audio_alert_file}
-fi
+# Install audio alert file replacement
+install_file "$AUDIO_ALERT_SOURCE_FILE" "$AUDIO_ALERT_FILE" "Installing audio alert replacement"
 
-cd "${pkg_install_dir}" || exit
+# Install GTK and Icon themes in the following directory
+PKG_INSTALL_DIR="${HOME}/packages/install"
+mkdir -p "${PKG_INSTALL_DIR}"
+cd "${PKG_INSTALL_DIR}" || exit 1
 
 # for debian and derivatives, also sync throttled repo for manual install
-if [ ! -d "throttled" ] && [ "${install_os}" == "debian" ]; then
+if [[ ! -d "${PKG_INSTALL_DIR}/throttled" ]] && [[ "${INSTALL_OS}" == "debian" ]]; then
   git clone https://github.com/erpalma/throttled.git
-  sudo /bin/bash ./throttled/install.sh
+  sudo /bin/bash "${PKG_INSTALL_DIR}/throttled/install.sh"
 fi
 
 # Install Nerd fonts, cleanup and update font cache
-source_nerd_font_dir="./nerd_font_install"
-mkdir -p "${source_nerd_font_dir}"
-cd "${source_nerd_font_dir}" || exit
+SOURCE_NERD_FONT_DIR="./nerd_font_install"
+mkdir -p "${SOURCE_NERD_FONT_DIR}"
+cd "${SOURCE_NERD_FONT_DIR}" || exit 1
 
-fonts_dir="${HOME}/.local/share/fonts"
-if [[ ! -d "${fonts_dir}" ]]; then
-  mkdir -p "${fonts_dir}"
-fi
+FONTS_DIR="${HOME}/.local/share/fonts"
+mkdir -p "${FONTS_DIR}"
 
 #array defined at the top of the file, change list and version there
-for font in "${fonts[@]}"; do
-  zip_file="${font}.zip"
-  download_url="https://github.com/ryanoasis/nerd-fonts/releases/download/v${nerd_font_ver}/${zip_file}"
-  echo "Downloading ${download_url}"
-  wget "${download_url}"
-  unzip -o "${zip_file}" -d "${fonts_dir}"
-  rm "${zip_file}"
+for font in "${NERD_FONTS[@]}"; do
+  ZIP_FILE="${font}.zip"
+  DOWNLOAD_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v${NERD_FONT_VER}/${ZIP_FILE}"
+  echo "Downloading ${DOWNLOAD_URL}"
+  wget "${DOWNLOAD_URL}"
+  unzip -o "${ZIP_FILE}" -d "${FONTS_DIR}"
+  rm "${ZIP_FILE}"
 done
-find "${fonts_dir}" -name '*Windows Compatible*' -delete
+find "${FONTS_DIR}" -name '*Windows Compatible*' -delete
 fc-cache -fv
 
 ## install gtk themes
 echo "Installing GTK themes..."
 # change back to original installation directory
-cd "${install_dir}" || exit
+cd "${INSTALL_DIR}" || exit 1
 /bin/bash ./gtk/gtkthemes.sh
 
-if [ "${desktopEnv}" == "GNOME" ]; then
+if [[ "${desktopEnv}" == "GNOME" ]]; then
   # set GTK and icon themes
   echo "Setting GTK and Icon themes..."
   gsettings set org.gnome.desktop.interface gtk-theme "'Orchis-Dark-Compact'"
@@ -474,7 +554,7 @@ if [ "${desktopEnv}" == "GNOME" ]; then
 fi
 
 # change back to original installation directory
-cd "${install_dir}" || exit
+cd "${INSTALL_DIR}" || exit 1
 
 ####################################################################################
 # Enable various services
@@ -491,7 +571,7 @@ sudo systemctl start autofs
 
 # only on fedora. on debian and derivatives, this happens
 # as part of manual installation/script
-if [ "${ID}" == "fedora" ]; then
+if [[ "${INSTALL_OS}" == "fedora" ]]; then
   sudo systemctl enable throttled
   sudo systemctl start throttled
 fi
@@ -512,7 +592,7 @@ chsh -s "$(which zsh)"
 echo
 echo "==========================================================================================="
 echo
-if [ "${desktopEnv}" == "GNOME" ]; then
+if [[ "${desktopEnv}" == "GNOME" ]]; then
   echo "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
   echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
   echo "Removable Drive Menu, OpenBar, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
@@ -526,7 +606,7 @@ fi
 #echo
 echo "Manually set Nerd Font in: Terminal, Gnome Tweaks (if GNOME DE) and VSCode etc."
 echo
-echo "UI customizations have been cloned in ${pkg_install_dir}, for future git pulls and "
+echo "UI customizations have been cloned in ${PKG_INSTALL_DIR}, for future git pulls and "
 echo "updates or can be manually removed to save space."
 echo
 echo "==========================================================================================="
@@ -535,21 +615,22 @@ echo
 ####################################################################################
 # ZSH and customizations
 ####################################################################################
-ohmyzshinstallurl="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
 echo "==========================================================================================="
 echo "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script."
 echo "Before running the post-installer script, install oh-my-zsh manually from: https://ohmyz.sh/"
-if [ "${install_os}" == "debian" ]; then
+if [[ "${INSTALL_OS}" == "debian" ]]; then
   echo
   echo "Install 'throttled' manually (https://github.com/erpalma/throttled) for Debian and derivatives"
-  echo "Repo has been sync'd in ${pkg_install_dir}. Run \"sudo ./throttled/install.sh\" from this directory"
+  echo "Repo has been sync'd in ${PKG_INSTALL_DIR}. Run \"sudo ./throttled/install.sh\" from this directory"
   echo
 fi
 echo "==========================================================================================="
+
+# installing oh-my-zsh will exit this script, needs to debugged
+#ohmyzshinstallurl="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 #sh -c "$(curl -fsSL ${ohmyzshinstallurl})"
 
-# installing oh-my-zsh will exit this script, so keep it as the last item to be installed
 ####################################################################################
 # END of script
 ####################################################################################

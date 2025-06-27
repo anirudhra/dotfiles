@@ -12,37 +12,13 @@ SOURCED_ALIASES_HOMELAB=1
 
 debuglog "Homelab aliases sourced"
 
-# hosts
-export SBCHOST="ifc6410"
-export ROUTER="10.100.100.1"
-export ROUTERPORT="12372"
-
-export PVESERVER="10.100.100.50"
-export PVEVENTOY="10.100.100.51"
-export PVWG="10.100.100.55"
-export PVEVEGA="10.100.100.60"
-export PVEBLANKA="10.100.100.65"
-export PVEHA="10.100.100.70"
-export PVESAGAT="10.100.100.75"
-export PVEJF="10.100.100.80"
-export PVEUBUNTU="10.100.100.85"
-export PVEIMM="10.100.100.95"
-
-export SBC="10.100.100.64"
-export SBCWIFI="10.100.100.66"
-export SBCETH="10.100.100.67"
-
-export ROUTERUSER="admin"
-export SSHROOT="root"
-export SSHNONROOT="nonroot"
-export SSHTMUX="tmux -2 attach || tmux -2 new"
-export SSHMAC="hmac-sha2-256"
+source "${HOME}/.aliases_hosts"
 
 # ssh aliases
+alias sshrouter='ssh ${ROUTERUSER}@${ROUTER} -p ${ROUTERPORT} -t "${SSHTMUX}"'
+
 alias sshpve='ssh -o MACs=${SSHMAC} ${SSHROOT}@${PVESERVER} -t "${SSHTMUX}"'
 alias sshserver='ssh -o MACs=${SSHMAC} ${SSHROOT}@${PVESERVER}' #non-tmux version
-
-alias sshrouter='ssh ${ROUTERUSER}@${ROUTER} -p ${ROUTERPORT} -t "${SSHTMUX}"'
 
 alias sshsbcwifi='ssh ${SSHROOT}@${SBCWIFI} -t "${SSHTMUX}"'
 alias sshsbceth='ssh ${SSHROOT}@${SBCETH} -t "${SSHTMUX}"'
