@@ -102,7 +102,12 @@ fi
 # for machines without gnu stow
 manualstow() {
   local homefiles=(
-    '.aliases*'
+    '.aliases'
+    '.aliases_linux'
+    '.aliases_linux_debian'
+    '.aliases_linux_fedora'
+    '.aliases_homelab'
+    '.aliases_macos'
     '.profile'
     '.profile.${HOSTNAME}'
     '.zshrc'
@@ -118,30 +123,24 @@ manualstow() {
     '.config'
     '.vifm'
   )
-
-  # TODO: force copy all files and directories recursively for now
-  local srcdir="${HOME}/dotfiles/home"
-  local destdir="${HOME}"
-
-  cp -f "${srcdir}/*" "${destdir}"
     
-  #for file in "${homefiles[@]}"; do
-    #local src="${HOME}/dotfiles/home/${file}"
-    #local dest="${HOME}/${file}"
-    #local dest="${HOME}"
+  for file in "${homefiles[@]}"; do
+    local src="${HOME}/dotfiles/home/${file}"
+    local dest="${HOME}/${file}"
+    local dest="${HOME}"
     
     # TODO: following doesn't work all the time, need to debug
-    #if [ -e "${dest}" ]; then
-    #  cp -f "${dest}" "${dest}.bak"
-    #  info "Backed up ${dest} to ${dest}.bak"
-    #fi
-    #if [ -e "${src}" ]; then
-    #  cp -f "${src}" "${dest}"
-    #  info "Copied ${src} to ${dest}"
-    #else
-    #  info "Source file ${src} does not exist, skipping."
-    #fi
-  #done
+    if [ -e "${dest}" ]; then
+      cp -f "${dest}" "${dest}.bak"
+      info "Backed up ${dest} to ${dest}.bak"
+    fi
+    if [ -e "${src}" ]; then
+      cp -f "${src}" "${dest}"
+      info "Copied ${src} to ${dest}"
+    else
+      info "Source file ${src} does not exist, skipping."
+    fi
+  done
 
   for dir in "${homedirs[@]}"; do
     local src="${HOME}/dotfiles/home/${dir}"
