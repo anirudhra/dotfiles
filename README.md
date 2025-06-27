@@ -5,9 +5,15 @@ Repo for dotfiles and other configs and installation scripts (macOS and Linux - 
 * linux and macos directories contain other specific OS files and scripts
 * pve directory contains installation and maintenance scripts for PVE server and guest OS, migrated from: https://github.com/anirudhra/pve_server
 * sbc directory scripts for single board computer, installation for debian and arch distros
+* common directory contains ansible and other general scripts
 
 ## How to
-Clone this repo and change directory to .../dotfiles/linux and run linux_install.sh and linux_post_install.sh for Linux (Fedora/Debian/Ubuntu) or .../dotfiles/mac/macos_install.sh and macos_post_install.sh for macOS in that order
+Clone this repo and:
+
+* For Linux (Debian/Fedora and derivatives)
+** change directory to .../dotfiles/linux and run linux_install.sh and linux_post_install.sh in order
+* For macOS
+** change directory to .../dotfiles/mac and run macos_install.sh and macos_post_install.sh in order
 
 ## Client Linux
 
@@ -55,7 +61,6 @@ git clone https://github.com/anirudhra/dotfiles
 cd $HOME/dotfiles/pve/setup
 ./install.sh
 ```
-
 
 ## tmux config (on remote machines)
 
