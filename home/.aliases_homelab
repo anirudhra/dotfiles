@@ -127,7 +127,6 @@ manualstow() {
   for file in "${homefiles[@]}"; do
     local src="${HOME}/dotfiles/home/${file}"
     local dest="${HOME}/${file}"
-    local dest="${HOME}"
     
     # TODO: following doesn't work all the time, need to debug
     if [ -e "${dest}" ]; then
