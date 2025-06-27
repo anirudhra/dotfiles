@@ -18,7 +18,7 @@ source ${HOME}/.aliases_homelab
 ################################################
 
 alias getdot="git clone --depth 1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
-alias redot="cd ${HOME}/dotfiles && git pull"
+alias redot="cd ${HOME}/dotfiles && git pull && restow"
 
 ## ls aliases
 ## Colorize the ls output ##
