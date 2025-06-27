@@ -71,7 +71,7 @@ if [ -x "$(command -v stow)" ]; then
 else
   # call the manual stow function
   alias restow=manualstow
-  alias dotstow='cp -f "${HOME}/dotfiles/home/.*" "${HOME}"'
+  alias dotstow='cp -f "${HOME}/dotfiles/home"/.* "${HOME}"'
 fi
 
 ######## functions ######################
