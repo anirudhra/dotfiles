@@ -138,7 +138,10 @@ detect_shell_type() {
 #   - "client" for Client
 detect_pve_server() {
   #debuglog "Detecting machine type"
-  if [ -f /proc/1/environ ]; then
+  if [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
+    #debuglog "Detected SBC"
+    echo "sbc" # combination of echo and return used to return strings in functions
+  elif [ -f /proc/1/environ ]; then
     if [ -x "$(command -v pveversion >/dev/null 2>&1)" ]; then
         #debuglog "Detected PVE server"
         echo "pveserver" # combination of echo and return used to return strings in functions
@@ -152,9 +155,6 @@ detect_pve_server() {
     else
       echo "unknown linux" # combination of echo and return used to return strings in functions
     fi
-  elif [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
-    #debuglog "Detected SBC"
-    echo "sbc" # combination of echo and return used to return strings in functions
   else
     #debuglog "Detected client"
     echo "unknown" # combination of echo and return used to return strings in functions
