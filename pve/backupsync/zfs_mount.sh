@@ -1,21 +1,25 @@
 #!/bin/sh
 #
 # (c) Anirudh Acharya 2024
-# script to mount usb zfs pool
-#
+# Script to mount USB ZFS pool
 
-zfspool="pvebackup"
-mountpoint="zfsdata"
-# uncomment -f version if pool fails to mount, else use non-f version
-# zpool import ${zfspool} -f
-zpool import ${zfspool}
+set -e
 
-mkdir -p /${mountpoint}
+zfspool="${1:-pvebackup}"
+mountpoint="${2:-zfsdata}"
 
-# following command may not be needed all the time, but just in case
-zfs set mountpoint=/${mountpoint} ${zfspool}/${mountpoint}
+if zpool list "$zfspool" >/dev/null 2>&1; then
+    echo "ZFS pool '$zfspool' is already imported."
+else
+    echo "Importing ZFS pool '$zfspool'..."
+    # Uncomment the -f version if pool fails to import normally
+    # zpool import -f "$zfspool"
+    zpool import "$zfspool"
+fi
 
-#zpool status -v
-zpool status
-#zfs list -v
-zfs list
+mkdir -p "/$mountpoint"
+
+# Set mountpoint (may not be needed every time, but included for safety)
+zfs set mountpoint="/$mountpoint" "$zfspool/$mountpoint"
+
+zpool

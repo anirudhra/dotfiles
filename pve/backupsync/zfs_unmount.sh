@@ -1,15 +1,20 @@
 #!/bin/sh
 # (c) Anirudh Acharya 2024
-# unmounts hdpool filesystem - first step (does not remove the pool)
-#
+# Unmounts ZFS filesystem and exports the pool for safe USB removal.
 
-zfspool="pvebackup"
+set -e
 
-zfs umount /${zfspool}
-# exports the zpool to make it safe to USB disconnect after unmount
-zpool export ${zfspool}
+zfspool="${1:-pvebackup}"
 
-#zpool status -v
-#zfs list -v
+if ! zpool list "$zfspool" >/dev/null 2>&1; then
+    echo "ZFS pool '$zfspool' does not exist."
+    exit 1
+fi
+
+echo "This will unmount and export the ZFS pool '$zfspool'."
+read -r -p "Press Enter to continue or Ctrl+C to abort..."
+
+zfs umount "/$zfspool"
+zpool export "$zfspool"
+
 zpool status
-zfs list
