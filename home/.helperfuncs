@@ -142,10 +142,10 @@ detect_pve_server() {
     #debuglog "Detected SBC"
     echo "sbc" # combination of echo and return used to return strings in functions
   elif [ -f /proc/1/environ ]; then
-    if [ -x "$(command -v pveversion >/dev/null 2>&1)" ]; then
+    if [ -x "$(command -v pveversion)" ]; then
         #debuglog "Detected PVE server"
         echo "pveserver" # combination of echo and return used to return strings in functions
-    elif [ -x "$(command -v systemd-detect-virt 2>&1)" ]; then
+    elif [ -x "$(command -v systemd-detect-virt)" ]; then
         #debuglog "Detected PVE guest"
         if [[ $(/usr/bin/systemd-detect-virt) == "none" ]]; then
           echo "client" # combination of echo and return used to return strings in functions
