@@ -29,10 +29,10 @@ alias ll='ls -la --color | less -R'
 alias ll.='ls -l -d -FG --color=auto .* | less'
 alias ls.='ls -d -FG --color=auto .*'
 
-alias l='ls -lFh'     #size,show type,human readable
-alias la='ls -lAFh'   #long list,show almost all,show type,human readable
-alias lr='ls -tRFh'   #sorted by date,recursive,show type,human readable
-alias lt='ls -ltFh'   #long list,sorted by date,show type,human readable
+alias l='ls -lFh'   #size,show type,human readable
+alias la='ls -lAFh' #long list,show almost all,show type,human readable
+alias lr='ls -tRFh' #sorted by date,recursive,show type,human readable
+alias lt='ls -ltFh' #long list,sorted by date,show type,human readable
 alias ldot='ls -ld .*'
 alias lS='ls -1FSsh'
 alias lart='ls -1Fcart'
@@ -151,8 +151,7 @@ alias pager="${PAGER}"
 alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less -R {} \;"
 
 # Tree
-if [ ! -x "$(which tree 2>/dev/null)" ]
-then
+if [ ! -x "$(which tree 2>/dev/null)" ]; then
   alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
 fi
 
@@ -172,7 +171,7 @@ alias more='less'
 alias table='column -t -s'
 
 #dumps directory contents to file, usage dir2file <filename>
-alias dir2file="find \"$PWD\" -iname \"*\" >" 
+alias dir2file="find \"$PWD\" -iname \"*\" >"
 
 #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
 alias refresh='watch --interval=3'
@@ -196,17 +195,16 @@ fi
 
 ######## functions ######################
 
-mkcd()
-{
-    case $# in
-    1)
-        mkdir -p "$1"
-cd "$1"
-        ;;
-    *)
-        info "USAGE : mkcd <directory>"
-        ;;
-    esac
+mkcd() {
+  case $# in
+  1)
+    mkdir -p "$1"
+    cd "$1"
+    ;;
+  *)
+    info "USAGE : mkcd <directory>"
+    ;;
+  esac
 }
 
 ################################################################################################
@@ -217,11 +215,11 @@ cd "$1"
 #   OS specific aliases
 ################################################################################################
 
-debuglog "OS_TYPE: ${OS_TYPE}"
+debuglog "OS Type: ${OS_TYPE}"
 
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
   debuglog "Linux OS Detected: ${OS_TYPE}"
-  source ${HOME}/.aliases_linux 
+  source ${HOME}/.aliases_linux
 elif [[ "${OS_TYPE}" == "macos" ]]; then
   debuglog "MacOS OS Detected: ${OS_TYPE}"
   source ${HOME}/.aliases_macos
@@ -230,3 +228,4 @@ fi
 ################################################################################################
 #   END: OS specific aliases
 ################################################################################################
+
