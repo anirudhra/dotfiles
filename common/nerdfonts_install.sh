@@ -10,37 +10,37 @@ echo "[-] Download Nerd Fonts [-]"
 echo "############################"
 echo
 echo "Select Nerd Font to install:"
-nerdfonts_list=("Agave" "AnonymousPro" "Arimo" "AurulentSansMono" "BigBlueTerminal" "BitstreamVeraSansMono" "CascadiaCode" "CodeNewRoman" "ComicShannsMono" "Cousine" "DaddyTimeMono" "DejaVuSansMono" "FantasqueSansMono" "FiraCode" "FiraMono" "Gohu" "Go-Mono" "Hack" "Hasklig" "HeavyData" "Hermit" "iA-Writer" "IBMPlexMono" "InconsolataGo" "InconsolataLGC" "Inconsolata" "IosevkaTerm" "JetBrainsMono" "Lekton" "LiberationMono" "Lilex" "Meslo" "Monofur" "Monoid" "Mononoki" "MPlus" "NerdFontsSymbolsOnly" "Noto" "OpenDyslexic" "Overpass" "ProFont" "ProggyClean" "RobotoMono" "ShareTechMono" "SourceCodePro" "SpaceMono" "Terminus" "Tinos" "UbuntuMono" "Ubuntu" "VictorMono")
 
+NERDFONTS_LIST=("Agave" "AnonymousPro" "Arimo" "AurulentSansMono" "BigBlueTerminal" "BitstreamVeraSansMono" "CascadiaCode" "CodeNewRoman" "ComicShannsMono" "Cousine" "DaddyTimeMono" "DejaVuSansMono" "FantasqueSansMono" "FiraCode" "FiraMono" "Gohu" "Go-Mono" "Hack" "Hasklig" "HeavyData" "Hermit" "iA-Writer" "IBMPlexMono" "InconsolataGo" "InconsolataLGC" "Inconsolata" "IosevkaTerm" "JetBrainsMono" "Lekton" "LiberationMono" "Lilex" "Meslo" "Monofur" "Monoid" "Mononoki" "MPlus" "NerdFontsSymbolsOnly" "Noto" "OpenDyslexic" "Overpass" "ProFont" "ProggyClean" "RobotoMono" "ShareTechMono" "SourceCodePro" "SpaceMono" "Terminus" "Tinos" "UbuntuMono" "Ubuntu" "VictorMono")
 echo
 echo
 PS3="Enter a number: "
 
-select font_name in "${nerdfonts_list[@]}" "Quit"; do
+select FONT_NAME in "${NERDFONTS_LIST[@]}" "Quit"; do
 
-  if [ -n "${font_name}" ]; then
+  if [ -n "${FONT_NAME}" ]; then
 
-    echo "Starting ${font_name} Nerd Font download..."
+    echo "Starting ${FONT_NAME} Nerd Font download..."
 
     if [ "$(command -v curl)" ]; then
-      echo "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${font_name}.zip"
-      curl -OL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${font_name}.zip"
+      echo "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${FONT_NAME}.zip"
+      curl -OL "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${FONT_NAME}.zip"
       echo "creating fonts folder: ${HOME}/.fonts"
-      mkdir -p "$HOME/.fonts"
-      echo "unzip the ${font_name}.zip"
-      unzip "${font_name}.zip" -d "$HOME/.fonts/${font_name}/"
+      mkdir -p "${HOME}/.fonts"
+      echo "unzip the ${FONT_NAME}.zip"
+      unzip "${FONT_NAME}.zip" -d "${HOME}/.fonts/${FONT_NAME}/"
       fc-cache -fv
       echo "done!"
-      rm -f "${font_name}.zip"
+      rm -f "${FONT_NAME}.zip"
       break
 
     elif [ "$(command -v wget)" ]; then
-      echo "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${font_name}.zip"
-      wget "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${font_name}.zip"
+      echo "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${FONT_NAME}.zip"
+      wget "https://github.com/ryanoasis/nerd-fonts/releases/latest/download/${FONT_NAME}.zip"
       echo "creating fonts folder: ${HOME}/.fonts"
-      mkdir -p "$HOME/.fonts"
-      echo "unzip the ${font_name}.zip"
-      unzip "${font_name}.zip" -d "$HOME/.fonts/${font_name}/"
+      mkdir -p "${HOME}/.fonts"
+      echo "unzip the ${FONT_NAME}.zip"
+      unzip "${FONT_NAME}.zip" -d "${HOME}/.fonts/${FONT_NAME}/"
       fc-cache -fv
       echo "done!"
       break
@@ -50,7 +50,7 @@ select font_name in "${nerdfonts_list[@]}" "Quit"; do
       break
     fi
   else
-    echo "Select a vaild ${font_name} Nerd Font with the number in front of it."
+    echo "Select a vaild ${FONT_NAME} Nerd Font with the number in front of it."
     continue
   fi
 done
