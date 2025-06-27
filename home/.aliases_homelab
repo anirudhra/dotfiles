@@ -15,43 +15,43 @@ debuglog "Homelab aliases sourced"
 source "${HOME}/.aliases_hosts"
 
 # ssh aliases
-alias sshrouter='ssh ${ROUTERUSER}@${ROUTER} -p ${ROUTERPORT} -t "${SSHTMUX}"'
+alias sshrouter='ssh "${ROUTERUSER}@${ROUTER}" -p "${ROUTERPORT}" -t "${SSHTMUX}"'
 
-alias sshpve='ssh -o MACs=${SSHMAC} ${SSHROOT}@${PVESERVER} -t "${SSHTMUX}"'
-alias sshserver='ssh -o MACs=${SSHMAC} ${SSHROOT}@${PVESERVER}' #non-tmux version
+alias sshpve='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}" -t "${SSHTMUX}"'
+alias sshserver='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}"' #non-tmux version
 
-alias sshsbcwifi='ssh ${SSHROOT}@${SBCWIFI} -t "${SSHTMUX}"'
-alias sshsbceth='ssh ${SSHROOT}@${SBCETH} -t "${SSHTMUX}"'
-alias sshsbc='ssh ${SSHROOT}@${SBC} -t "${SSHTMUX}"'
+alias sshsbcwifi='ssh "${SSHROOT}@${SBCWIFI}" -t "${SSHTMUX}"'
+alias sshsbceth='ssh "${SSHROOT}@${SBCETH}" -t "${SSHTMUX}"'
+alias sshsbc='ssh "${SSHROOT}@${SBC}" -t "${SSHTMUX}"'
 
-alias sshwg='ssh ${SSHROOT}@${PVWG} -t "${SSHTMUX}"'
-alias sshventoy='ssh ${SSHROOT}@${PVEVENTOY} -t "${SSHTMUX}"'
-alias sshvega='ssh ${SSHROOT}@${PVEVEGA} -t "${SSHTMUX}"'
-alias sshblanka='ssh ${SSHROOT}@${PVEBLANKA} -t "${SSHTMUX}"'
-alias sshha='ssh ${SSHROOT}@${PVEHA} -t "${SSHTMUX}"'
-alias sshjf='ssh ${SSHROOT}@${PVEJF} -t "${SSHTMUX}"'
-alias sshsagat='ssh ${SSHROOT}@${PVESAGAT} -t "${SSHTMUX}"'
-alias sshimm='ssh ${SSHROOT}@${PVEIMM} -t "${SSHTMUX}"'
-alias sshubuntu='ssh ${SSHROOT}@${PVEUBUNTU} -t "${SSHTMUX}"'
-alias sshubuntuuser='ssh ${SSHNONROOT}@${PVEUBUNTU} -t "${SSHTMUX}"'
+alias sshwg='ssh "${SSHROOT}@${PVWG}" -t "${SSHTMUX}"'
+alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
+alias sshvega='ssh "${SSHROOT}@${PVEVEGA}" -t "${SSHTMUX}"'
+alias sshblanka='ssh "${SSHROOT}@${PVEBLANKA}" -t "${SSHTMUX}"'
+alias sshha='ssh "${SSHROOT}@${PVEHA}" -t "${SSHTMUX}"'
+alias sshjf='ssh "${SSHROOT}@${PVEJF}" -t "${SSHTMUX}"'
+alias sshsagat='ssh "${SSHROOT}@${PVESAGAT}" -t "${SSHTMUX}"'
+alias sshimm='ssh "${SSHROOT}@${PVEIMM}" -t "${SSHTMUX}"'
+alias sshubuntu='ssh "${SSHROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
+alias sshubuntuuser='ssh "${SSHNONROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
 
 # generic tmux ssh aliases
 # alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
 
 # ping aliases
-alias pingrouter='ping ${ROUTER}'
-alias pingserver='ping ${PVESERVER}'
+alias pingrouter='ping "${ROUTER}"'
+alias pingserver='ping "${PVESERVER}"'
 
 # iperf3 aliases for network testing
-alias iperfdown='iperf3 -Rc ${PVESERVER}'
-alias iperfup='iperf3 -c ${PVESERVER}'
+alias iperfdown='iperf3 -Rc "${PVESERVER}"'
+alias iperfup='iperf3 -c "${PVESERVER}"'
 
 # goto aliases
-alias gocode='cd ${HOME}/code'
-alias gogit='cd ${HOME}/code/github'
-alias gopkg='cd ${HOME}/packages/install'
-alias godot='cd ${HOME}/dotfiles'
-alias goans='cd ${HOME}/dotfiles/common/ansible/scripts'
+alias gocode='cd "${HOME}/code"'
+alias gogit='cd "${HOME}/code/github"'
+alias gopkg='cd "${HOME}/packages/install"'
+alias godot='cd "${HOME}/dotfiles"'
+alias goans='cd "${HOME}/dotfiles/common/ansible/scripts"'
 
 #git
 alias gitpush="git pull && git add * && git commit -a && git push"
@@ -80,6 +80,7 @@ manualstow() {
   local homefiles=(
     '.aliases'
     '.aliases_linux'
+    '.aliases_hosts'
     '.aliases_linux_debian'
     '.aliases_linux_fedora'
     '.aliases_homelab'
