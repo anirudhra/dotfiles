@@ -12,28 +12,70 @@ SOURCED_ALIASES_HOSTS=1
 
 debuglog "Hosts aliases sourced"
 
-# hosts
-export ROUTER="10.100.100.1"
-export ROUTERPORT="12372"
-
-export PVESERVER="10.100.100.50"
-export PVEVENTOY="10.100.100.51"
-export PVWG="10.100.100.55"
-export PVEVEGA="10.100.100.60"
-export PVEBLANKA="10.100.100.65"
-export PVEHA="10.100.100.70"
-export PVESAGAT="10.100.100.75"
-export PVEJF="10.100.100.80"
-export PVEUBUNTU="10.100.100.85"
-export PVEIMM="10.100.100.95"
-
-export SBC="10.100.100.64"
-export SBCWIFI="10.100.100.66"
-export SBCETH="10.100.100.67"
-export SBCHOST="ifc6410"
-
+# constants
+export ROUTERPORT="6666"
 export ROUTERUSER="admin"
 export SSHROOT="root"
 export SSHNONROOT="nonroot"
 export SSHTMUX="tmux -2 attach || tmux -2 new"
 export SSHMAC="hmac-sha2-256"
+export SBCHOST="ifc6410"
+export PVEHOST="pve"
+
+#subnets
+export NET1="10.100.100"
+export NET2="192.168.4"
+
+# Main network hosts
+export ROUTER="${NET1}.1"
+
+export PVESERVER="${NET1}.50"
+export PVEVENTOY="${NET1}.51"
+export PVWG="${NET1}.55"
+export PVEVEGA="${NET1}.60"
+export PVEBLANKA="${NET1}.65"
+export PVEHA="${NET1}.70"
+export PVESAGAT="${NET1}.75"
+export PVEJF="${NET1}.80"
+export PVEUBUNTU="${NET1}.85"
+export PVEIMM="${NET1}.95"
+
+export SBC="${NET1}.64"
+export SBCWIFI="${NET1}.66"
+export SBCETH="${NET1}.67"
+
+export CAM_BASE="${NET1}.40"
+export THERMOSTAT="${NET1}.41" 
+export ENTRANCE_LIGHT="${NET1}.42"
+export PRINTER="${NET1}.45"
+
+# Guest network hosts
+export FRIDGE="${NET2}.15"
+export ROOMBA="${NET2}.16"
+export BRAVAJET="${NET2}.17"
+
+export KD110_DOORBELL="${NET2}.18"
+export TAPO_C210_CAMERA="${NET2}.19"
+export MYQGARAGE="${NET2}.20"
+
+export S500D_GUEST_CEILING="${NET2}.21"
+export S500D_KITCHEN_HALL="${NET2}.22"
+export S505D_CEILING="${NET2}.23"
+export S500D_OFFICE_CEILING="${NET2}.24"
+export S500D_MASTER_CEILING="${NET2}.25"
+export S505_CHANDELIER="${NET2}.26"
+export DINING_LIGHT="${NET2}.27"
+export OFFICE_LIGHT="${NET2}.28"
+
+export SPRINKLER="${NET2}.29"
+export TV_LAMP="${NET2}.30"
+export HALLWAY_LAMP="${NET2}.31"
+export NIGHT_LAMP1="${NET2}.32"
+
+export MASTER_POWER_STRIP="${NET2}.33"
+export MEDIA_CENTER_POWER_STRIP="${NET2}.38"
+
+export GUEST_LIGHT="${NET2}.34"
+export GUEST_LAMP="${NET2}.35"
+export KITCHEN_FAN="${NET2}.36"
+export ISLAND_FAN="${NET2}.37"
