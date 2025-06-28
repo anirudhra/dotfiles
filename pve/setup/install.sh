@@ -5,10 +5,11 @@
 # Not running as bash or zsh will cause this script to fail as "sh" does not support arrays!
 
 mode="none"
+usage="Usage: $0 pve or $0 guest"
 
 # validate inputs
 if [ $# -ne 1 ]; then
-  echo "Usage: $0 pve or $0 guest"
+  echo "${usage}"
   exit 1
 else
   if [ "$1" = "pve" ]; then
@@ -16,7 +17,7 @@ else
   elif [ "$1" = "guest" ]; then
     echo "Script invoked in Guest mode"
   else
-    echo "Usage: $0 pve or $0 guest"
+    echo "${usage}"
     exit 1
   fi
   mode=$1
@@ -150,6 +151,7 @@ if [ "${mode}" = "pve" ]; then
   # Copy all files in /dotfiles/pve/setup/config/pve to host machine's relevant paths
   echo "Copying PVE config files to host..."
   CONFIG_SRC="$(dirname "$0")/config/pve"
+
   # etc files
   if [ -d "$CONFIG_SRC/etc" ]; then
     find "$CONFIG_SRC/etc" -type f | while read -r srcfile; do
@@ -161,6 +163,7 @@ if [ "${mode}" = "pve" ]; then
       cp -a "$srcfile" "$destfile"
     done
   fi
+
   # usr/lib files
   if [ -d "$CONFIG_SRC/usr/lib" ]; then
     find "$CONFIG_SRC/usr/lib" -type f | while read -r srcfile; do
@@ -185,6 +188,7 @@ else
     mount_nfs="${base_nfs}/${mount}"
     # create base directory, all server exportes will be mounted in /mnt/nfs directory, foe g.e., /mnt/nfs/sata-ssd
     mkdir -p "${base_nfs}"
+    
     if grep -wq "${mount_nfs} -fstype=nfs" ${client_auto_pveshare}; then
       echo "NFS share mount ${mount_nfs} already exists in ${client_auto_pveshare}! Check ${client_auto_master} if it does not work!"
       echo

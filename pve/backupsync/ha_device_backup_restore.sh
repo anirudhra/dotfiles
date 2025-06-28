@@ -32,57 +32,57 @@ if [ "$#" -ne 2 ]; then
 fi
 
 # Assign arguments to variables for better readability
-source_file="$1"
-operation="$2"
-backup_dir="/root/devicebackup" # Define your backup directory here
+SOURCE_FILE="$1"
+OPERATION="$2"
+BACKUP_DIR="/root/devicebackup" # Define your backup directory here
 
 # Check if the source file exists
-if [ ! -f "$source_file" ]; then
-  echo "Error: Source file '$source_file' not found." >&2 # Output error to standard error
+if [ ! -f "${SOURCE_FILE}" ]; then
+  echo "Error: Source file '${SOURCE_FILE}' not found." >&2 # Output error to standard error
   exit 1
 fi
 
 # Perform the requested operation
-case "$operation" in
+case "${OPERATION}" in
 backup)
   # Create backup directory if it doesn't exist
-  mkdir -p "$backup_dir" || {
-    echo "Error: Failed to create backup directory '$backup_dir'." >&2
+  mkdir -p "${BACKUP_DIR}" || {
+    echo "Error: Failed to create backup directory '${BACKUP_DIR}'." >&2
     exit 1
   }
 
   # if the backup already exists, make a copy to keep most recent 2 copies
-  backup_file="$backup_dir/$(basename "$source_file")" # Get the backup file path
-  if [ -f "$backup_file" ]; then
+  BACKUP_FILE="${BACKUP_DIR}/$(basename "${SOURCE_FILE}")" # Get the backup file path
+  if [ -f "${BACKUP_FILE}" ]; then
     echo "Backup file exists! Making a copy."
-    mv "$backup_file" "${backup_file}.bak"
+    mv "${BACKUP_FILE}" "${BACKUP_FILE}.bak"
   fi
 
   # Copy the file to the backup directory
-  cp -f "$source_file" "$backup_dir/" || {
-    echo "Error: Failed to copy '$source_file' to '$backup_dir'." >&2
+  cp -f "${SOURCE_FILE}" "${BACKUP_DIR}/" || {
+    echo "Error: Failed to copy '${SOURCE_FILE}' to '${BACKUP_DIR}'." >&2
     exit 1
   }
-  echo "Successfully backed up '$source_file' to '$backup_dir'."
+  echo "Successfully backed up '${SOURCE_FILE}' to '${BACKUP_DIR}'."
   ;;
 restore)
-  backup_file="$backup_dir/$(basename "$source_file")" # Get the backup file path
+  BACKUP_FILE="${BACKUP_DIR}/$(basename "${SOURCE_FILE}")" # Get the backup file path
 
   # Check if the backup file exists
-  if [ ! -f "$backup_file" ]; then
-    echo "Error: Backup file '$backup_file' not found." >&2 # Output error to standard error
+  if [ ! -f "${BACKUP_FILE}" ]; then
+    echo "Error: Backup file '${BACKUP_FILE}' not found." >&2 # Output error to standard error
     exit 1
   fi
 
   # Copy the backup file back to the source location
-  cp -f "$backup_file" "$source_file" || {
-    echo "Error: Failed to restore '$backup_file' to '$source_file'." >&2
+  cp -f "${BACKUP_FILE}" "${SOURCE_FILE}" || {
+    echo "Error: Failed to restore '${BACKUP_FILE}' to '${SOURCE_FILE}'." >&2
     exit 1
   }
-  echo "Successfully restored '$source_file' from '$backup_dir'."
+  echo "Successfully restored '${SOURCE_FILE}' from '${BACKUP_DIR}'."
   ;;
 *)
-  echo "Error: Invalid operation '$operation'." >&2 # Output error to standard error
+  echo "Error: Invalid operation '${OPERATION}'." >&2 # Output error to standard error
   usage
   ;;
 esac

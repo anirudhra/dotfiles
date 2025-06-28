@@ -5,14 +5,14 @@
 set -euo pipefail
 
 check_and_umount() {
-    local type="$1"
+    local TYPE="$1"
     # Use mapfile/readarray to handle spaces in mount points
-    mapfile -t mounts < <(mount | sed -n "s/^.* on \(.*\) type $type .*/\1/p")
-    for mnt in "${mounts[@]}"; do
-        if ! timeout 300 ls "$mnt" &>/dev/null; then
-            echo "Stale $type mount: $mnt"
+    mapfile -t mounts < <(mount | sed -n "s/^.* on \(.*\) type $TYPE .*/\1/p")
+    for MNT in "${mounts[@]}"; do # mounts needs to be lowercase
+        if ! timeout 300 ls "$MNT" &>/dev/null; then
+            echo "Stale $TYPE mount: $MNT"
             echo "Umounting this stale mount..."
-            umount -f -l "$mnt"
+            umount -f -l "$MNT"
         fi
     done
 }

@@ -5,21 +5,21 @@
 
 set -e
 
-zfspool="${1:-pvebackup}"
-mountpoint="${2:-zfsdata}"
+ZFSPOOL="${1:-pvebackup}"
+MOUNTPOINT="${2:-zfsdata}"
 
-if zpool list "$zfspool" >/dev/null 2>&1; then
-    echo "ZFS pool '$zfspool' is already imported."
+if zpool list "${ZFSPOOL}" >/dev/null 2>&1; then
+    echo "ZFS pool '${ZFSPOOL}' is already imported."
 else
-    echo "Importing ZFS pool '$zfspool'..."
+    echo "Importing ZFS pool '${ZFSPOOL}'..."   
     # Uncomment the -f version if pool fails to import normally
     # zpool import -f "$zfspool"
-    zpool import "$zfspool"
+    zpool import "${ZFSPOOL}"
 fi
 
-mkdir -p "/$mountpoint"
+mkdir -p "/${MOUNTPOINT}"
 
 # Set mountpoint (may not be needed every time, but included for safety)
-zfs set mountpoint="/$mountpoint" "$zfspool/$mountpoint"
+zfs set mountpoint="/${MOUNTPOINT}" "${ZFSPOOL}/${MOUNTPOINT}"
 
 zpool

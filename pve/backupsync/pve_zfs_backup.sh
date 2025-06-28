@@ -14,37 +14,37 @@
 #
 
 #zfspool="pvebackup"
-mountpoint="zfsdata"
+MOUNTPOINT="zfsdata"
 #backup_dest="/${pvebackup}/${mountpoint}"
 # zfs fs mountpoint does not include zpool anymore
-backup_dest="/${mountpoint}"
-backup_dest_dir="${backup_dest}/pve_backup"
-backup_source_dir="/mnt/sata-ssd"
-backup_exclude_list="./exclude_pve_zfs_backup.txt"
+BACKUP_DEST="/${MOUNTPOINT}"
+BACKUP_DEST_DIR="${BACKUP_DEST}/pve_backup"
+BACKUP_SOURCE_DIR="/mnt/sata-ssd"
+BACKUP_EXCLUDE_LIST="./exclude_pve_zfs_backup.txt"
 
 #confirm backup destination is available and correct
 echo
 echo "==============================================================================="
 echo "Ensure your backup destination is mounted correctly before running this script"
 echo
-echo "Backup desitnation: ${backup_dest}"
-echo "Backup destination directory: ${backup_dest_dir}"
-echo "Backup source diretory: ${backup_source_dir}"
-echo "Backup exclude list: ${backup_exclude_list}"
+echo "Backup desitnation: ${BACKUP_DEST}"
+echo "Backup destination directory: ${BACKUP_DEST_DIR}"
+echo "Backup source diretory: ${BACKUP_SOURCE_DIR}"
+echo "Backup exclude list: ${BACKUP_EXCLUDE_LIST}"
 echo "==============================================================================="
 echo
-echo "Contents of backup destination - ${backup_dest}:"
+echo "Contents of backup destination - ${BACKUP_DEST}:"
 echo
-ls ${backup_dest}
-echo
-echo "==============================================================================="
-echo "Disk space usage of destination: ${backup_dest}"
-echo
-df -h ${backup_dest}
+ls ${BACKUP_DEST}
 echo
 echo "==============================================================================="
+echo "Disk space usage of destination: ${BACKUP_DEST}"
 echo
-echo "Command: rsync -avHPAX --delete --exclude-from=${backup_exclude_list} ${backup_source_dir} ${backup_dest_dir}"
+df -h ${BACKUP_DEST}
+echo
+echo "==============================================================================="
+echo
+echo "Command: rsync -avHPAX --delete --exclude-from=${BACKUP_EXCLUDE_LIST} ${BACKUP_SOURCE_DIR} ${BACKUP_DEST_DIR}"
 echo
 echo
 echo "==========================================================================================="
@@ -57,12 +57,12 @@ echo
 echo "Starting backup..."
 echo
 
-mkdir -p ${backup_dest_dir}
+mkdir -p ${BACKUP_DEST_DIR}
 # -avHPAX should handle linux/macos volumes fine, not intended for fat32/vfat destinations
-rsync -avHPAX --delete --exclude-from=${backup_exclude_list} ${backup_source_dir} ${backup_dest_dir}
+rsync -avHPAX --delete --exclude-from=${BACKUP_EXCLUDE_LIST} ${BACKUP_SOURCE_DIR} ${BACKUP_DEST_DIR}
 
-today=$(date '+%Y-%m-%d')
+TODAY=$(date '+%Y-%m-%d')
 
-echo "Backup complete: ${today}"
-echo "Backed up on ${today}" >"${backup_dest}/log.txt"
+echo "Backup complete: ${TODAY}"
+echo "Backed up on ${TODAY}" >"${BACKUP_DEST}/log.txt"
 echo

@@ -38,6 +38,9 @@ for dir in "${DEST_DIRS[@]}"; do
     rm "${dest_dir}/${item}"
     ln -s "$(realpath "${TARGET_THEME_DIR}")/${dir}/${item}" "${dest_dir}/${item}"
   done
+  echo "Linked: "
+  ls -l "${dest_dir}"
+
 done
 
 echo Done!
