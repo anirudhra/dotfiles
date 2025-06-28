@@ -282,7 +282,6 @@ last-folder-path='/home/anirudh/Pictures/wallpapers/OS/Linux'
 
 [settings-daemon/plugins/color]
 night-light-enabled=true
-night-light-last-coordinates=(33.001399999999997, -117.074)
 night-light-schedule-automatic=true
 
 [settings-daemon/plugins/media-keys]
