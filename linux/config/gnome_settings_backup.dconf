@@ -1,7 +1,7 @@
 [Extensions]
-window-height=653
-window-maximized=false
-window-width=721
+window-height=732
+window-maximized=true
+window-width=1373
 
 [GWeather4]
 temperature-unit='centigrade'
@@ -12,15 +12,18 @@ window-maximize=true
 
 [Ptyxis]
 default-profile-uuid='78ab5d848e47e21d7cfbc4c7682d3c3d'
-font-name='DejaVu Sans Mono 10'
+font-name='JetBrainsMono Nerd Font Mono 11'
 profile-uuids=['78ab5d848e47e21d7cfbc4c7682d3c3d']
 text-blink-mode='focused'
 use-system-font=false
-window-size=(uint32 132, uint32 37)
+window-size=(uint32 169, uint32 35)
 
 [Ptyxis/Profiles/78ab5d848e47e21d7cfbc4c7682d3c3d]
 bold-is-bright=true
 palette='GNOME Legacy'
+
+[Ptyxis/Shortcuts]
+toggle-fullscreen='F12'
 
 [Snapshot]
 is-maximized=false
@@ -59,7 +62,7 @@ panel-id='world'
 size=(870, 690)
 
 [control-center]
-last-panel='printers'
+last-panel='display'
 window-state=(980, 646, false)
 
 [desktop/app-folders]
@@ -106,6 +109,7 @@ require-password='always'
 
 [desktop/input-sources]
 sources=[('xkb', 'us')]
+xkb-options=['ctrl:swap_lalt_lctl']
 
 [desktop/interface]
 accent-color='blue'
@@ -118,20 +122,24 @@ cursor-theme='elementary'
 document-font-name='Adwaita Sans 11'
 enable-animations=true
 font-antialiasing='rgba'
-font-name='Adwaita Sans 10'
-gtk-theme='Orchis-Dark'
+font-name='Adwaita Sans Medium 10 @wght=500'
+gtk-theme='Orianin-Dark'
 icon-theme='Tela-dark'
-monospace-font-name='FiraCode Nerd Font Mono 10'
+monospace-font-name='FiraCode Nerd Font Mono 11'
 toolkit-accessibility=false
 
 [desktop/notifications]
-application-children=['gnome-power-panel', 'org-gnome-software', 'setroubleshoot', 'org-mozilla-firefox', 'ulauncher', 'solaar', 'org-gnome-nautilus', 'org-gnome-geary', 'io-elementary-mail', 'microsoft-edge', 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-default', 'org-gnome-evolution-alarm-notify', 'org-gnome-extensions', 'org-gnome-evince']
+application-children=['gnome-power-panel', 'org-gnome-software', 'setroubleshoot', 'org-mozilla-firefox', 'ulauncher', 'solaar', 'org-gnome-nautilus', 'org-gnome-geary', 'io-elementary-mail', 'microsoft-edge', 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-default', 'org-gnome-evolution-alarm-notify', 'org-gnome-extensions', 'org-gnome-evince', 'io-github-dweymouth-supersonic']
+show-banners=true
 
 [desktop/notifications/application/gnome-datetime-panel]
 application-id='gnome-datetime-panel.desktop'
 
 [desktop/notifications/application/gnome-power-panel]
 application-id='gnome-power-panel.desktop'
+
+[desktop/notifications/application/io-github-dweymouth-supersonic]
+application-id='io.github.dweymouth.supersonic.desktop'
 
 [desktop/notifications/application/microsoft-edge]
 application-id='microsoft-edge.desktop'
@@ -216,7 +224,7 @@ show-sidebar=true
 sidebar-page='thumbnails'
 sidebar-size=132
 sizing-mode='free'
-window-ratio=(0.75771971496437052, 0.9798319327731092)
+window-ratio=(0.97222222222222221, 0.97979797979797978)
 zoom=1.1058823529411765
 
 [evolution-data-server]
@@ -235,6 +243,9 @@ width=763
 center-new-windows=true
 overlay-key='Super_L'
 
+[nautilus/compression]
+default-compression-format='7z'
+
 [nautilus/icon-view]
 default-zoom-level='small-plus'
 
@@ -249,13 +260,16 @@ initial-size-file-chooser=(890, 550)
 maximized=false
 
 [portal/filechooser/code]
-last-folder-path='/home/anirudh/dotfiles/linux'
+last-folder-path='/home/anirudh/dotfiles'
 
 [portal/filechooser/io.github.realmazharhussain.GdmSettings]
 last-folder-path='/home/anirudh/Pictures/GDM'
 
 [portal/filechooser/microsoft-edge]
 last-folder-path='/home/anirudh/Downloads'
+
+[portal/filechooser/msedge-bajipdbhimehakjfhkcibdbdkmndfboa-Default]
+last-folder-path='/mnt/nfs/nvme-ssd/nvme-data/backup/ifc6410'
 
 [portal/filechooser/org.gnome.Settings]
 last-folder-path='/home/anirudh/Pictures/wallpapers/ArtAbstract'
@@ -291,7 +305,7 @@ enabled-connections=['1b0d25a9-ae5b-455c-9ca2-77662f4262f2']
 app-picker-layout=[{'btop.desktop': <{'position': <0>}>, 'org.gnome.Contacts.desktop': <{'position': <1>}>, 'org.gnome.Weather.desktop': <{'position': <2>}>, 'org.gnome.clocks.desktop': <{'position': <3>}>, 'org.gnome.Maps.desktop': <{'position': <4>}>, 'org.gnome.Calculator.desktop': <{'position': <5>}>, 'simple-scan.desktop': <{'position': <6>}>, 'org.gnome.Settings.desktop': <{'position': <7>}>, 'org.gnome.Calendar.desktop': <{'position': <8>}>, 'org.gnome.Totem.desktop': <{'position': <9>}>, 'org.gnome.Snapshot.desktop': <{'position': <10>}>, 'org.gnome.Characters.desktop': <{'position': <11>}>, 'Utilities': <{'position': <12>}>, 'System': <{'position': <13>}>, 'calf.desktop': <{'position': <14>}>, 'ca.desrt.dconf-editor.desktop': <{'position': <15>}>, 'yelp.desktop': <{'position': <16>}>, 'com.github.wwmm.easyeffects.desktop': <{'position': <17>}>, 'org.gnome.Extensions.desktop': <{'position': <18>}>, 'gimp.desktop': <{'position': <19>}>, 'gparted.desktop': <{'position': <20>}>, 'system-config-language.desktop': <{'position': <21>}>, 'mpv.desktop': <{'position': <22>}>, 'nvim.desktop': <{'position': <23>}>}, {'rxvt-unicode.desktop': <{'position': <0>}>, 'setroubleshoot.desktop': <{'position': <1>}>, 'org.signal.Signal.desktop': <{'position': <2>}>, 'org.gnome.Software.desktop': <{'position': <3>}>, 'solaar.desktop': <{'position': <4>}>, 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop': <{'position': <5>}>, 'org.gnome.TextEditor.desktop': <{'position': <6>}>, 'org.gnome.tweaks.desktop': <{'position': <7>}>, 'ulauncher.desktop': <{'position': <8>}>, 'vlc.desktop': <{'position': <9>}>, 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop': <{'position': <10>}>}]
 disabled-extensions=['forge@jmmaranan.com', 'blur-my-shell@aunetx']
 enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'appindicatorsupport@rgcjonas.gmail.com', 'arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com', 'weatheroclock@CleoMenezesJr.github.io', 'grand-theft-focus@zalckos.github.com', 'just-perfection-desktop@just-perfection', 'transparent-window-moving@noobsai.github.com', 'Vitals@CoreCoding.com', 'openbar@neuromorph', 'caffeine@patapon.info']
-favorite-apps=['org.gnome.Nautilus.desktop', 'microsoft-edge.desktop', 'org.gnome.Ptyxis.desktop', 'org.mozilla.firefox.desktop', 'code.desktop']
+favorite-apps=['org.gnome.Nautilus.desktop', 'microsoft-edge.desktop', 'org.gnome.Ptyxis.desktop', 'org.mozilla.firefox.desktop', 'code.desktop', 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop', 'msedge-pbodigkegiigalbpjodefafoajimondc-Default.desktop', 'msedge-bajipdbhimehakjfhkcibdbdkmndfboa-Default.desktop', 'appimagekit_8c4f3feaea7043e28d83a53baab3124f-Feishin.desktop']
 welcome-dialog-last-shown-version='48.2'
 
 [shell/extensions/appindicator]
@@ -317,11 +331,11 @@ menu-button-middle-click-action='None'
 menu-height=500
 menu-width-adjustment=0
 misc-item-icon-size='Default'
-pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-majiogicmcnmdhhlgmkahaleckhjbmlk-Default.desktop'}, {'id': 'nvim.desktop'}, {'id': 'vlc.desktop'}, {'id': 'filezilla.desktop'}, {'id': 'msedge-akpamiohjfcnimfljfndmaldlcfphjmp-Default.desktop'}, {'id': 'org.musicbrainz.Picard.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'code.desktop'}]
+pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop'}, {'id': 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop'}, {'id': 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop'}, {'id': 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop'}]
 power-options=[(0, false), (1, true), (2, true), (3, true), (4, true), (5, false), (6, false), (7, false)]
 prefs-visible-page=0
 quicklinks-item-icon-size='Default'
-recently-installed-apps=['msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop', 'org.signal.Signal.desktop', 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop', 'mpv.desktop', 'msedge-mdpkiolbdkhdjpekfbkbmhigcaggjagi-Default.desktop']
+recently-installed-apps=['appimagekit_f90637decf50d9a5d75de650c2923ea7-Feishin.desktop']
 right-panel-width=200
 search-entry-border-radius=(true, 25)
 search-provider-open-windows=true
@@ -559,7 +573,7 @@ balpha=0.65000000000000002
 bartype='Floating'
 bcolor=['0.718', '0.588', '0.776']
 bg-change=false
-bgalpha=0.94999999999999996
+bgalpha=0.90000000000000002
 bgalpha-wmax=1.0
 bgalpha2=0.69999999999999996
 bgcolor=['0.125', '0.145', '0.169']
@@ -574,7 +588,7 @@ boxalpha=0.0
 boxcolor=['0.125', '0.145', '0.169']
 bradius=20.0
 buttonbg-wmax=true
-bwidth=2.0
+bwidth=1.5
 candy1=['0', '0.61', '0.74']
 candy10=['0.09', '0.19', '0.72']
 candy11=['0.75', '0.49', '0.44']
@@ -634,7 +648,7 @@ dark-candy8=['0.18', '0.76', '0.49']
 dark-candy9=['0.93', '0.20', '0.23']
 dark-dbgcolor=['0.141', '0.133', '0.176']
 dark-fgcolor=['1.0', '1.0', '1.0']
-dark-hcolor=['0.451', '0.490', '0.647']
+dark-hcolor=['0.467', '0.463', '0.482']
 dark-hscd-color=['0.090', '0.125', '0.255']
 dark-iscolor=['0.125', '0.145', '0.169']
 dark-mbcolor=['0.627', '0.518', '0.682']
@@ -677,13 +691,13 @@ gradient-direction='vertical'
 gtk-popover=false
 gtk-shadow='Default'
 gtk-transparency=1.0
-halpha=0.0
+halpha=0.16
 handle-border=9.0
 hbar-gtk3only=false
-hcolor=['0.451', '0.490', '0.647']
+hcolor=['0.467', '0.463', '0.482']
 headerbar-hint=0
-heffect=true
-height=35.0
+heffect=false
+height=36.0
 hpad=1.0
 hscd-color=['0.090', '0.125', '0.255']
 import-export=false
@@ -739,7 +753,7 @@ light-shcolor=['0.000', '0.000', '0.000']
 light-smbgcolor=['0.808', '0.780', '0.839']
 light-vw-color=['0.125', '0.196', '0.475']
 light-winbcolor=['0.125', '0.196', '0.475']
-margin=3.0
+margin=2.0
 margin-wmax=2.0
 mbalpha=0.80000000000000004
 mbcolor=['0.627', '0.518', '0.682']
@@ -807,7 +821,7 @@ smbgoverride=false
 success-color=['0.15', '0.635', '0.41']
 traffic-light=false
 trigger-autotheme=false
-trigger-reload=false
+trigger-reload=true
 view-hint=0
 vpad=4.0
 vw-color=['0.090', '0.125', '0.255']
@@ -850,7 +864,7 @@ transparent-on-moving=true
 window-opacity=200
 
 [shell/extensions/user-theme]
-name='Marble-blue-dark'
+name='Orianin-Dark'
 
 [shell/extensions/vertical-workspaces]
 app-grid-animation=4
@@ -880,7 +894,7 @@ alphabetize=true
 hide-zeros=true
 hot-sensors=['_temperature_acpi_thermal zone_', '_memory_allocated_']
 menu-centered=true
-position-in-panel=2
+position-in-panel=0
 show-battery=true
 show-gpu=true
 
@@ -900,11 +914,12 @@ locations=[<(uint32 2, <('Escondido', 'KCRQ', false, [(0.57822758118572137, -2.0
 locations=[<(uint32 2, <('New Delhi', 'VIDP', true, [(0.49858239547081096, 1.345939747314058)], [(0.49916416607037828, 1.3473941825396225)])>)>]
 
 [software]
-check-timestamp=int64 1750117294
+check-timestamp=int64 1751046792
 first-run=false
-flatpak-purge-timestamp=int64 1750007118
-install-timestamp=int64 1749338126
-update-notification-timestamp=int64 1749741363
+flatpak-purge-timestamp=int64 1750993067
+install-timestamp=int64 1750612215
+packagekit-historical-updates-timestamp=uint64 1750526630
+update-notification-timestamp=int64 1750612330
 
 [system/location]
 enabled=true
