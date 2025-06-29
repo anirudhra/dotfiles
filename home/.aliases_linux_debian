@@ -113,28 +113,28 @@ getkernels() {
     local ZIMAGE="zImage"
     local INITRDIMAGE="initrd.img"
 
-    local BUILD_DIR="../tmp/deploy/images/qcom-armv7a"
-    local ARTIFACTS_DIR="artifacts"
-    local KERNEL_CONFIG="../tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
+    local BUILD_DIR="./tmp/deploy/images/qcom-armv7a"
+    local KERNEL_CONFIG="./tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
     local KERNEL_DEFCONFIG="defconfig"
     local WORKING_DIR="."
+    local ARTIFACTS_DIR="${WORKING_DIR}/artifacts"
 
     # create a backup if directory already exists
-    if [ -d "${BUILD_DIR}/${ARTIFACTS_DIR}" ]; then
-      rm -rf "${BUILD_DIR}/${ARTIFACTS_DIR}_backup"
-      mv -f "${BUILD_DIR}/${ARTIFACTS_DIR}" "${BUILD_DIR}/${ARTIFACTS_DIR}_backup"
+    if [ -d "${ARTIFACTS_DIR}" ]; then
+      rm -rf "${ARTIFACTS_DIR}_backup"
+      mv -f "${ARTIFACTS_DIR}" "${ARTIFACTS_DIR}_backup"
     fi
 
     # copy build artifacts
-    mkdir -p "${BUILD_DIR}/${ARTIFACTS_DIR}"
-    cd "${BUILD_DIR}/${ARTIFACTS_DIR}" || exit
-    sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${WORKING_DIR}/"
-    sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${WORKING_DIR}/"
-    sudo cp -f "${KERNEL_CONFIG}" "${WORKING_DIR}/${KERNEL_DEFCONFIG}"
+    mkdir -p "${ARTIFACTS_DIR}"
+    sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${KERNEL_CONFIG}" "${ARTIFACTS_DIR}/${KERNEL_DEFCONFIG}"
     info "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
 
     # fix permisisons
     #sudo chown -R nobody:nogroup *
+    cd "${ARTIFACTS_DIR}" || exit
     sudo chown -R nonroot:nonroot *
 
     # rename build artifacts with kernel version and timestamp
