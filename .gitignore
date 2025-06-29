@@ -5,7 +5,8 @@ lazyvim.json
 btop.log 
 *vifminfo.json
 # don't save tmux git repos
-*tmux/plugins*
+/tmux/plugins/*
+/.tmux/plugins/*
 
 # OS generated files #
 ######################
