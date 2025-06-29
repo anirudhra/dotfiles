@@ -16,14 +16,26 @@ font-name='JetBrainsMono Nerd Font Mono 11'
 profile-uuids=['78ab5d848e47e21d7cfbc4c7682d3c3d']
 text-blink-mode='focused'
 use-system-font=false
-window-size=(uint32 169, uint32 35)
+window-size=(uint32 169, uint32 38)
 
 [Ptyxis/Profiles/78ab5d848e47e21d7cfbc4c7682d3c3d]
 bold-is-bright=true
+custom-command='tmux'
+label='Default tmux profile'
+login-shell=false
 palette='GNOME Legacy'
+scroll-on-output=false
+use-custom-command=true
 
 [Ptyxis/Shortcuts]
+close-tab='<Super>w'
+copy-clipboard='<Super>c'
+new-tab='<Super>t'
+paste-clipboard='<Super>v'
+search='<Super>f'
+select-all='<Super>a'
 toggle-fullscreen='F12'
+undo-close-tab='<Shift><Control>w'
 
 [Snapshot]
 is-maximized=false
@@ -38,7 +50,6 @@ active-plugins=['variable-rate', 'skipto', 'screenshot', 'screensaver', 'save-fi
 subtitle-encoding='UTF-8'
 
 [Weather]
-locations=[<(uint32 2, <('Escondido', 'KCRQ', false, [(0.57822758118572137, -2.0468494188690189)], [(0.57822758118572137, -2.0468494188690189)])>)>]
 window-height=503
 window-maximized=false
 window-width=636
@@ -54,7 +65,6 @@ window-maximized=false
 window-size=(360, 616)
 
 [clocks]
-world-clocks=[{'location': <(uint32 2, <('New Delhi', 'VIDP', true, [(0.49858239547081096, 1.345939747314058)], [(0.49916416607037828, 1.3473941825396225)])>)>}]
 
 [clocks/state/window]
 maximized=false
@@ -62,7 +72,7 @@ panel-id='world'
 size=(870, 690)
 
 [control-center]
-last-panel='display'
+last-panel='keyboard'
 window-state=(980, 646, false)
 
 [desktop/app-folders]
@@ -109,7 +119,7 @@ require-password='always'
 
 [desktop/input-sources]
 sources=[('xkb', 'us')]
-xkb-options=['ctrl:swap_lalt_lctl']
+xkb-options=['caps:ctrl_shifted_capslock']
 
 [desktop/interface]
 accent-color='blue'
@@ -282,6 +292,7 @@ last-folder-path='/home/anirudh/Pictures/wallpapers/OS/Linux'
 
 [settings-daemon/plugins/color]
 night-light-enabled=true
+night-light-last-coordinates=(33.001399999999997, -117.074)
 night-light-schedule-automatic=true
 
 [settings-daemon/plugins/media-keys]
@@ -795,12 +806,12 @@ prominent3=['100', '100', '100']
 prominent4=['100', '100', '100']
 prominent5=['100', '100', '100']
 prominent6=['100', '100', '100']
-qtoggle-radius=15.0
+qtoggle-radius=23.0
 radius-bottomleft=true
 radius-bottomright=true
 radius-topleft=true
 radius-topright=true
-reloadstyle=true
+reloadstyle=false
 removestyle=false
 sbar-gradient='none'
 set-bottom-margin=false
@@ -901,21 +912,22 @@ show-gpu=true
 weather-after-clock=true
 
 [shell/keybindings]
+focus-active-notification=@as []
 switch-to-application-1=@as []
 switch-to-application-2=@as []
+toggle-application-view=@as []
+toggle-message-tray=@as []
 toggle-overview=['<Super>o']
 
 [shell/weather]
 automatic-location=true
-locations=[<(uint32 2, <('Escondido', 'KCRQ', false, [(0.57822758118572137, -2.0468494188690189)], [(0.57822758118572137, -2.0468494188690189)])>)>]
 
 [shell/world-clocks]
-locations=[<(uint32 2, <('New Delhi', 'VIDP', true, [(0.49858239547081096, 1.345939747314058)], [(0.49916416607037828, 1.3473941825396225)])>)>]
 
 [software]
-check-timestamp=int64 1751046792
+check-timestamp=int64 1751220075
 first-run=false
-flatpak-purge-timestamp=int64 1750993067
+flatpak-purge-timestamp=int64 1751171241
 install-timestamp=int64 1750612215
 packagekit-historical-updates-timestamp=uint64 1750526630
 update-notification-timestamp=int64 1750612330
