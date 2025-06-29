@@ -41,6 +41,8 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     export DOCKERDIR="/opt/dockerapps"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
     alias dockerbackup='sudo tar -zcvf /mnt/nfs/sata-ssd/ssd-data/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
+    # script to copy compiled kernel modules from PVE LXC to SBC
+    alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
   else # LXC/VM/Client debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
@@ -48,6 +50,14 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
     alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}_$(date -I).tar.gz ${DOCKERDIR}'
+
+    # yocto kernel compile macros
+    alias bbmenu="bitbake -c menuconfig virtual/kernel"
+    alias bbmake="bitbake core-image-minimal"
+    alias bbsync="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && git pull && cd meta-qcom && git pull && cd .."
+    alias bbinit="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom"
+    alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
+
   fi
 
   #  Other common non-PVE aliases
@@ -57,15 +67,7 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
   alias dockerrestart='docker compose down && docker compose up -d'
   alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
   alias dockerclean='docker system prune --volumes'
-
   alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
-
-  # yocto kernel macros
-  alias bbmenu="bitbake -c menuconfig virtual/kernel"
-  alias bbbuild="bitbake core-image-minimal"
-  alias bbsync="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && git pull && cd meta-qcom && git pull && cd .."
-  alias bbinit="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom"
-  alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
 else
   # Client only aliases
   alias upgrade='fullupdate && fullclean && fwupdate'
