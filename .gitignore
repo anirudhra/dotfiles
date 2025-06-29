@@ -4,6 +4,8 @@ lazy-lock.json
 lazyvim.json
 btop.log 
 *vifminfo.json
+# don't save tmux git repos
+*tmux/plugins*
 
 # OS generated files #
 ######################
