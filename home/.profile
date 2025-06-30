@@ -32,6 +32,12 @@ else
 fi
 
 # hostname specific
+# bash specific
 if [ -e "${HOME}/.profile.${HOSTNAME}" ]; then
   . "${HOME}/.profile.${HOSTNAME}"
+fi
+
+# for zsh
+if [ -e "${HOME}/.profile.${HOST}" ]; then
+  . "${HOME}/.profile.${HOST}"
 fi
