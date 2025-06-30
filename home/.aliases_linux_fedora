@@ -32,8 +32,8 @@ export DOCKERDIR="${DATADIR}/dockerapps"
 export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
 # alias cat to bat with syntax highlighting
-alias cat="bat --color=always"
-alias bat="bat --color=always"
+#alias cat="batcat --color=always"
+#alias bat="batcat --color=always"
 
 alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
 
