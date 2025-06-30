@@ -24,11 +24,16 @@ alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY
 alias upgrade='fullupdate && fullclean && fwupdate && flatpak update -y'
 #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
 
+# set the right nfs directories
 export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
 export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
 export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
 export DOCKERDIR="${DATADIR}/dockerapps"
 export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+# alias cat to bat with syntax highlighting
+alias cat="bat --color=always"
+alias bat="bat --color=always"
 
 alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
 

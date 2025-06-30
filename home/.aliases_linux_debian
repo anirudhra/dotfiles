@@ -32,6 +32,10 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
   export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
   alias upgrade='fullupdate && fullclean && fwupdate'
+
+  # use bat instead of cat
+  alias bat="bat --color=always"
+  alias cat="bat --color=always"
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
   # LXC/VM and SBC shortcuts
   if [ "${HOSTNAME}" == "${SBCHOST}" ]; then # SBC debian
@@ -43,6 +47,8 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     alias dockerbackup='sudo tar -zcvf /mnt/nfs/sata-ssd/ssd-data/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
     # script to copy compiled kernel modules from PVE LXC to SBC
     alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
+    alias cat="bat --color=always"
+    alias bat="bat --color=always"
   else # LXC/VM/Client debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
