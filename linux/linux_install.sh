@@ -299,6 +299,8 @@ CORE_PACKAGES=(
   'jhead'
   'iperf3'
   'ncdu'
+  'zoxide'
+  'bat'
   's-tui'
   'solaar' #logitech config utility
   'papirus-icon-theme'

@@ -23,4 +23,6 @@ if [ -d ~/.bashrc.d ]; then
 fi
 unset rc
 
+eval "$(zoxide init --cmd cd bash)"
 source "${HOME}/.profile"
+
