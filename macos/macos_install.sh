@@ -41,6 +41,8 @@ corepackages=(
   'gawk'
   'gnu-sed'
   'p7zip'
+  'bat'
+  'zoxide'
   'pv'
   'btop'
   'calc'

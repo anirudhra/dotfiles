@@ -299,7 +299,6 @@ CORE_PACKAGES=(
   'jhead'
   'iperf3'
   'ncdu'
-  'zoxide'
   'bat'
   's-tui'
   'solaar' #logitech config utility
@@ -362,6 +361,7 @@ if [ "${INSTALL_OS}" == "fedora" ]; then
     'libheif-freeworld'
     'libheif'
     'easyeffects'
+    'zoxide'
     'fuse'
     'fuse-libs'
     'inxi'
@@ -622,6 +622,8 @@ echo "==========================================================================
 echo "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script."
 echo "Before running the post-installer script, install oh-my-zsh manually from: https://ohmyz.sh/"
 if [[ "${INSTALL_OS}" == "debian" ]]; then
+  # install latest version of zoxide as debian repos have an old buggy version
+  curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
   echo
   echo "Install 'throttled' manually (https://github.com/erpalma/throttled) for Debian and derivatives"
   echo "Repo has been sync'd in ${PKG_INSTALL_DIR}. Run \"sudo ./throttled/install.sh\" from this directory"
