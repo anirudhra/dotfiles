@@ -49,6 +49,7 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
     alias cat="batcat --color=always"
     alias bat="batcat --color=always"
+    alias update='fullupdate && fullclean' # alias without dockerupdate
   else # LXC/VM/Client debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
