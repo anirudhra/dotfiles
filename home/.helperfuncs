@@ -138,7 +138,10 @@ detect_shell_type() {
 #   - "client" for Client
 detect_pve_server() {
   #debuglog "Detecting machine type"
-  if [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
+  # $HOSTNAME only works for bash shells, use more portable way
+  #if [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
+  host_name=$(hostname)
+  if [[ "${host_name}" == "ifc6410" ]] || [[ "${host_name}" == "IFC6410" ]]; then
     #debuglog "Detected SBC"
     echo "sbc" # combination of echo and return used to return strings in functions
   elif [ -f /proc/1/environ ]; then
