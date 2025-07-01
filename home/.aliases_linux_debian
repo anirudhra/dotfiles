@@ -38,7 +38,7 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
   alias cat="batcat --color=always"
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
   # LXC/VM and SBC shortcuts
-  if [ "${HOSTNAME}" == "${SBCHOST}" ]; then # SBC debian
+  if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
     export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
     export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
     export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
