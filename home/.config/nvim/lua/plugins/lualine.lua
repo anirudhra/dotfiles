@@ -5,7 +5,10 @@ return {
        event = "VeryLazy", -- Or "VeryLazy" to load after all other plugins
        config = function()
            require('lualine').setup {
-               -- your lualine configuration here
+              options = {
+                theme = "catppuccin"
+              }
+              -- your lualine configuration here
            }
        end
    }

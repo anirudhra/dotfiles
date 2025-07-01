@@ -16,7 +16,7 @@ vim.keymap.set('n', '<leader>h', ':nohlsearch<CR>')
 vim.wo.number = true
 
 -- new additions
--- vim.g.maplocalleader "\\"
+vim.g.maplocalleader = "\\"
 vim.g.snacks_animate = true
 vim.g.deprecation_warnings = false
 vim.g.autoformat = true
