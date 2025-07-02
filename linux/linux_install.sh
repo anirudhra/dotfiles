@@ -277,7 +277,7 @@ CORE_PACKAGES=(
   'iftop'
   'atop'
   'dnf-plugins-core'
-  'vifm'
+  'vifm' #replaced by yazi
   #'golang'
   #'cmake'
   #'gcc'

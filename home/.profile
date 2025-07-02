@@ -16,8 +16,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export VISUAL='vimr'
   export EDITOR='nvim'
 
-  export GTK_PATH=/usr/local/lib/gtk-2.0
-  export PATH="./:${HOME}/.local/bin:/usr/local/sbin:${PATH}"
+  export PATH="${HOME}/.local/bin:${PATH}"
+  export PATH="./:/usr/local/sbin:${PATH}"
 
   LESSPIPE=$(which src-hilite-lesspipe.sh)
   export LESSOPEN="| ${LESSPIPE} %s"

@@ -14,7 +14,7 @@ OS_TYPE=$(detect_os_type)
 
 ################################################
 # aliases common to all OSes for home computers
-source "${HOME}/.aliases_homelab"
+source "${HOME}/.aliases_dev"
 ################################################
 
 alias getdot="git clone --depth 1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
@@ -193,6 +193,16 @@ elif [[ "${SHELL}" == "/bin/zsh" ]]; then
   alias zshrc.='${EDITOR} ${HOME}/.zshrc.local'
 fi
 
+#stow aliases
+if [ -x "$(command -v stow)" ]; then
+  alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
+  alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
+else
+  # call the manual stow function
+  alias restow=manualstow
+  alias dotstow='cp -f "${HOME}/dotfiles/home"/.* "${HOME}"'
+fi
+
 ######## functions ######################
 
 mkcd() {
@@ -205,6 +215,68 @@ mkcd() {
     info "USAGE : mkcd <directory>"
     ;;
   esac
+}
+
+# for machines without gnu stow
+manualstow() {
+  local homefiles=(
+    '.aliases'
+    '.aliases_linux'
+    '.aliases_hosts'
+    '.aliases_linux_debian'
+    '.aliases_linux_fedora'
+    '.aliases_dev'
+    '.aliases_macos'
+    '.profile'
+    ".profile.${HOSTNAME}"
+    '.zshrc'
+    '.bashrc'
+    '.bash_profile'
+    '.vimrc'
+    '.gitfuncs'
+    '.helperfuncs'
+  )
+
+  local homedirs=(
+    '.vim'
+    '.config'
+    '.vifm'
+  )
+
+  for file in "${homefiles[@]}"; do
+    local src="${HOME}/dotfiles/home/${file}"
+    local dest="${HOME}/${file}"
+
+    if [ -e "${dest}" ]; then
+      cp -f "${dest}" "${dest}.bak"
+      info "Backed up ${dest} to ${dest}.bak"
+    fi
+    if [ -e "${src}" ]; then
+      cp -f "${src}" "${dest}"
+      info "Copied ${src} to ${dest}"
+    else
+      info "Source file ${src} does not exist, skipping."
+    fi
+  done
+
+  for dir in "${homedirs[@]}"; do
+    local src="${HOME}/dotfiles/home/${dir}"
+    local dest="${HOME}/${dir}"
+
+    if [ -d "${dest}" ]; then
+      cp -a "${dest}" "${dest}.bak"
+      info "Backed up ${dest} to ${dest}.bak"
+    fi
+    if [ -d "${src}" ]; then
+      # create destination directory if it doesn't exist
+      mkdir -p "${dest}"
+      # copy all files and directories recursively
+      cp -a "${src}/" "${dest}/"
+      info "Copied ${src} to ${dest}"
+    else
+      info "Source directory ${src} does not exist, skipping."
+    fi
+  done
 }
 
 ################################################################################################
