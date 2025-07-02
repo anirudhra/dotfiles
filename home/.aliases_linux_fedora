@@ -35,8 +35,6 @@ export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 alias cat="bat --color=always"
 alias bat="bat --color=always"
 
-alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
-
 ######## functions ######################
 
 # remove old kernels in fedora

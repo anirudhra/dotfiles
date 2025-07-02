@@ -74,7 +74,6 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
   alias dockerrestart='docker compose down && docker compose up -d'
   alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
   alias dockerclean='docker system prune --volumes'
-  alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
 else
   # Client only aliases
   alias upgrade='fullupdate && fullclean && fwupdate'

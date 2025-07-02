@@ -146,6 +146,10 @@ fi
 export EDITOR='vim'
 alias v='vim'
 
+# ncdu aliases
+alias ncdu='ncdu -e -2 --color dark-bg --show-graph --show-itemcount' # better default ncdu
+alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
+
 # pager and readme aliases
 alias pager="${PAGER}"
 alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less -R {} \;"
