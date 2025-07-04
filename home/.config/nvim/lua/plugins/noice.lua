@@ -1,8 +1,8 @@
 return {
-    "folke/noice.nvim",
-    config = {
-        cmdline = {
-            enabled = true,
-        },
+  "folke/noice.nvim",
+  opts = {
+    cmdline = {
+      enabled = true,
     },
+  },
 }

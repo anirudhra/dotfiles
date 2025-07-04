@@ -23,18 +23,18 @@ return {
             -- because some formatters care about the filename.
             lang_to_ext = {
               bash = "sh",
-              --              c_sharp = "cs",
-              --              elixir = "exs",
-              --              javascript = "js",
-              --              julia = "jl",
+              c_sharp = "cs",
+              elixir = "exs",
+              javascript = "js",
+              julia = "jl",
               latex = "tex",
               markdown = "md",
               python = "py",
-              --              ruby = "rb",
+              ruby = "rb",
               rust = "rs",
-              --              teal = "tl",
-              --              r = "r",
-              --              typescript = "ts",
+              teal = "tl",
+              r = "r",
+              typescript = "ts",
             },
             -- Map of treesitter language to formatters to use
             -- (defaults to the value from formatters_by_ft)

@@ -1,0 +1,1 @@
+../../../dotfiles/home/.config/vifm/colors/CONTRIBUTING.md

@@ -8,18 +8,18 @@ return {
         auto_install = false,
         ensure_installed = {
           "bash",
-          --          "ruby",
+          "ruby",
           "html",
           "css",
           "scss",
-          --          "javascript",
-          --          "typescript",
+          "javascript",
+          "typescript",
           "json",
           "lua",
         },
         highlight = { enable = true },
         indent = { enable = false },
       })
-    end,
-  },
+    end
+  }
 }
