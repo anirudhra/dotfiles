@@ -1,18 +1,31 @@
 return {
   {
-    "williamboman/mason.nvim",
-    lazy = false,
-    config = function()
-      require("mason").setup()
-    end,
+    "mason-org/mason.nvim",
+    opts = {},
   },
   {
-    "williamboman/mason-lspconfig.nvim",
-    lazy = false,
-    opts = {
-      auto_install = true,
+    "mason-org/mason-lspconfig.nvim",
+    opts = {},
+    dependencies = {
+      { "mason-org/mason.nvim", opts = {} },
+      "neovim/nvim-lspconfig",
     },
   },
+  -- new repos above
+  --  {
+  --    "williamboman/mason.nvim",
+  --    lazy = false,
+  --    config = function()
+  --      require("mason").setup()
+  --    end,
+  --  },
+  --{
+  --  "williamboman/mason-lspconfig.nvim",
+  --  lazy = false,
+  --  opts = {
+  --    auto_install = true,
+  --  },
+  --},
   {
     "neovim/nvim-lspconfig",
     lazy = false,
