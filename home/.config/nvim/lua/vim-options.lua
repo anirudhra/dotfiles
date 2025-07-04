@@ -22,9 +22,7 @@ vim.g.deprecation_warnings = false
 vim.g.autoformat = true
 vim.g.lazyvim_picker = "auto"
 
-
 local opt = vim.opt
-
 opt.ignorecase = true
 opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 opt.autowrite = true
