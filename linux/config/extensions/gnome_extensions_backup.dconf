@@ -21,7 +21,7 @@ menu-button-middle-click-action='None'
 menu-height=500
 menu-width-adjustment=0
 misc-item-icon-size='Default'
-pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop'}, {'id': 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop'}, {'id': 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop'}, {'id': 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop'}]
+pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop'}, {'id': 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop'}, {'id': 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop'}, {'id': 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop'}, {'id': 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop'}]
 power-options=[(0, false), (1, true), (2, true), (3, true), (4, true), (5, false), (6, false), (7, false)]
 prefs-visible-page=0
 quicklinks-item-icon-size='Default'
@@ -206,7 +206,7 @@ window-size=(640, 460)
 accent-color-icon=false
 accessibility-menu=true
 activities-button=true
-animation=1
+animation=2
 background-menu=true
 controls-manager-spacing-size=0
 dash=true
@@ -220,9 +220,10 @@ osd=true
 osd-position=0
 panel=true
 panel-in-overview=true
+quick-settings-airplane-mode=true
 ripple-box=true
 search=true
-show-apps-button=true
+show-apps-button=false
 startup-status=0
 support-notifier-showed-time=uint64 1738435957803
 support-notifier-showed-version=34
@@ -239,7 +240,7 @@ workspace-background-corner-size=0
 workspace-popup=true
 workspace-wrap-around=true
 workspaces-in-app-grid=true
-world-clock=true
+world-clock=false
 
 [openbar]
 accent-color=['0.208', '0.518', '0.894']
@@ -364,9 +365,9 @@ dark-smbgcolor=['0.231', '0.192', '0.278']
 dark-vw-color=['0.090', '0.125', '0.255']
 dark-winbcolor=['0.090', '0.125', '0.255']
 dashdock-style='Bar'
-dbgalpha=0.90000000000000002
+dbgalpha=0.80000000000000004
 dbgcolor=['0.141', '0.133', '0.176']
-dborder=true
+dborder=false
 dbradius=15.0
 default-font='Sans 12'
 destruct-color=['0.75', '0.11', '0.16']
@@ -554,7 +555,7 @@ transparent-on-moving=true
 window-opacity=200
 
 [user-theme]
-name='Orianin-Dark'
+name='Marble-gray-dark'
 
 [vertical-workspaces]
 app-grid-animation=4
@@ -584,7 +585,7 @@ alphabetize=true
 hide-zeros=true
 hot-sensors=['_temperature_acpi_thermal zone_', '_memory_allocated_']
 menu-centered=true
-position-in-panel=0
+position-in-panel=2
 show-battery=true
 show-gpu=true
 

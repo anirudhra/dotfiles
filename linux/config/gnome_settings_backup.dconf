@@ -16,7 +16,7 @@ font-name='JetBrainsMono Nerd Font Mono 11'
 profile-uuids=['78ab5d848e47e21d7cfbc4c7682d3c3d']
 text-blink-mode='focused'
 use-system-font=false
-window-size=(uint32 169, uint32 38)
+window-size=(uint32 169, uint32 37)
 
 [Ptyxis/Profiles/78ab5d848e47e21d7cfbc4c7682d3c3d]
 bold-is-bright=true
@@ -51,7 +51,7 @@ subtitle-encoding='UTF-8'
 
 [Weather]
 window-height=503
-window-maximized=false
+window-maximized=true
 window-width=636
 
 [calculator]
@@ -65,6 +65,7 @@ window-maximized=false
 window-size=(360, 616)
 
 [clocks]
+world-clocks=@aa{sv} []
 
 [clocks/state/window]
 maximized=false
@@ -72,7 +73,7 @@ panel-id='world'
 size=(870, 690)
 
 [control-center]
-last-panel='keyboard'
+last-panel='system'
 window-state=(980, 646, false)
 
 [desktop/app-folders]
@@ -133,13 +134,13 @@ document-font-name='Adwaita Sans 11'
 enable-animations=true
 font-antialiasing='rgba'
 font-name='Adwaita Sans Medium 10 @wght=500'
-gtk-theme='Orianin-Dark'
+gtk-theme='MacTahoe-Dark-alt'
 icon-theme='Tela-dark'
 monospace-font-name='FiraCode Nerd Font Mono 11'
 toolkit-accessibility=false
 
 [desktop/notifications]
-application-children=['gnome-power-panel', 'org-gnome-software', 'setroubleshoot', 'org-mozilla-firefox', 'ulauncher', 'solaar', 'org-gnome-nautilus', 'org-gnome-geary', 'io-elementary-mail', 'microsoft-edge', 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-default', 'org-gnome-evolution-alarm-notify', 'org-gnome-extensions', 'org-gnome-evince', 'io-github-dweymouth-supersonic']
+application-children=['gnome-power-panel', 'org-gnome-software', 'setroubleshoot', 'org-mozilla-firefox', 'ulauncher', 'solaar', 'org-gnome-nautilus', 'org-gnome-geary', 'io-elementary-mail', 'microsoft-edge', 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-default', 'org-gnome-evolution-alarm-notify', 'org-gnome-extensions', 'org-gnome-evince', 'io-github-dweymouth-supersonic', 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-default', 'org-signal-signal', 'org-gnome-ptyxis']
 show-banners=true
 
 [desktop/notifications/application/gnome-datetime-panel]
@@ -153,6 +154,9 @@ application-id='io.github.dweymouth.supersonic.desktop'
 
 [desktop/notifications/application/microsoft-edge]
 application-id='microsoft-edge.desktop'
+
+[desktop/notifications/application/msedge-hnpfjngllnobngcgfapefoaidbinmjnm-default]
+application-id='msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'
 
 [desktop/notifications/application/msedge-ibblmnobmgdmpoeblocemifbpglakpoi-default]
 application-id='msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'
@@ -177,6 +181,9 @@ application-id='org.gnome.Software.desktop'
 
 [desktop/notifications/application/org-mozilla-firefox]
 application-id='org.mozilla.firefox.desktop'
+
+[desktop/notifications/application/org-signal-signal]
+application-id='org.signal.Signal.desktop'
 
 [desktop/notifications/application/setroubleshoot]
 application-id='setroubleshoot.desktop'
@@ -216,12 +223,21 @@ event-sounds=true
 theme-name='elementary'
 
 [desktop/wm/keybindings]
+move-to-workspace-1=['<Shift><Super>1']
+move-to-workspace-2=['<Shift><Super>2']
+move-to-workspace-3=['<Shift><Super>3']
+move-to-workspace-4=['<Shift><Super>4']
 switch-input-source=@as []
 switch-input-source-backward=@as []
+switch-to-workspace-1=['<Super>1']
+switch-to-workspace-2=['<Super>2']
+switch-to-workspace-3=['<Super>3']
+switch-to-workspace-4=['<Super>4']
 
 [desktop/wm/preferences]
 button-layout=':minimize,maximize,close'
 titlebar-font='Cantarell 10'
+workspace-names=@as []
 
 [evince/default]
 continuous=true
@@ -239,6 +255,9 @@ zoom=1.1058823529411765
 
 [evolution-data-server]
 migrated=true
+
+[gnome-session]
+auto-save-session=true
 
 [login-screen]
 enable-fingerprint-authentication=true
@@ -269,6 +288,9 @@ initial-size=(989, 586)
 initial-size-file-chooser=(890, 550)
 maximized=false
 
+[portal/filechooser/appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor]
+last-folder-path='/home/anirudh/code/github/ipod_scripts'
+
 [portal/filechooser/code]
 last-folder-path='/home/anirudh/dotfiles'
 
@@ -290,6 +312,9 @@ last-folder-path='/home/anirudh/dotfiles/linux'
 [portal/filechooser/org.gnome.tweaks]
 last-folder-path='/home/anirudh/Pictures/wallpapers/OS/Linux'
 
+[portal/filechooser/org.signal.Signal]
+last-folder-path='/home/anirudh/Downloads'
+
 [settings-daemon/plugins/color]
 night-light-enabled=true
 night-light-last-coordinates=(33.001399999999997, -117.074)
@@ -297,8 +322,8 @@ night-light-schedule-automatic=true
 
 [settings-daemon/plugins/media-keys]
 custom-keybindings=['/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/']
-home=['<Super>1']
-www=['<Super>2']
+home=['<Shift><Control>h']
+www=['<Shift><Control>b']
 
 [settings-daemon/plugins/media-keys/custom-keybindings/custom0]
 binding='<Super>space'
@@ -309,13 +334,14 @@ name='ulauncher-toggle'
 sleep-inactive-ac-timeout=1200
 
 [settings-daemon/plugins/sharing/gnome-user-share-webdav]
-enabled-connections=['1b0d25a9-ae5b-455c-9ca2-77662f4262f2']
+enabled-connections=['1b0d25a9-ae5b-455c-9ca2-77662f4262f2', '59bc45d5-7760-4675-bfae-4f6f43af0479']
 
 [shell]
 app-picker-layout=[{'btop.desktop': <{'position': <0>}>, 'org.gnome.Contacts.desktop': <{'position': <1>}>, 'org.gnome.Weather.desktop': <{'position': <2>}>, 'org.gnome.clocks.desktop': <{'position': <3>}>, 'org.gnome.Maps.desktop': <{'position': <4>}>, 'org.gnome.Calculator.desktop': <{'position': <5>}>, 'simple-scan.desktop': <{'position': <6>}>, 'org.gnome.Settings.desktop': <{'position': <7>}>, 'org.gnome.Calendar.desktop': <{'position': <8>}>, 'org.gnome.Totem.desktop': <{'position': <9>}>, 'org.gnome.Snapshot.desktop': <{'position': <10>}>, 'org.gnome.Characters.desktop': <{'position': <11>}>, 'Utilities': <{'position': <12>}>, 'System': <{'position': <13>}>, 'calf.desktop': <{'position': <14>}>, 'ca.desrt.dconf-editor.desktop': <{'position': <15>}>, 'yelp.desktop': <{'position': <16>}>, 'com.github.wwmm.easyeffects.desktop': <{'position': <17>}>, 'org.gnome.Extensions.desktop': <{'position': <18>}>, 'gimp.desktop': <{'position': <19>}>, 'gparted.desktop': <{'position': <20>}>, 'system-config-language.desktop': <{'position': <21>}>, 'mpv.desktop': <{'position': <22>}>, 'nvim.desktop': <{'position': <23>}>}, {'rxvt-unicode.desktop': <{'position': <0>}>, 'setroubleshoot.desktop': <{'position': <1>}>, 'org.signal.Signal.desktop': <{'position': <2>}>, 'org.gnome.Software.desktop': <{'position': <3>}>, 'solaar.desktop': <{'position': <4>}>, 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop': <{'position': <5>}>, 'org.gnome.TextEditor.desktop': <{'position': <6>}>, 'org.gnome.tweaks.desktop': <{'position': <7>}>, 'ulauncher.desktop': <{'position': <8>}>, 'vlc.desktop': <{'position': <9>}>, 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop': <{'position': <10>}>}]
-disabled-extensions=['forge@jmmaranan.com', 'blur-my-shell@aunetx']
-enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'appindicatorsupport@rgcjonas.gmail.com', 'arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com', 'weatheroclock@CleoMenezesJr.github.io', 'grand-theft-focus@zalckos.github.com', 'just-perfection-desktop@just-perfection', 'transparent-window-moving@noobsai.github.com', 'Vitals@CoreCoding.com', 'openbar@neuromorph', 'caffeine@patapon.info']
-favorite-apps=['org.gnome.Nautilus.desktop', 'microsoft-edge.desktop', 'org.gnome.Ptyxis.desktop', 'org.mozilla.firefox.desktop', 'code.desktop', 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop', 'msedge-pbodigkegiigalbpjodefafoajimondc-Default.desktop', 'msedge-bajipdbhimehakjfhkcibdbdkmndfboa-Default.desktop', 'appimagekit_8c4f3feaea7043e28d83a53baab3124f-Feishin.desktop']
+disabled-extensions=['forge@jmmaranan.com', 'blur-my-shell@aunetx', 'tactile@lundal.io']
+enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'appindicatorsupport@rgcjonas.gmail.com', 'arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com', 'weatheroclock@CleoMenezesJr.github.io', 'grand-theft-focus@zalckos.github.com', 'just-perfection-desktop@just-perfection', 'Vitals@CoreCoding.com', 'openbar@neuromorph', 'caffeine@patapon.info', 'space-bar@luchrioh', 'transparent-window-moving@noobsai.github.com']
+favorite-apps=['org.gnome.Nautilus.desktop', 'microsoft-edge.desktop', 'org.gnome.Ptyxis.desktop', 'org.mozilla.firefox.desktop', 'code.desktop', 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop', 'appimagekit_5802891a21ddd851c2c3869da1f745df-Feishin.desktop', 'msedge-pbodigkegiigalbpjodefafoajimondc-Default.desktop']
+last-selected-power-profile='power-saver'
 welcome-dialog-last-shown-version='48.2'
 
 [shell/extensions/appindicator]
@@ -341,7 +367,7 @@ menu-button-middle-click-action='None'
 menu-height=500
 menu-width-adjustment=0
 misc-item-icon-size='Default'
-pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop'}, {'id': 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop'}, {'id': 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop'}, {'id': 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop'}]
+pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop'}, {'id': 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop'}, {'id': 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop'}, {'id': 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop'}, {'id': 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop'}]
 power-options=[(0, false), (1, true), (2, true), (3, true), (4, true), (5, false), (6, false), (7, false)]
 prefs-visible-page=0
 quicklinks-item-icon-size='Default'
@@ -526,7 +552,7 @@ window-size=(640, 460)
 accent-color-icon=false
 accessibility-menu=true
 activities-button=true
-animation=1
+animation=2
 background-menu=true
 controls-manager-spacing-size=0
 dash=true
@@ -540,9 +566,10 @@ osd=true
 osd-position=0
 panel=true
 panel-in-overview=true
+quick-settings-airplane-mode=true
 ripple-box=true
 search=true
-show-apps-button=true
+show-apps-button=false
 startup-status=0
 support-notifier-showed-time=uint64 1738435957803
 support-notifier-showed-version=34
@@ -559,7 +586,7 @@ workspace-background-corner-size=0
 workspace-popup=true
 workspace-wrap-around=true
 workspaces-in-app-grid=true
-world-clock=true
+world-clock=false
 
 [shell/extensions/openbar]
 accent-color=['0.208', '0.518', '0.894']
@@ -684,9 +711,9 @@ dark-smbgcolor=['0.231', '0.192', '0.278']
 dark-vw-color=['0.090', '0.125', '0.255']
 dark-winbcolor=['0.090', '0.125', '0.255']
 dashdock-style='Bar'
-dbgalpha=0.90000000000000002
+dbgalpha=0.80000000000000004
 dbgcolor=['0.141', '0.133', '0.176']
-dborder=true
+dborder=false
 dbradius=15.0
 default-font='Sans 12'
 destruct-color=['0.75', '0.11', '0.16']
@@ -806,12 +833,12 @@ prominent3=['100', '100', '100']
 prominent4=['100', '100', '100']
 prominent5=['100', '100', '100']
 prominent6=['100', '100', '100']
-qtoggle-radius=23.0
+qtoggle-radius=15.0
 radius-bottomleft=true
 radius-bottomright=true
 radius-topleft=true
 radius-topright=true
-reloadstyle=false
+reloadstyle=true
 removestyle=false
 sbar-gradient='none'
 set-bottom-margin=false
@@ -874,7 +901,7 @@ transparent-on-moving=true
 window-opacity=200
 
 [shell/extensions/user-theme]
-name='Orianin-Dark'
+name='Marble-gray-dark'
 
 [shell/extensions/vertical-workspaces]
 app-grid-animation=4
@@ -904,7 +931,7 @@ alphabetize=true
 hide-zeros=true
 hot-sensors=['_temperature_acpi_thermal zone_', '_memory_allocated_']
 menu-centered=true
-position-in-panel=0
+position-in-panel=2
 show-battery=true
 show-gpu=true
 
@@ -915,6 +942,8 @@ weather-after-clock=true
 focus-active-notification=@as []
 switch-to-application-1=@as []
 switch-to-application-2=@as []
+switch-to-application-3=@as []
+switch-to-application-4=@as []
 toggle-application-view=@as []
 toggle-message-tray=@as []
 toggle-overview=['<Super>o']
@@ -925,9 +954,9 @@ automatic-location=true
 [shell/world-clocks]
 
 [software]
-check-timestamp=int64 1751220075
+check-timestamp=int64 1751648450
 first-run=false
-flatpak-purge-timestamp=int64 1751171241
+flatpak-purge-timestamp=int64 1751588708
 install-timestamp=int64 1750612215
 packagekit-historical-updates-timestamp=uint64 1750526630
 update-notification-timestamp=int64 1750612330
