@@ -19,7 +19,7 @@ debuglog "Debian aliases sourced"
 
 # add condition for debian/derivatives specific command here
 alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
-alias fullupdate='sudo apt update && sudo apt dist-upgrade && fwupdate'
+alias fullupdate='sudo apt update -y && sudo apt dist-upgrade -y && fwupdate'
 alias showinstalled="sudo apt list --installed | less"
 alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && dpkg --list | grep -i -e kernel- -e linux-image"
 
@@ -50,7 +50,7 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     alias cat="batcat --color=always"
     alias bat="batcat --color=always"
     alias update='fullupdate && fullclean' # alias without dockerupdate
-  else # LXC/VM/Client debian
+  else                                     # LXC/VM/Client debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
     export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
