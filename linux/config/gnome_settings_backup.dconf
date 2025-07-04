@@ -16,7 +16,7 @@ font-name='JetBrainsMono Nerd Font Mono 11'
 profile-uuids=['78ab5d848e47e21d7cfbc4c7682d3c3d']
 text-blink-mode='focused'
 use-system-font=false
-window-size=(uint32 169, uint32 37)
+window-size=(uint32 169, uint32 35)
 
 [Ptyxis/Profiles/78ab5d848e47e21d7cfbc4c7682d3c3d]
 bold-is-bright=true
@@ -133,7 +133,7 @@ cursor-theme='elementary'
 document-font-name='Adwaita Sans 11'
 enable-animations=true
 font-antialiasing='rgba'
-font-name='Adwaita Sans Medium 10 @wght=500'
+font-name='Adwaita Sans Medium 11 @wght=500'
 gtk-theme='MacTahoe-Dark-alt'
 icon-theme='Tela-dark'
 monospace-font-name='FiraCode Nerd Font Mono 11'
@@ -722,7 +722,7 @@ dshadow=false
 fgalpha=1.0
 fgcolor=['1.0', '1.0', '1.0']
 fitts-widgets=true
-font='Adwaita Sans 10'
+font='Adwaita Sans 11'
 gradient=false
 gradient-direction='vertical'
 gtk-popover=false
@@ -838,7 +838,7 @@ radius-bottomleft=true
 radius-bottomright=true
 radius-topleft=true
 radius-topright=true
-reloadstyle=true
+reloadstyle=false
 removestyle=false
 sbar-gradient='none'
 set-bottom-margin=false
@@ -858,7 +858,7 @@ smbgoverride=false
 success-color=['0.15', '0.635', '0.41']
 traffic-light=false
 trigger-autotheme=false
-trigger-reload=true
+trigger-reload=false
 view-hint=0
 vpad=4.0
 vw-color=['0.090', '0.125', '0.255']
