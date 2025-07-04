@@ -1,6 +1,10 @@
 # . is POSIX version of "source"
 . "${HOME}/.aliases"
 
+if [ -n "$TMUX" ]; then
+  export TERM=screen-256color
+fi
+
 #macos only, test by checking if "diskutil" command exists (macos-only)
 #if (( ${+commands[diskutil]} )); then
 if [[ "$OSTYPE" == "darwin"* ]]; then
