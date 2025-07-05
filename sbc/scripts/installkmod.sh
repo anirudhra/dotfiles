@@ -12,7 +12,29 @@
 #rmdir /lib/modules/lib/modules
 #rmdir /lib/modules/lib
 
-source "~/dotfiles/home/.helperfuncs"
+# following doesn't work for whatever reason
+#source "~/dotfiles/home/.helperfuncs"
+
+info() {
+  echo -e "INFO: $1"
+}
+
+debugLog() {
+  echo -e "DEBUG: $1"
+}
+
+warn() {
+  echo -e "WARN: $1"
+}
+
+error() {
+  echo -e "ERROR: $1"
+  exit 1
+}
+
+log() {
+  echo -e "LOG: $1"
+}
 
 set -euo pipefail # Exit on error, undefined vars, pipe failures
 
