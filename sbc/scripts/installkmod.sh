@@ -12,7 +12,7 @@
 #rmdir /lib/modules/lib/modules
 #rmdir /lib/modules/lib
 
-source "../../home/.helperfuncs"
+source "~/dotfiles/home/.helperfuncs"
 
 set -euo pipefail # Exit on error, undefined vars, pipe failures
 
