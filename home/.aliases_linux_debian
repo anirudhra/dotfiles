@@ -18,10 +18,16 @@ MACHINE_TYPE=$(detect_pve_server) # this is the machine type of the machine runn
 debuglog "Debian aliases sourced"
 
 # add condition for debian/derivatives specific command here
-alias fullclean='sudo apt clean && sudo apt autoclean && sudo apt autoremove'
+alias fullclean='sudo apt clean -y && sudo apt autoclean -y && sudo apt --purge autoremove -y'
 alias fullupdate='sudo apt update -y && sudo apt dist-upgrade -y && fwupdate'
 alias showinstalled="sudo apt list --installed | less"
 alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && dpkg --list | grep -i -e kernel- -e linux-image"
+
+# if bat utility (batcat on debian distros) is installed
+if [ -x "$(command -v batcat)" ]; then
+  alias bat="batcat --color=always"
+  alias cat="bat"
+fi
 
 #Separate out PVE and non-PVE/SBC/Client shortcuts
 if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
@@ -33,9 +39,6 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
   alias upgrade='fullupdate && fullclean && fwupdate'
 
-  # use bat instead of cat
-  alias bat="batcat --color=always"
-  alias cat="batcat --color=always"
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
   # LXC/VM and SBC shortcuts
   if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
@@ -47,8 +50,6 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     alias dockerbackup='sudo tar -zcvf /mnt/nfs/sata-ssd/ssd-data/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
     # script to copy compiled kernel modules from PVE LXC to SBC
     alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
-    alias cat="batcat --color=always"
-    alias bat="batcat --color=always"
     alias update='fullupdate && fullclean' # alias without dockerupdate
   else                                     # LXC/VM/Client debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
@@ -67,15 +68,15 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
 
   fi
 
-  #  Other common non-PVE aliases
-  alias upgrade="fullupdate && fullclean && dockerupdateall"
+  #  Other common non-PVE server aliases
+  alias upgrade="fullupdate && fullclean && dockerupdateall" #no firmware update
   alias dockerup='docker compose up -d'
   alias dockerdown='docker compose down'
   alias dockerrestart='docker compose down && docker compose up -d'
   alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
   alias dockerclean='docker system prune --volumes'
 else
-  # Client only aliases
+  # Client only aliases, usually for laptops
   alias upgrade='fullupdate && fullclean && fwupdate'
 fi
 
