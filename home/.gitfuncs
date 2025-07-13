@@ -70,3 +70,32 @@ syncrepo() {
     return 1
   fi
 }
+
+# Run repo sync and install/update logic, with optional force
+# Usage: run_git_update_and_install <giturl> <gitdir> <installupdate_func> <force>
+run_git_update_and_install() {
+  local _giturl="$1"
+  local _gitdir="$2"
+  local _installupdate_func="$3"
+  local _force="$4"
+
+  syncrepo "$_giturl" "$_gitdir"
+  local sync_status=$?
+  if [ $sync_status -eq 0 ] || [ "$_force" = "true" ]; then
+    echo "Forced install/update: $_force"
+    cd "$_gitdir" || exit 1
+    "$_installupdate_func"
+    exit 0
+  else
+    echo "Install/update script not run: $_giturl"
+    exit 1
+  fi
+}
+
+# Print help for theme update scripts
+print_git_theme_update_help() {
+  echo "Usage: $0 [--force] [--help]"
+  echo "  --force   Run install/update even if repo sync fails. (optional, default is false)"
+  echo "  --help    Show this help message."
+  exit 0
+}

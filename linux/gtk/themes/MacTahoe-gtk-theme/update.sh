@@ -5,22 +5,30 @@ giturl="https://github.com/vinceliuice/MacTahoe-gtk-theme"
 gitdir="MacTahoe-gtk-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/themes -a alt -HD --shell -i fedora --darker
+  #sudo ./install.sh -d /usr/share/themes -a alt -HD --shell -i fedora --darker
+  sudo ./install.sh -d /usr/share/themes -a alt --shell -i fedora --darker
 }
 
-##---------------common installation/update script-------------------------#
-source ${HOME}/.gitfuncs
+##---------------------common part-----------------------------------------#
 
-# clone or update the repo
-syncrepo ${giturl} ${gitdir}
+# Source the git functions (now includes run_git_update_and_install)
+source "${HOME}/.gitfuncs"
 
-# only install/update if clone/pull was successful
-if [ $? -eq 0 ]; then
-  cd ${gitdir} || exit 1
-  installupdate # run the install/update script
-  exit 0
-else
-  echo "Install/update script not run: ${giturl}"
-  exit 1
+force_update="false"
+if [ $# -gt 0 ]; then
+  case "$1" in
+    --force)
+      force_update="true"
+      ;;
+    --help)
+      print_git_theme_update_help
+      ;;
+    *)
+      print_git_theme_update_help
+      ;;
+  esac
 fi
+
+# Run the common logic
+run_git_update_and_install "$giturl" "$gitdir" installupdate "$force_update"
 
