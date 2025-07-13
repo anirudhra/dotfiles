@@ -64,6 +64,9 @@ alias nobodyown='chown -R nobody:nogroup *'
 # Create m3u playlist from file listing in current directory recursively
 alias createplaylist="find . -type f -iname \"*.mp3\" -or -iname \"*.flac\" -or -iname \"*.alac\" -or -iname \"*.m4a\" > Playlist.m3u"
 
+# gemini-cli alias
+alias geminicli="npx https://github.com/google-gemini/gemini-cli"
+
 ######## functions ######################
 
 # this function will remove all history until current commit and rebase the repo with current
