@@ -112,9 +112,6 @@ alias lessc='less -R'
 alias more='less'
 #alias cat='less'
 
-alias vim='nano'
-alias vi='nano'
-
 alias sshblanka='ssh -o MACs=hmac-sha2-256 root@10.100.100.65'
 alias sshha='ssh -o MACs=hmac-sha2-256 root@10.100.100.70'
 alias sshjf='ssh -o MACs=hmac-sha2-256 root@10.100.100.80'
