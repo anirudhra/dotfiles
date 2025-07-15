@@ -26,7 +26,7 @@ cd "${PKG_INSTALL_DIR}/themes" || {
 }
 
 # run update.sh script from each directory above where supported, if at least one was sync'd
-echo "Installing GTK UI themes..."
+echo "Installing/Updating GTK UI themes..."
 find . -maxdepth 1 -type d ! -name . | while read -r THEME_DIR; do
   if [[ -x "$THEME_DIR/update.sh" ]]; then
     echo "Updating theme in $THEME_DIR"

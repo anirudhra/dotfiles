@@ -22,7 +22,6 @@ clonerepo_latestcommit() {
   local giturl="$1"
   local gitdir="$2"
   if [ ! -d "$gitdir/.git" ]; then
-    info "Cloning repo: $giturl -> $gitdir"
     if git clone "$giturl" "$gitdir" --depth=1; then
       return 0
     else
@@ -40,7 +39,6 @@ clonerepo_allcommits() {
   local giturl="$1"
   local gitdir="$2"
   if [ ! -d "$gitdir/.git" ]; then
-    info "Cloning repo: $giturl -> $gitdir"
     if git clone "$giturl" "$gitdir"; then
       return 0
     else
@@ -110,8 +108,10 @@ syncrepo() {
   local giturl="$1"
   local gitdir="$2"
   if clonerepo_latestcommit "$giturl" "$gitdir"; then
+    info "Repo cloned: $giturl to $(pwd)/$gitdir"
     return 0
   elif updaterepo_latestcommit "$giturl" "$gitdir"; then
+    info "Repo updated: $giturl to $(pwd)/$gitdir"
     return 0
   else
     return 1
