@@ -291,14 +291,12 @@ manualstow() {
 #   OS specific aliases
 ################################################################################################
 
+debuglog "OS Detected: ${OS_TYPE}"
+
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
-  debuglog "Linux OS Detected: ${OS_TYPE}"
   source "${HOME}/.aliases_linux"
 elif [[ "${OS_TYPE}" == "macos" ]]; then
-  debuglog "MacOS OS Detected: ${OS_TYPE}"
   source "${HOME}/.aliases_macos"
-else
-  debuglog "Unknown OS Type: ${OS_TYPE}"
 fi
 
 ################################################################################################
