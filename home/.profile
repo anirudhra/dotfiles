@@ -35,13 +35,12 @@ else
   export PATH="./:${PATH}"
 fi
 
+HOST_PROFILE_ZSH="${HOME}/.profile.${HOST%%.*}"
+HOST_PROFILE_BASH="${HOME}/.profile.${HOSTNAME%%.*}"
+
 # hostname specific
 # bash specific
-if [ -e "${HOME}/.profile.${HOSTNAME}" ]; then
-  . "${HOME}/.profile.${HOSTNAME}"
-fi
+[ -f "${HOST_PROFILE_BASH}" ] && . "${HOST_PROFILE_BASH}"
 
 # for zsh
-if [ -e "${HOME}/.profile.${HOST}" ]; then
-  . "${HOME}/.profile.${HOST}"
-fi
+[ -f "${HOST_PROFILE_ZSH}" ] && . "${HOST_PROFILE_ZSH}"
