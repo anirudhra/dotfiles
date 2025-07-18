@@ -1,3 +1,11 @@
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_PROFILE_IFC6410 ]]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_PROFILE_IFC6410=1
+
 lsb_release -a
 echo
 uname -a

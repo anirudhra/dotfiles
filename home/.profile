@@ -1,3 +1,11 @@
+# Guard variable to ensure sourcing only once
+if [[ -v SOURCED_PROFILE ]]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_PROFILE=1
+
 # . is POSIX version of "source"
 . "${HOME}/.aliases"
 
@@ -38,7 +46,7 @@ fi
 HOST_PROFILE_ZSH="${HOME}/.profile.${HOST%%.*}"
 HOST_PROFILE_BASH="${HOME}/.profile.${HOSTNAME%%.*}"
 
-# hostname specific
+# hostname specific commands, both point to the same file and will run only once
 # bash specific
 [ -f "${HOST_PROFILE_BASH}" ] && . "${HOST_PROFILE_BASH}"
 
