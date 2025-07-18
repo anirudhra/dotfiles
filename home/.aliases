@@ -233,6 +233,8 @@ manualstow() {
     '.aliases_macos'
     '.profile'
     ".profile.${HOSTNAME}"
+    ".profile.${HOST}"
+    ".profile.*"
     '.zshrc'
     '.bashrc'
     '.bash_profile'
