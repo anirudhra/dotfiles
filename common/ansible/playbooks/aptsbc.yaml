@@ -1,9 +1,9 @@
 - name: Apt Update and clean on SBC
   hosts: sbceth
   tasks:
-  - name: Run apt update and clean commands on remote services host
-    #ansible.builtin.ping:
-    ansible.builtin.shell: sudo apt update -y && sudo apt dist-upgrade -y ; sudo apt clean ; sudo apt autoclean ; sudo apt autoremove
-    register: out
+    - name: Run apt update and clean commands on remote services host
+      #ansible.builtin.ping:
+      ansible.builtin.shell: sudo apt update -y && sudo apt dist-upgrade -y ; sudo apt clean -y; sudo apt autoclean -y; sudo apt autoremove -y
+      register: out
 
-  - debug: var=out.stdout_lines
+    - debug: var=out.stdout_lines

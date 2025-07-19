@@ -1,9 +1,9 @@
 - name: Update ifc6410 SBC
   hosts: sbceth
   tasks:
-  - name: Run upgrade.sh script on remote host
-    #ansible.builtin.ping:
-    ansible.builtin.shell: cd ${HOME} && ./upgrade.sh
-    register: out
+    - name: Run upgrade.sh script on remote host
+      #ansible.builtin.ping:
+      ansible.builtin.shell: cd "${HOME}/dotfiles/common/ansible/clientscripts" && ./upgrade.sh
+      register: out
 
-  - debug: var=out.stdout_lines
+    - debug: var=out.stdout_lines

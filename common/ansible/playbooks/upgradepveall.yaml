@@ -1,9 +1,9 @@
 - name: Update all PVE services
   hosts: upgradepveall
   tasks:
-  - name: Run upgrade.sh script on remote services hosts
-    #ansible.builtin.ping:
-    ansible.builtin.shell: cd ${HOME} && ./upgrade.sh
-    register: out
+    - name: Run upgrade.sh script on remote services hosts
+      #ansible.builtin.ping:
+      ansible.builtin.shell: cd "${HOME}/dotfiles/common/ansible/clientscripts" && ./upgrade.sh
+      register: out
 
-  - debug: var=out.stdout_lines
+    - debug: var=out.stdout_lines

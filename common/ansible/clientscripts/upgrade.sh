@@ -4,9 +4,9 @@
 # intended to be run on PVE server and guests only
 
 fullclean() {
-  sudo apt clean
-  sudo apt autoclean
-  sudo apt autoremove
+  sudo apt clean -y
+  sudo apt autoclean -y
+  sudo apt autoremove -y
 }
 
 fullupdate() {
