@@ -24,4 +24,4 @@ fi
 unset rc
 
 source "${HOME}/.profile"
-eval "$(zoxide init bash)"
+command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
