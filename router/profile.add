@@ -122,5 +122,11 @@ alias sshventoy='ssh -o MACs=hmac-sha2-256 root@10.100.100.51'
 alias sshwg='ssh -o MACs=hmac-sha2-256 root@10.100.100.55'
 alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
 
+##################################
+# Commands to be run on startup
+# gets rid of defaults.vim not found error
+# either install 'sudo' via opkg or remove sudo from command below
+sudo touch ~root/.exrc
+
 ##########################################################################
 # End of profile.add
