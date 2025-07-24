@@ -52,6 +52,7 @@ clonerepo_allcommits() {
 }
 
 # Update a repo if it exists, only to latest commit
+# default update function to only sync to head instead of full history
 updaterepo_latestcommit() {
   local giturl="$1"
   local gitdir="$2"
@@ -61,7 +62,10 @@ updaterepo_latestcommit() {
       return 1
     }
     local syncstatus
-    syncstatus=$(git pull --depth=1)
+    syncstatus=$(
+      git rebase
+      git pull --depth=1
+    )
     if [[ "$syncstatus" != "Already up to date." ]]; then
       info "Repo updated: $giturl"
       cd - >/dev/null 2>&1
@@ -78,6 +82,7 @@ updaterepo_latestcommit() {
 }
 
 # Update a repo if it exists, pull all commits since last sync
+# function not called by default as it pulls full history
 updaterepo_allcommits() {
   local giturl="$1"
   local gitdir="$2"
@@ -87,7 +92,10 @@ updaterepo_allcommits() {
       return 1
     }
     local syncstatus
-    syncstatus=$(git pull)
+    syncstatus=$(
+      git rebase
+      git pull
+    )
     if [[ "$syncstatus" != "Already up to date." ]]; then
       info "Repo updated: $giturl"
       cd - >/dev/null 2>&1
