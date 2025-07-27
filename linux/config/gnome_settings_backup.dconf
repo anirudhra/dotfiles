@@ -16,7 +16,7 @@ font-name='JetBrainsMono Nerd Font Mono 11'
 profile-uuids=['78ab5d848e47e21d7cfbc4c7682d3c3d']
 text-blink-mode='focused'
 use-system-font=false
-window-size=(uint32 169, uint32 35)
+window-size=(uint32 169, uint32 38)
 
 [Ptyxis/Profiles/78ab5d848e47e21d7cfbc4c7682d3c3d]
 bold-is-bright=true
@@ -101,8 +101,8 @@ translate=true
 
 [desktop/background]
 picture-options='zoom'
-picture-uri='file:///home/anirudh/Pictures/wallpapers/OS/Linux/unix_wallpaper.jpg'
-picture-uri-dark='file:///home/anirudh/Pictures/wallpapers/OS/Linux/unix_wallpaper.jpg'
+picture-uri='file:///home/anirudh/.config/background'
+picture-uri-dark='file:///home/anirudh/.config/background'
 
 [desktop/break-reminders/eyesight]
 play-sound=true
@@ -130,13 +130,12 @@ clock-show-seconds=false
 clock-show-weekday=true
 color-scheme='prefer-dark'
 cursor-theme='elementary'
-document-font-name='Adwaita Sans 11'
 enable-animations=true
 font-antialiasing='rgba'
-font-name='Adwaita Sans Medium 11 @wght=500'
-gtk-theme='MacTahoe-Dark-alt'
+font-hinting='slight'
+font-name='Adwaita Sans 10'
+gtk-theme='Orchis-Dark'
 icon-theme='Tela-dark'
-monospace-font-name='FiraCode Nerd Font Mono 11'
 toolkit-accessibility=false
 
 [desktop/notifications]
@@ -223,10 +222,16 @@ event-sounds=true
 theme-name='elementary'
 
 [desktop/wm/keybindings]
-move-to-workspace-1=['<Shift><Super>1']
-move-to-workspace-2=['<Shift><Super>2']
-move-to-workspace-3=['<Shift><Super>3']
-move-to-workspace-4=['<Shift><Super>4']
+move-to-workspace-1=['<Super><Shift>1']
+move-to-workspace-10=['<Super><Shift>0']
+move-to-workspace-2=['<Super><Shift>2']
+move-to-workspace-3=['<Super><Shift>3']
+move-to-workspace-4=['<Super><Shift>4']
+move-to-workspace-5=['<Super><Shift>5']
+move-to-workspace-6=['<Super><Shift>6']
+move-to-workspace-7=['<Super><Shift>7']
+move-to-workspace-8=['<Super><Shift>8']
+move-to-workspace-9=['<Super><Shift>9']
 switch-input-source=@as []
 switch-input-source-backward=@as []
 switch-to-workspace-1=['<Super>1']
@@ -235,7 +240,11 @@ switch-to-workspace-3=['<Super>3']
 switch-to-workspace-4=['<Super>4']
 
 [desktop/wm/preferences]
-button-layout=':minimize,maximize,close'
+action-double-click-titlebar='toggle-maximize'
+action-middle-click-titlebar='none'
+action-right-click-titlebar='menu'
+button-layout='appmenu:minimize,maximize,close'
+focus-mode='click'
 titlebar-font='Cantarell 10'
 workspace-names=@as []
 
@@ -250,7 +259,7 @@ show-sidebar=true
 sidebar-page='thumbnails'
 sidebar-size=132
 sizing-mode='free'
-window-ratio=(0.97222222222222221, 0.97979797979797978)
+window-ratio=(1.6437908496732025, 0.97979797979797978)
 zoom=1.1058823529411765
 
 [evolution-data-server]
@@ -269,7 +278,6 @@ is-maximized=true
 width=763
 
 [mutter]
-center-new-windows=true
 overlay-key='Super_L'
 
 [nautilus/compression]
@@ -289,7 +297,7 @@ initial-size-file-chooser=(890, 550)
 maximized=false
 
 [portal/filechooser/appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor]
-last-folder-path='/home/anirudh/code/github/ipod_scripts'
+last-folder-path='/home/anirudh/dotfiles'
 
 [portal/filechooser/code]
 last-folder-path='/home/anirudh/dotfiles'
@@ -337,10 +345,10 @@ sleep-inactive-ac-timeout=1200
 enabled-connections=['1b0d25a9-ae5b-455c-9ca2-77662f4262f2', '59bc45d5-7760-4675-bfae-4f6f43af0479']
 
 [shell]
-app-picker-layout=[{'btop.desktop': <{'position': <0>}>, 'org.gnome.Contacts.desktop': <{'position': <1>}>, 'org.gnome.Weather.desktop': <{'position': <2>}>, 'org.gnome.clocks.desktop': <{'position': <3>}>, 'org.gnome.Maps.desktop': <{'position': <4>}>, 'org.gnome.Calculator.desktop': <{'position': <5>}>, 'simple-scan.desktop': <{'position': <6>}>, 'org.gnome.Settings.desktop': <{'position': <7>}>, 'org.gnome.Calendar.desktop': <{'position': <8>}>, 'org.gnome.Totem.desktop': <{'position': <9>}>, 'org.gnome.Snapshot.desktop': <{'position': <10>}>, 'org.gnome.Characters.desktop': <{'position': <11>}>, 'Utilities': <{'position': <12>}>, 'System': <{'position': <13>}>, 'calf.desktop': <{'position': <14>}>, 'ca.desrt.dconf-editor.desktop': <{'position': <15>}>, 'yelp.desktop': <{'position': <16>}>, 'com.github.wwmm.easyeffects.desktop': <{'position': <17>}>, 'org.gnome.Extensions.desktop': <{'position': <18>}>, 'gimp.desktop': <{'position': <19>}>, 'gparted.desktop': <{'position': <20>}>, 'system-config-language.desktop': <{'position': <21>}>, 'mpv.desktop': <{'position': <22>}>, 'nvim.desktop': <{'position': <23>}>}, {'rxvt-unicode.desktop': <{'position': <0>}>, 'setroubleshoot.desktop': <{'position': <1>}>, 'org.signal.Signal.desktop': <{'position': <2>}>, 'org.gnome.Software.desktop': <{'position': <3>}>, 'solaar.desktop': <{'position': <4>}>, 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop': <{'position': <5>}>, 'org.gnome.TextEditor.desktop': <{'position': <6>}>, 'org.gnome.tweaks.desktop': <{'position': <7>}>, 'ulauncher.desktop': <{'position': <8>}>, 'vlc.desktop': <{'position': <9>}>, 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop': <{'position': <10>}>}]
-disabled-extensions=['forge@jmmaranan.com', 'blur-my-shell@aunetx', 'tactile@lundal.io']
-enabled-extensions=['user-theme@gnome-shell-extensions.gcampax.github.com', 'appindicatorsupport@rgcjonas.gmail.com', 'arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com', 'weatheroclock@CleoMenezesJr.github.io', 'grand-theft-focus@zalckos.github.com', 'just-perfection-desktop@just-perfection', 'Vitals@CoreCoding.com', 'openbar@neuromorph', 'caffeine@patapon.info', 'space-bar@luchrioh', 'transparent-window-moving@noobsai.github.com']
-favorite-apps=['org.gnome.Nautilus.desktop', 'microsoft-edge.desktop', 'org.gnome.Ptyxis.desktop', 'org.mozilla.firefox.desktop', 'code.desktop', 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop', 'appimagekit_5802891a21ddd851c2c3869da1f745df-Feishin.desktop', 'msedge-pbodigkegiigalbpjodefafoajimondc-Default.desktop']
+app-picker-layout=[{'btop.desktop': <{'position': <0>}>, 'org.gnome.Contacts.desktop': <{'position': <1>}>, 'org.gnome.Weather.desktop': <{'position': <2>}>, 'org.gnome.clocks.desktop': <{'position': <3>}>, 'org.gnome.Maps.desktop': <{'position': <4>}>, 'org.gnome.Calculator.desktop': <{'position': <5>}>, 'simple-scan.desktop': <{'position': <6>}>, 'org.gnome.Settings.desktop': <{'position': <7>}>, 'org.gnome.Calendar.desktop': <{'position': <8>}>, 'org.gnome.Totem.desktop': <{'position': <9>}>, 'org.gnome.Snapshot.desktop': <{'position': <10>}>, 'org.gnome.Characters.desktop': <{'position': <11>}>, 'Utilities': <{'position': <12>}>, 'System': <{'position': <13>}>, 'calf.desktop': <{'position': <14>}>, 'ca.desrt.dconf-editor.desktop': <{'position': <15>}>, 'yelp.desktop': <{'position': <16>}>, 'com.github.wwmm.easyeffects.desktop': <{'position': <17>}>, 'org.gnome.Extensions.desktop': <{'position': <18>}>, 'gimp.desktop': <{'position': <19>}>, 'gparted.desktop': <{'position': <20>}>, 'system-config-language.desktop': <{'position': <21>}>, 'mpv.desktop': <{'position': <22>}>, 'nvim.desktop': <{'position': <23>}>}, {'rxvt-unicode.desktop': <{'position': <0>}>, 'setroubleshoot.desktop': <{'position': <1>}>, 'org.signal.Signal.desktop': <{'position': <2>}>, 'org.gnome.Software.desktop': <{'position': <3>}>, 'solaar.desktop': <{'position': <4>}>, 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop': <{'position': <5>}>, 'org.gnome.TextEditor.desktop': <{'position': <6>}>, 'org.gnome.tweaks.desktop': <{'position': <7>}>, 'ulauncher.desktop': <{'position': <8>}>, 'vlc.desktop': <{'position': <9>}>, 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop': <{'position': <10>}>, 'appimagelaunchersettings.desktop': <{'position': <11>}>, 'msedge-eajldadhcdflkokijcobhdbikgknilhd-Default.desktop': <{'position': <12>}>, 'msedge-nhmjimlpnolfejjepgelfnlangaejnpc-Default.desktop': <{'position': <13>}>, 'msedge-mdpkiolbdkhdjpekfbkbmhigcaggjagi-Default.desktop': <{'position': <14>}>, 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop': <{'position': <15>}>, 'msedge-bgcnlolgeamgoobeekkpmhlkdieeemlb-Default.desktop': <{'position': <16>}>, 'msedge-ackmkohmncbefkhimjegebcbkcapbmle-Default.desktop': <{'position': <17>}>, 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop': <{'position': <18>}>, 'menulibre.desktop': <{'position': <19>}>, 'msedge-bajipdbhimehakjfhkcibdbdkmndfboa-Default.desktop': <{'position': <20>}>, 'msedge-bolinnmjdbpfiblpildcpchlmeadjdpc-Default.desktop': <{'position': <21>}>, 'msedge-iaeeeliiibckodefaniockophecickng-Default.desktop': <{'position': <22>}>, 'msedge-bajaebjnbgnngngemmcpjknnbkpcaaki-Default.desktop': <{'position': <23>}>}, {'nvtop.desktop': <{'position': <0>}>, 'page.tesk.Refine.desktop': <{'position': <1>}>, 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop': <{'position': <2>}>, 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop': <{'position': <3>}>, 'vifm.desktop': <{'position': <4>}>}]
+disabled-extensions=['forge@jmmaranan.com', 'blur-my-shell@aunetx', 'tactile@lundal.io', 'caffeine@patapon.info']
+enabled-extensions=['appindicatorsupport@rgcjonas.gmail.com', 'arcmenu@arcmenu.com', 'dash-to-dock@micxgx.gmail.com', 'weatheroclock@CleoMenezesJr.github.io', 'grand-theft-focus@zalckos.github.com', 'Vitals@CoreCoding.com', 'space-bar@luchrioh', 'transparent-window-moving@noobsai.github.com', 'user-theme@gnome-shell-extensions.gcampax.github.com', 'just-perfection-desktop@just-perfection', 'openbar@neuromorph']
+favorite-apps=['org.gnome.Nautilus.desktop', 'microsoft-edge.desktop', 'org.gnome.Ptyxis.desktop', 'org.mozilla.firefox.desktop', 'code.desktop', 'appimagekit_5802891a21ddd851c2c3869da1f745df-Feishin.desktop', 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop', 'msedge-pbodigkegiigalbpjodefafoajimondc-Default.desktop']
 last-selected-power-profile='power-saver'
 welcome-dialog-last-shown-version='48.2'
 
@@ -362,12 +370,21 @@ extra-categories=[(0, false), (1, false), (2, false), (3, false), (4, false)]
 hide-overview-on-startup=true
 left-panel-width=250
 menu-arrow-rise=(true, 6)
+menu-background-color='rgba(48,48,49,0.98)'
+menu-border-color='rgb(60,60,60)'
 menu-button-icon='Menu_Icon'
 menu-button-middle-click-action='None'
+menu-foreground-color='rgb(223,223,223)'
 menu-height=500
+menu-item-active-bg-color='rgb(25,98,163)'
+menu-item-active-fg-color='rgb(255,255,255)'
+menu-item-hover-bg-color='rgb(21,83,158)'
+menu-item-hover-fg-color='rgb(255,255,255)'
+menu-separator-color='rgba(255,255,255,0.1)'
 menu-width-adjustment=0
 misc-item-icon-size='Default'
-pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop'}, {'id': 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop'}, {'id': 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop'}, {'id': 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop'}, {'id': 'appimagekit_57468eafba3c0643e36a16ee464fb0a7-Cursor.desktop'}]
+override-menu-theme=true
+pinned-apps=[{'id': 'btop.desktop'}, {'id': 'org.signal.Signal.desktop'}, {'id': 'msedge-hnpfjngllnobngcgfapefoaidbinmjnm-Default.desktop'}, {'id': 'msedge-ibblmnobmgdmpoeblocemifbpglakpoi-Default.desktop'}, {'id': 'msedge-dlcdeddmkpiclfopbfkcbopjeanmkpnd-Default.desktop'}, {'id': 'msedge-inoiknikobiemmomjjfifcgfgjiffahm-Default.desktop'}, {'id': 'msedge-ghnchkheenemndnipajlelaglhocfbpd-Default.desktop'}, {'id': 'msedge-jhplebaocdfibeljifoogfkfhedcbphk-Default.desktop'}, {'id': 'msedge-bajipdbhimehakjfhkcibdbdkmndfboa-Default.desktop'}, {'id': 'appimagekit_6c77dbb87bed08b0a18fdec03249f8c6-Feishin.desktop'}, {'id': 'msedge-blgdilankhbcpipclgpdndahbehalgkh-Default.desktop'}]
 power-options=[(0, false), (1, true), (2, true), (3, true), (4, true), (5, false), (6, false), (7, false)]
 prefs-visible-page=0
 quicklinks-item-icon-size='Default'
@@ -423,10 +440,10 @@ autohide-in-fullscreen=false
 background-color='rgb(10,11,28)'
 background-opacity=0.80000000000000004
 click-action='minimize-or-overview'
-custom-background-color=true
+custom-background-color=false
 custom-theme-running-dots-border-color='rgb(255,255,255)'
 custom-theme-running-dots-color='rgb(255,255,255)'
-custom-theme-shrink=true
+custom-theme-shrink=false
 customize-alphas=true
 dash-max-icon-size=42
 disable-overview-on-startup=true
@@ -590,7 +607,7 @@ world-clock=false
 
 [shell/extensions/openbar]
 accent-color=['0.208', '0.518', '0.894']
-accent-override=false
+accent-override=true
 apply-accent-shell=false
 apply-all-shell=false
 apply-flatpak=true
@@ -601,23 +618,23 @@ auto-bgalpha=true
 autofg-bar=true
 autofg-menu=true
 autohg-bar=true
-autohg-menu=true
+autohg-menu=false
 autotheme-dark='Dark'
-autotheme-font=false
+autotheme-font=true
 autotheme-light='Light'
 autotheme-refresh=true
 balpha=0.65000000000000002
 bartype='Floating'
 bcolor=['0.718', '0.588', '0.776']
-bg-change=false
-bgalpha=0.90000000000000002
+bg-change=true
+bgalpha=0.94999999999999996
 bgalpha-wmax=1.0
 bgalpha2=0.69999999999999996
 bgcolor=['0.125', '0.145', '0.169']
 bgcolor-wmax=['0.118', '0.118', '0.118']
 bgcolor2=['0.231', '0.192', '0.278']
 bgpalette=false
-bguri='file:///home/anirudh/Pictures/wallpapers/OS/Linux/unix_wallpaper.jpg'
+bguri='file:///home/anirudh/.config/background'
 border-wmax=false
 bordertype='solid'
 bottom-margin=6.5
@@ -665,7 +682,7 @@ dark-bcolor=['0.718', '0.588', '0.776']
 dark-bgcolor=['0.125', '0.145', '0.169']
 dark-bgcolor-wmax=['0.118', '0.118', '0.118']
 dark-bgcolor2=['0.231', '0.192', '0.278']
-dark-bguri='file:///home/anirudh/Pictures/wallpapers/OS/Linux/unix_wallpaper.jpg'
+dark-bguri='file:///home/anirudh/.config/background'
 dark-boxcolor=['0.125', '0.145', '0.169']
 dark-candy1=['0', '0.61', '0.74']
 dark-candy10=['0.09', '0.19', '0.72']
@@ -685,15 +702,15 @@ dark-candy8=['0.18', '0.76', '0.49']
 dark-candy9=['0.93', '0.20', '0.23']
 dark-dbgcolor=['0.141', '0.133', '0.176']
 dark-fgcolor=['1.0', '1.0', '1.0']
-dark-hcolor=['0.467', '0.463', '0.482']
+dark-hcolor=['0.451', '0.490', '0.647']
 dark-hscd-color=['0.090', '0.125', '0.255']
 dark-iscolor=['0.125', '0.145', '0.169']
-dark-mbcolor=['0.627', '0.518', '0.682']
-dark-mbgcolor=['0.122', '0.137', '0.165']
+dark-mbcolor=['0.451', '0.490', '0.647']
+dark-mbgcolor=['0.141', '0.133', '0.176']
 dark-mfgcolor=['1.0', '1.0', '1.0']
 dark-mhcolor=['0.451', '0.490', '0.647']
-dark-mscolor=['0.208', '0.518', '0.894']
-dark-mshcolor=['0.082', '0.090', '0.122']
+dark-mscolor=['0.000', '0.620', '1.000']
+dark-mshcolor=['0.141', '0.122', '0.192']
 dark-palette1=['21', '23', '31']
 dark-palette10=['115', '125', '165']
 dark-palette11=['119', '117', '136']
@@ -706,8 +723,8 @@ dark-palette6=['38', '44', '51']
 dark-palette7=['40', '47', '64']
 dark-palette8=['68', '75', '101']
 dark-palette9=['66', '70', '80']
-dark-shcolor=['0.082', '0.090', '0.122']
-dark-smbgcolor=['0.231', '0.192', '0.278']
+dark-shcolor=['0.000', '0.000', '0.000']
+dark-smbgcolor=['0.467', '0.463', '0.482']
 dark-vw-color=['0.090', '0.125', '0.255']
 dark-winbcolor=['0.090', '0.125', '0.255']
 dashdock-style='Bar'
@@ -731,7 +748,7 @@ gtk-transparency=1.0
 halpha=0.16
 handle-border=9.0
 hbar-gtk3only=false
-hcolor=['0.467', '0.463', '0.482']
+hcolor=['0.451', '0.490', '0.647']
 headerbar-hint=0
 heffect=false
 height=36.0
@@ -745,7 +762,7 @@ light-bcolor=['0.549', '0.298', '0.424']
 light-bgcolor=['0.820', '0.831', '0.875']
 light-bgcolor-wmax=['0.922', '0.922', '0.922']
 light-bgcolor2=['0.808', '0.780', '0.839']
-light-bguri='file:///home/anirudh/Pictures/wallpapers/OS/Linux/unix_wallpaper.jpg'
+light-bguri='file:///home/anirudh/.config/background'
 light-boxcolor=['0.820', '0.831', '0.875']
 light-candy1=['0', '0.61', '0.74']
 light-candy10=['0.09', '0.19', '0.72']
@@ -793,12 +810,12 @@ light-winbcolor=['0.125', '0.196', '0.475']
 margin=2.0
 margin-wmax=2.0
 mbalpha=0.80000000000000004
-mbcolor=['0.627', '0.518', '0.682']
+mbcolor=['0.451', '0.490', '0.647']
 mbg-gradient=false
 mbgalpha=0.75
-mbgcolor=['0.122', '0.137', '0.165']
+mbgcolor=['0.141', '0.133', '0.176']
 menu-radius=21.0
-menustyle=true
+menustyle=false
 mfgalpha=1.0
 mfgcolor=['1.0', '1.0', '1.0']
 mhalpha=0.29999999999999999
@@ -807,9 +824,9 @@ monitor-height=864
 monitor-width=1536
 monitors='all'
 msalpha=0.90000000000000002
-mscolor=['0.208', '0.518', '0.894']
+mscolor=['0.000', '0.620', '1.000']
 mshalpha=0.79000000000000004
-mshcolor=['0.082', '0.090', '0.122']
+mshcolor=['0.141', '0.122', '0.192']
 neon=false
 neon-wmax=false
 notif-radius=10.0
@@ -833,12 +850,12 @@ prominent3=['100', '100', '100']
 prominent4=['100', '100', '100']
 prominent5=['100', '100', '100']
 prominent6=['100', '100', '100']
-qtoggle-radius=15.0
+qtoggle-radius=25.0
 radius-bottomleft=true
 radius-bottomright=true
 radius-topleft=true
 radius-topright=true
-reloadstyle=false
+reloadstyle=true
 removestyle=false
 sbar-gradient='none'
 set-bottom-margin=false
@@ -849,11 +866,11 @@ set-overview=false
 set-yarutheme=false
 shadow=true
 shalpha=0.28999999999999998
-shcolor=['0.082', '0.090', '0.122']
+shcolor=['0.000', '0.000', '0.000']
 sidebar-hint=10
 slider-height=12.0
 smbgalpha=0.94999999999999996
-smbgcolor=['0.231', '0.192', '0.278']
+smbgcolor=['0.467', '0.463', '0.482']
 smbgoverride=false
 success-color=['0.15', '0.635', '0.41']
 traffic-light=false
@@ -901,7 +918,7 @@ transparent-on-moving=true
 window-opacity=200
 
 [shell/extensions/user-theme]
-name='Marble-gray-dark'
+name='Orchis-Dark'
 
 [shell/extensions/vertical-workspaces]
 app-grid-animation=4
@@ -954,12 +971,13 @@ automatic-location=true
 [shell/world-clocks]
 
 [software]
-check-timestamp=int64 1751648450
+check-timestamp=int64 1753544751
 first-run=false
-flatpak-purge-timestamp=int64 1751588708
-install-timestamp=int64 1750612215
-packagekit-historical-updates-timestamp=uint64 1750526630
-update-notification-timestamp=int64 1750612330
+flatpak-purge-timestamp=int64 1753585244
+install-timestamp=int64 1753284460
+packagekit-historical-updates-timestamp=uint64 1753284460
+security-timestamp=int64 1753284241271302
+update-notification-timestamp=int64 1753284504
 
 [system/location]
 enabled=true
