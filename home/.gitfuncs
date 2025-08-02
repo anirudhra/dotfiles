@@ -63,7 +63,7 @@ updaterepo_latestcommit() {
     }
     local syncstatus
     syncstatus=$(
-      git rebase
+      #git rebase
       git pull --depth=1
     )
     if [[ "$syncstatus" != "Already up to date." ]]; then
@@ -93,7 +93,7 @@ updaterepo_allcommits() {
     }
     local syncstatus
     syncstatus=$(
-      git rebase
+      #git rebase
       git pull
     )
     if [[ "$syncstatus" != "Already up to date." ]]; then
