@@ -12,10 +12,11 @@ SOURCED_ALIASES_DEV=1
 
 debuglog "Dev/Homelab aliases sourced"
 
-source "${HOME}/.aliases_hosts"
+source "${ALIASES_HOME}/.aliases_hosts"
 
 # ssh aliases
 alias sshrouter='ssh "${ROUTERUSER}@${ROUTER}" -p "${ROUTERPORT}" -t "${SSHTMUX}"'
+alias sshddwrt='ssh "${SSHROOT}@${DDWRTROUTER}" -t "${SSHTMUX}"'
 
 alias sshpve='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}" -t "${SSHTMUX}"'
 alias sshserver='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}"' #non-tmux version

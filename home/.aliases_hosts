@@ -15,8 +15,10 @@ debuglog "Hosts aliases sourced"
 # constants
 export ROUTERPORT="6666"
 export ROUTERUSER="admin"
+
 export SSHROOT="root"
 export SSHNONROOT="nonroot"
+
 export SSHTMUX="tmux -2 attach || tmux -2 new"
 export SSHMAC="hmac-sha2-256"
 export SBCHOST="ifc6410"
@@ -25,9 +27,11 @@ export PVEHOST="pve"
 #subnets
 export NET1="10.100.100"
 export NET2="192.168.4"
+export NET3="192.168.1"
 
 # Main network hosts
 export ROUTER="${NET1}.1"
+export DDWRTROUTER="${NET3}.1"
 
 export PVESERVER="${NET1}.50"
 export PVEVENTOY="${NET1}.51"
@@ -45,7 +49,7 @@ export SBCWIFI="${NET1}.66"
 export SBCETH="${NET1}.67"
 
 export CAM_BASE="${NET1}.40"
-export THERMOSTAT="${NET1}.41" 
+export THERMOSTAT="${NET1}.41"
 export ENTRANCE_LIGHT="${NET1}.42"
 export PRINTER="${NET1}.45"
 

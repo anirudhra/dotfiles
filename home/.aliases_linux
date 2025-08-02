@@ -10,7 +10,7 @@ fi
 # Set the guard variable
 SOURCED_ALIASES_LINUX=1
 
-source "${HOME}/.helperfuncs"
+source "${ALIASES_HOME}/.helperfuncs"
 
 OS_TYPE=$(detect_os_type)         # this is the OS of the machine running the script
 MACHINE_TYPE=$(detect_pve_server) # this is the machine type of the machine running the script
@@ -20,7 +20,7 @@ debuglog "Machine Type: ${MACHINE_TYPE}"
 debuglog "Linux aliases sourced"
 
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
-  source "${HOME}/.aliases_linux_${OS_TYPE}"
+  source "${ALIASES_HOME}/.aliases_linux_${OS_TYPE}"
 fi
 
 if [ -x "$(command -v fwupdmgr)" ]; then

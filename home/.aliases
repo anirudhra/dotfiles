@@ -2,8 +2,11 @@
 ## (c) Anirudh Acharya 2024, 2025
 ## useful aliases
 
+# set aliases home directory, this is where all subscripts live
+export ALIASES_HOME="${HOME}"
+
 # source helpers
-source "${HOME}/.helperfuncs"
+source "${ALIASES_HOME}/.helperfuncs"
 
 OS_TYPE=$(detect_os_type)
 #SHELL_TYPE=$(detect_shell_type)
@@ -14,7 +17,7 @@ OS_TYPE=$(detect_os_type)
 
 ################################################
 # aliases common to all OSes for home computers
-source "${HOME}/.aliases_dev"
+source "${ALIASES_HOME}/.aliases_dev"
 ################################################
 
 alias getdot="git clone --depth 1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
@@ -296,9 +299,9 @@ manualstow() {
 debuglog "OS Detected: ${OS_TYPE}"
 
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
-  source "${HOME}/.aliases_linux"
+  source "${ALIASES_HOME}/.aliases_linux"
 elif [[ "${OS_TYPE}" == "macos" ]]; then
-  source "${HOME}/.aliases_macos"
+  source "${ALIASES_HOME}/.aliases_macos"
 fi
 
 ################################################################################################
