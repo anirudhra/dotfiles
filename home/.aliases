@@ -25,18 +25,26 @@ alias clonedot="git clone --depth 1 --single-branch --branch main https://github
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 alias getdot="wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && && mv ./dotfiles ./dotfiles-bak && tar xvf master.tar.gz && mv ./dotfiles-main ./dotfiles"
 
+lscolors="auto"
+lesscolors=""
+# if the terminal supports colors, set lscolors to always
+if [[ -n "${TERM}" ]] && [[ "$TERM" =~ "color" ]]; then
+  lscolors="always"
+  lesscolors="-R"
+fi
+
 # if eza is installed, replace ls with eza
 if command -v eza >/dev/null 2>&1; then
   unalias ls >/dev/null 2>&1
   alias ls='eza'
   ## ls aliases
   ## Colorize the ls output ##
-  alias ls='eza --color=auto -F -G'
+  alias ls='eza --color=${lscolors} -F -G'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='eza -la --color=auto | less'
+  alias ll='eza -la --color=${lscolors} --header --icons --git | less ${lesscolors}'
   ## Show hidden files ##
-  alias ll.='eza -l -d -F -G --color=auto .* | less'
-  alias ls.='eza -d -F -G --color=auto .*'
+  alias ll.='eza -l -d -F -G --color=${lscolors} .* | less ${lesscolors}'
+  alias ls.='eza -d -F -G --color=${lscolors} .*'
   alias l='eza -lah'                  #size,show type,human readable
   alias la='eza -laAh -F'             #long list,show almost all,show type,human readable
   alias lr='eza -F -R -h -t modified' #sorted by date,recursive,show type,human readable
@@ -47,7 +55,6 @@ if command -v eza >/dev/null 2>&1; then
   alias lrt='eza -1rtm -F'
   alias lsr='eza -lARh -F' #Recursive list of files and directories
   alias lsn='eza -1'       #A column contains name of files and directories
-
   # Detailed listings with icons and Git status
   alias lsd='eza -l --icons --git'
   alias lsa='eza -la --icons --git'
@@ -68,12 +75,12 @@ if command -v eza >/dev/null 2>&1; then
 else
   ## ls aliases
   ## Colorize the ls output ##
-  alias ls='ls --color=auto -F'
+  alias ls='ls --color=${lscolors} -F'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='ls -la --color=auto | less'
+  alias ll='ls -la --color=${lscolors} | less ${lesscolors}'
   ## Show hidden files ##
-  alias ll.='ls -l -d -F --color=auto .* | less'
-  alias ls.='ls -d -F --color=auto .*'
+  alias ll.='ls -l -d -F --color=${lscolors} .* | less ${lesscolors}'
+  alias ls.='ls -d -F --color=${lscolors} .*'
   alias l='ls -lFh'   #size,show type,human readable
   alias la='ls -lAFh' #long list,show almost all,show type,human readable
   alias lr='ls -tRFh' #sorted by date,recursive,show type,human readable
@@ -96,10 +103,10 @@ alias .4='cd ../../../../'
 alias .5='cd ../../../../..'
 
 ## Colorize the grep command output for ease of use (good for log files)##
-alias grep='grep --color=auto'
-alias grepc='grep --color=always'
-alias egrep='egrep --color=auto'
-alias fgrep='fgrep --color=auto'
+alias grep='grep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+alias grepc='grep --color=always -n -H --exclude-dir={.git,.svn,CVS}'
+alias egrep='egrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+alias fgrep='fgrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
 alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 alias hgrep="fc -El 0 | grep"
 alias greph='history | grep'
@@ -198,7 +205,7 @@ alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclu
 
 # pager and readme aliases
 alias pager="${PAGER}"
-alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less -R {} \;"
+alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less ${lesscolors} {} \;"
 
 # Tree
 if [ ! -x "$(which tree 2>/dev/null)" ]; then
@@ -215,7 +222,7 @@ alias dotclean='find . -name ._\* -delete'
 #export LESS=" -R "
 #alias less='less -m -N -g -i -J --underline-special --SILENT'
 alias lessc='less -R'
-alias more='less'
+alias more='less ${lesscolors}'
 #alias cat='less'
 #use column command for a table. syntax: column -t -s "separator like , :" <filename>
 alias table='column -t -s'
@@ -272,7 +279,7 @@ manualstow() {
   # manually copy all dot files and directories
   SOURCE_DIR="${HOME}/dotfiles/home"
   DEST_DIR="${HOME}"
-  cp -a "$SOURCE_DIR/." "$DEST_DIR/"
+  cp -a "${SOURCE_DIR}/." "${DEST_DIR}/"
 }
 
 ################################################################################################

@@ -43,48 +43,64 @@ debuglog "Helper functions sourced"
 
 # Detect the operating system type
 # Returns:
-#   - "macos" for macOS
+#   - "macos" for macOS,
 #   - "debian" for Debian-based systems
 #   - "fedora" for Fedora-based systems
+#   - "linux" for other Linux distributions
+#   - "arch" for Arch-based systems
+#   - "gentoo" for Gentoo-based systems
+#   - "slackware" for Slackware-based systems
 #   - "unknown" for other systems
 detect_os_type() {
-
   uname_os="$(uname -s)"
 
   if [[ "${uname_os}" == "Darwin" ]]; then
-    #debuglog "Detected macOS"
-    echo "macos" # combination of echo and return used to return strings in functions
-  elif [[ -f /etc/os-release ]]; then
-    . /etc/os-release
-    case "$ID" in
-    debian | ubuntu | linuxmint | pop | elementary | kali | raspbian | zorin)
-      #debuglog "Detected Debian-based system"
-      echo "debian" # combination of echo and return used to return strings in functions
-      ;;
-    fedora | rhel | centos | rocky | almalinux | ol | oracle)
-      #debuglog "Detected Fedora-based system"
-      echo "fedora" # combination of echo and return used to return strings in functions
-      ;;
-    *)
-      # Try ID_LIKE for derivatives
-      if [[ "$ID_LIKE" == *debian* ]]; then
-        #debuglog "Detected Debian-based system"
-        echo "debian" # combination of echo and return used to return strings in functions
-      elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
-        #debuglog "Detected Fedora-based system"
-        echo "fedora" # combination of echo and return used to return strings in functions
-      else
-        #debuglog "Unknown system"
-        echo "unknown" # combination of echo and return used to return strings in functions
-      fi
-      ;;
-    esac
+    echo "macos"
   elif [[ "${uname_os}" == "Linux" ]]; then
-    #debuglog "Unknown linux"
-    echo "linux"
+    # If it's Linux, check for specific distribution by sourcing /etc/os-release
+    if [[ -f /etc/os-release ]]; then
+      . /etc/os-release
+      case "$ID" in
+      debian | ubuntu | linuxmint | pop | elementary | kali | raspbian | zorin)
+        echo "debian"
+        ;;
+      fedora | rhel | centos | rocky | almalinux | ol | oracle)
+        echo "fedora"
+        ;;
+      arch | manjaro | endeavouros | artix)
+        echo "arch"
+        ;;
+      gentoo | funtoo | calculate)
+        echo "gentoo"
+        ;;
+      slackware | salix)
+        echo "slackware"
+        ;;
+      *)
+        # Fallback to ID_LIKE for derivative distributions
+        if [[ "$ID_LIKE" == *debian* ]]; then
+          echo "debian"
+        elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
+          echo "fedora"
+        elif [[ "$ID_LIKE" == *arch* ]]; then
+          echo "arch"
+        elif [[ "$ID_LIKE" == *gentoo* ]]; then
+          echo "gentoo"
+        elif [[ "$ID_LIKE" == *slackware* ]]; then
+          echo "slackware"
+        else
+          # It's a Linux system, but we don't recognize the specific distribution
+          echo "linux"
+        fi
+        ;;
+      esac
+    else
+      # /etc/os-release not found, but we know it's Linux
+      echo "linux"
+    fi
   else
-    #debuglog "Unknown system"
-    echo "unknown" # combination of echo and return used to return strings in functions
+    # Neither macOS nor Linux
+    echo "unknown"
   fi
 }
 
@@ -123,15 +139,31 @@ detect_arch_type() {
 # Returns:
 #   - "bash" for bash
 #   - "zsh" for zsh
+#   - "sh" for sh
+#   - "fish" for fish
+#   - "tcsh" for tcsh
+#   - "ash" for ash
 #   - "unknown" for other shells
 detect_shell_type() {
   #debuglog "Detecting shell type"
-  if [[ "$SHELL" == "/bin/bash" ]]; then
+  if [[ "$SHELL" == *"/bash" ]]; then
     #debuglog "Detected bash shell"
     echo "bash" # combination of echo and return used to return strings in functions
-  elif [[ "$SHELL" == "/bin/zsh" ]]; then
+  elif [[ "$SHELL" == *"/zsh" ]]; then
     #debuglog "Detected zsh shell"
     echo "zsh" # combination of echo and return used to return strings in functions
+  elif [[ "$SHELL" == *"/sh" ]]; then
+    #debuglog "Detected sh shell"
+    echo "sh"
+  elif [[ "$SHELL" == *"/fish" ]]; then
+    #debuglog "Detected fish shell"
+    echo "fish"
+  elif [[ "$SHELL" == *"/tcsh" ]]; then
+    #debuglog "Detected tcsh shell"
+    echo "tcsh"
+  elif [[ "$SHELL" == *"/ash" ]]; then
+    #debuglog "Detected ash shell"
+    echo "ash"
   else
     #debuglog "Unknown shell"
     echo "unknown" # combination of echo and return used to return strings in functions

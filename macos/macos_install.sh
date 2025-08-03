@@ -43,6 +43,7 @@ corepackages=(
   'p7zip'
   'bat'
   'zoxide'
+  'eza'
   'pv'
   'btop'
   'calc'

@@ -19,11 +19,11 @@ desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 debuglog "Machine Type: ${MACHINE_TYPE}"
 debuglog "Linux aliases sourced"
 
-if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]]; then
   source "${ALIASES_HOME}/.aliases_linux_${OS_TYPE}"
 fi
 
-if [ -x "$(command -v fwupdmgr)" ]; then
+if command -v fwupdmgr >/dev/null 2>&1; then
   alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
   alias checkfw='sudo fwupdmgr get-devices'
 else
@@ -32,14 +32,14 @@ else
 fi
 
 # other linux-only aliases
-alias booterrors='sudo journalctl  -b 0 -p 3'
-if [ -x "$(command -v inxi)" ]; then
+if command -v inxi >/dev/null 2>&1; then
   alias sysinfo='sudo inxi -Fzx'
 fi
+
+alias booterrors='sudo journalctl  -b 0 -p 3'
 alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias reservice='sudo systemctl daemon-reload'
 alias serialnum='sudo dmidecode -t system'
-
 alias showlog='sudo tail -f /var/log/messages'
 
 #ssd/nvme/hdd benchmarking

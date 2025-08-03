@@ -88,8 +88,8 @@ gitrebasemain() {
 
 #create timelapse from set of images in a directory
 timelapse() {
-  if [ -x "$(command -v mencoder)" ]; then
-    if [ -x "$(command -v ffmpeg)" ]; then
+  if command -v mencoder >/dev/null 2>&1; then
+    if command -v ffmpeg >/dev/null 2>&1; then
       #10fps should be good, but adjust as needed
       info "Place all images in current directory sorted in ascending order by file name"
       ls -1tr | grep -v files.txt >files.txt

@@ -1,0 +1,19 @@
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_PROFILE_MX4300}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_PROFILE_MX4300=1
+
+#PROMPT='%n@%m:%~%# '
+
+cp -f /opt/root/.vimrc /tmp/root/.vimrc
+ln -s /opt/root /tmp/root/home >/dev/null 2>&1
+
+echo
+uname -a
+echo
+echo "Welcome to $(hostname) Router Shell"
+date
+echo

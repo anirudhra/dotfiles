@@ -20,7 +20,7 @@ alias fullupgrade='sudo dnf update --refresh && sudo flatpak upgrade -y && sudo 
 alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
 alias checkfw='sudo fwupdmgr get-devices'
 alias showkernel='echo Active Kernel && sudo uname -a && echo && echo Installed Kernels && sudo rpm -q kernel-core'
-alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less"
+alias showinstalled="rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less ${lesscolors}"
 alias upgrade='fullupdate && fullclean && fwupdate'
 #rpm --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n'macOS specific only below
 
@@ -32,8 +32,8 @@ export DOCKERDIR="${DATADIR}/dockerapps"
 export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
 # alias cat to bat with syntax highlighting
-alias cat="bat --color=always"
-alias bat="bat --color=always"
+alias cat="bat --color=${lscolors}"
+alias bat="bat --color=${lscolors}"
 
 ######## functions ######################
 

@@ -20,11 +20,11 @@ debuglog "Debian aliases sourced"
 # add condition for debian/derivatives specific command here
 alias fullclean='sudo apt clean -y && sudo apt autoclean -y && sudo apt --purge autoremove -y'
 alias fullupdate='sudo apt update -y && sudo apt dist-upgrade -y && fwupdate'
-alias showinstalled="sudo apt list --installed | less"
+alias showinstalled="sudo apt list --installed | less ${lesscolors}"
 alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && dpkg --list | grep -i -e kernel- -e linux-image"
 
 # if bat utility (batcat on debian distros) is installed
-if [ -x "$(command -v batcat)" ]; then
+if command -v batcat >/dev/null 2>&1; then
   alias bat="batcat --color=always"
   alias cat="bat"
 fi
@@ -85,7 +85,7 @@ fi
 #intended to be run on PVE guests/SBC only
 dockerupdateall() {
   if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
-    if [ -x "$(command -v docker)" ]; then #ensure docker is installed on host
+    if command -v docker >/dev/null 2>&1; then #ensure docker is installed on host
       cd "${DOCKERDIR}" || exit
       find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
       docker image prune -a -f
