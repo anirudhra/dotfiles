@@ -23,7 +23,7 @@ source "${ALIASES_HOME}/.aliases_dev"
 
 alias clonedot="git clone --depth 1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
-alias getdot="wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && mv ./master.tar.gz ./dotfiles.tar.gz"
+alias getdot="wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && && mv ./dotfiles ./dotfiles-bak && tar xvf master.tar.gz && mv ./dotfiles-main ./dotfiles"
 
 # if eza is installed, replace ls with eza
 if command -v eza >/dev/null 2>&1; then
