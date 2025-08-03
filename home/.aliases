@@ -26,7 +26,7 @@ alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 
 # if eza is installed, replace ls with eza
 if command -v eza >/dev/null 2>&1; then
-  unalias ls
+  unalias ls >/dev/null 2>&1
   alias ls='eza'
   ## ls aliases
   ## Colorize the ls output ##
