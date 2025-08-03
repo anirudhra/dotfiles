@@ -151,6 +151,9 @@ detect_pve_server() {
   if [[ "${host_name}" == "ifc6410" ]] || [[ "${host_name}" == "IFC6410" ]]; then
     #debuglog "Detected SBC"
     echo "sbc" # combination of echo and return used to return strings in functions
+  elif [[ "${host_name}" == "mx4300" ]] || [[ "${host_name}" == "MX4300" ]] || [[ "${host_name}" == "RT-AX82U" ]] || [[ "${host_name}" == "rt-ax82u" ]]; then
+    #debuglog "Detected Router"
+    echo "router" # router linux
   elif [ -f /proc/1/environ ]; then
     if [ -x "$(command -v pveversion)" ]; then
       #debuglog "Detected PVE server"
