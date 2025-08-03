@@ -8,7 +8,7 @@ if [ -n "${SOURCED_ALIASES_DEV}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_ALIASES_DEV=1
+SOURCED_ALIASES_DEV=1
 
 debuglog "Dev/Homelab aliases sourced"
 

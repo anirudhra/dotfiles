@@ -4,7 +4,7 @@ if [ -n "${SOURCED_PROFILE_RYU}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_PROFILE_RYU=1
+SOURCED_PROFILE_RYU=1
 
 #clear
 echo

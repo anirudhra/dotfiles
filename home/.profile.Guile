@@ -4,7 +4,7 @@ if [ -n "${SOURCED_PROFILE_GUILE}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_PROFILE_GUILE=1
+SOURCED_PROFILE_GUILE=1
 
 #clear
 echo

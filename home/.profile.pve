@@ -4,7 +4,7 @@ if [ -n "${SOURCED_PROFILE_PVE}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_PROFILE_PVE=1
+SOURCED_PROFILE_PVE=1
 
 #clear
 echo

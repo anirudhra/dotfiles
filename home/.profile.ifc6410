@@ -4,7 +4,7 @@ if [ -n "${SOURCED_PROFILE_IFC6410}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_PROFILE_IFC6410=1
+SOURCED_PROFILE_IFC6410=1
 
 lsb_release -a
 echo

@@ -9,7 +9,7 @@ if [ -n "${SOURCED_ALIASES_LINUX_FEDORA}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_ALIASES_LINUX_FEDORA=1
+SOURCED_ALIASES_LINUX_FEDORA=1
 
 debuglog "Fedora aliases sourced"
 

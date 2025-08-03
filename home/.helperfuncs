@@ -8,7 +8,7 @@ if [ -n "${SOURCED_HELPERFUNCS}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_HELPERFUNCS=1
+SOURCED_HELPERFUNCS=1
 
 # Logging functions
 RED='\033[0;31m'

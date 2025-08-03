@@ -8,7 +8,7 @@ if [ -n "${SOURCED_ALIASES_MACOS}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_ALIASES_MACOS=1
+SOURCED_ALIASES_MACOS=1
 
 debuglog "macOS aliases sourced"
 

@@ -4,7 +4,7 @@ if [ -n "${SOURCED_PROFILE}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_PROFILE=1
+SOURCED_PROFILE=1
 
 # . is POSIX version of "source"
 . "${HOME}/.aliases"

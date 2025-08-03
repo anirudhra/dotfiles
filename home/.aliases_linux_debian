@@ -9,7 +9,7 @@ if [ -n "${SOURCED_ALIASES_LINUX_DEBIAN}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_ALIASES_LINUX_DEBIAN=1
+SOURCED_ALIASES_LINUX_DEBIAN=1
 
 source "${ALIASES_HOME}/.helperfuncs"
 

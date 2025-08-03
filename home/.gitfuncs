@@ -11,7 +11,7 @@ if [ -n "${SOURCED_GITFUNCS}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_GITFUNCS=1
+SOURCED_GITFUNCS=1
 
 source "${HOME}/.helperfuncs"
 

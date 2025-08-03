@@ -8,7 +8,7 @@ if [ -n "${SOURCED_ALIASES_HOSTS}" ]; then
 fi
 
 # Set the guard variable
-export SOURCED_ALIASES_HOSTS=1
+SOURCED_ALIASES_HOSTS=1
 
 debuglog "Hosts aliases sourced"
 
