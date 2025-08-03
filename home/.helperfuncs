@@ -2,12 +2,13 @@
 # Helper functions for dotfiles
 
 # Guard variable to ensure sourcing only once
-if [[ -v SOURCED_HELPERFUNCS ]]; then
-    return 0 # Exit the script if already sourced
+#if [[ -v SOURCED_HELPERFUNCS ]]; then
+if [ -n "${SOURCED_HELPERFUNCS}" ]; then
+  return 0 # Exit the script if already sourced
 fi
 
 # Set the guard variable
-SOURCED_HELPERFUNCS=1
+export SOURCED_HELPERFUNCS=1
 
 # Logging functions
 RED='\033[0;31m'
@@ -18,24 +19,24 @@ CYAN='\033[0;36m'
 NC='\033[0m' # No Color
 
 info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+  echo -e "${BLUE}[INFO]${NC} $1"
 }
 
 debuglog() {
-    echo -e "${CYAN}[DEBUG: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+  echo -e "${CYAN}[DEBUG: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
 }
 
 log() {
-    echo -e "${GREEN}[LOG:$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+  echo -e "${GREEN}[LOG:$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
 }
 
 error() {
-    echo -e "${RED}[ERROR: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1" >&2
-    exit 1
+  echo -e "${RED}[ERROR: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1" >&2
+  exit 1
 }
 
 warn() {
-    echo -e "${YELLOW}[WARNING: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+  echo -e "${YELLOW}[WARNING: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
 }
 
 debuglog "Helper functions sourced"
@@ -47,34 +48,40 @@ debuglog "Helper functions sourced"
 #   - "fedora" for Fedora-based systems
 #   - "unknown" for other systems
 detect_os_type() {
-  if [[ "$(uname)" == "Darwin" ]]; then
+
+  uname_os="$(uname -s)"
+
+  if [[ "${uname_os}" == "Darwin" ]]; then
     #debuglog "Detected macOS"
     echo "macos" # combination of echo and return used to return strings in functions
   elif [[ -f /etc/os-release ]]; then
     . /etc/os-release
     case "$ID" in
-      debian|ubuntu|linuxmint|pop|elementary|kali|raspbian|zorin)
+    debian | ubuntu | linuxmint | pop | elementary | kali | raspbian | zorin)
+      #debuglog "Detected Debian-based system"
+      echo "debian" # combination of echo and return used to return strings in functions
+      ;;
+    fedora | rhel | centos | rocky | almalinux | ol | oracle)
+      #debuglog "Detected Fedora-based system"
+      echo "fedora" # combination of echo and return used to return strings in functions
+      ;;
+    *)
+      # Try ID_LIKE for derivatives
+      if [[ "$ID_LIKE" == *debian* ]]; then
         #debuglog "Detected Debian-based system"
         echo "debian" # combination of echo and return used to return strings in functions
-        ;;
-      fedora|rhel|centos|rocky|almalinux|ol|oracle)
+      elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
         #debuglog "Detected Fedora-based system"
         echo "fedora" # combination of echo and return used to return strings in functions
-        ;;
-      *)
-        # Try ID_LIKE for derivatives
-        if [[ "$ID_LIKE" == *debian* ]]; then
-          #debuglog "Detected Debian-based system"
-          echo "debian" # combination of echo and return used to return strings in functions
-        elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
-          #debuglog "Detected Fedora-based system"
-          echo "fedora" # combination of echo and return used to return strings in functions
-        else
-          #debuglog "Unknown system"
-          echo "unknown" # combination of echo and return used to return strings in functions
-        fi
-        ;;
+      else
+        #debuglog "Unknown system"
+        echo "unknown" # combination of echo and return used to return strings in functions
+      fi
+      ;;
     esac
+  elif [[ "${uname_os}" == "Linux" ]]; then
+    #debuglog "Unknown linux"
+    echo "linux"
   else
     #debuglog "Unknown system"
     echo "unknown" # combination of echo and return used to return strings in functions
@@ -105,7 +112,7 @@ detect_arch_type() {
     echo "armv7l" # combination of echo and return used to return strings in functions
   elif [[ "$(uname -m)" == "armv7h" ]]; then
     #debuglog "Detected armv7h architecture"
-    echo "armv7h" # combination of echo and return used to return strings in functions  
+    echo "armv7h" # combination of echo and return used to return strings in functions
   else
     #debuglog "Unknown architecture"
     echo "unknown" # combination of echo and return used to return strings in functions
@@ -146,15 +153,15 @@ detect_pve_server() {
     echo "sbc" # combination of echo and return used to return strings in functions
   elif [ -f /proc/1/environ ]; then
     if [ -x "$(command -v pveversion)" ]; then
-        #debuglog "Detected PVE server"
-        echo "pveserver" # combination of echo and return used to return strings in functions
+      #debuglog "Detected PVE server"
+      echo "pveserver" # combination of echo and return used to return strings in functions
     elif [ -x "$(command -v systemd-detect-virt)" ]; then
-        #debuglog "Detected PVE guest"
-        if [[ $(/usr/bin/systemd-detect-virt) == "none" ]]; then
-          echo "client" # combination of echo and return used to return strings in functions
-        else
-          echo "pveguest" # combination of echo and return used to return strings in functions
-        fi
+      #debuglog "Detected PVE guest"
+      if [[ $(/usr/bin/systemd-detect-virt) == "none" ]]; then
+        echo "client" # combination of echo and return used to return strings in functions
+      else
+        echo "pveguest" # combination of echo and return used to return strings in functions
+      fi
     else
       echo "unknown linux" # combination of echo and return used to return strings in functions
     fi

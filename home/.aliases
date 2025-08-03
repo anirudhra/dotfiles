@@ -26,12 +26,12 @@ alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 
 ## ls aliases
 ## Colorize the ls output ##
-alias ls='ls --color=auto -FG'
+alias ls='ls --color=auto -F'
 #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-alias ll='ls -la --color | less -R'
+alias ll='ls -la --color | less'
 ## Show hidden files ##
-alias ll.='ls -l -d -FG --color=auto .* | less'
-alias ls.='ls -d -FG --color=auto .*'
+alias ll.='ls -l -d -F --color=auto .* | less'
+alias ls.='ls -d -F --color=auto .*'
 
 alias l='ls -lFh'   #size,show type,human readable
 alias la='ls -lAFh' #long list,show almost all,show type,human readable
@@ -299,7 +299,7 @@ manualstow() {
 
 debuglog "OS Detected: ${OS_TYPE}"
 
-if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]]; then
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
   source "${ALIASES_HOME}/.aliases_linux"
 elif [[ "${OS_TYPE}" == "macos" ]]; then
   source "${ALIASES_HOME}/.aliases_macos"
