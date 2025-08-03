@@ -7,11 +7,7 @@ fi
 SOURCED_PROFILE=1
 
 # . is POSIX version of "source"
-. "${HOME}/.aliases"
-
-if [ -n "$TMUX" ]; then
-  export TERM=screen-256color
-fi
+. "${ALIASES_HOME}/.aliases"
 
 #macos only, test by checking if "diskutil" command exists (macos-only)
 #if (( ${+commands[diskutil]} )); then
@@ -43,8 +39,8 @@ else
   export PATH="./:${PATH}"
 fi
 
-HOST_PROFILE_ZSH="${HOME}/.profile.${HOST%%.*}"
-HOST_PROFILE_BASH="${HOME}/.profile.${HOSTNAME%%.*}"
+HOST_PROFILE_ZSH="${ALIASES_HOME}/.profile.${HOST%%.*}"
+HOST_PROFILE_BASH="${ALIASES_HOME}/.profile.${HOSTNAME%%.*}"
 
 # hostname specific commands, both point to the same file and will run only once
 # bash specific
