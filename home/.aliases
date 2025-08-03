@@ -227,66 +227,70 @@ mkcd() {
 
 # for machines without gnu stow
 manualstow() {
-  local homefiles=(
-    '.aliases'
-    '.aliases_linux'
-    '.aliases_hosts'
-    '.aliases_linux_debian'
-    '.aliases_linux_fedora'
-    '.aliases_dev'
-    '.aliases_macos'
-    '.profile'
-    ".profile.${HOSTNAME}"
-    ".profile.${HOST}"
-    ".profile.*"
-    '.zshrc'
-    '.bashrc'
-    '.bash_profile'
-    '.vimrc'
-    '.gitfuncs'
-    '.helperfuncs'
-  )
+  if [ -n "$BASH_VERSION" ] || -n "$ZSH_VERSION" ]; then
+    local homefiles=(
+      '.aliases'
+      '.aliases_linux'
+      '.aliases_hosts'
+      '.aliases_linux_debian'
+      '.aliases_linux_fedora'
+      '.aliases_dev'
+      '.aliases_macos'
+      '.profile'
+      ".profile.${HOSTNAME}"
+      ".profile.${HOST}"
+      ".profile.*"
+      '.zshrc'
+      '.bashrc'
+      '.bash_profile'
+      '.vimrc'
+      '.gitfuncs'
+      '.helperfuncs'
+    )
 
-  local homedirs=(
-    '.vim'
-    '.config'
-    '.vifm'
-  )
+    local homedirs=(
+      '.vim'
+      '.config'
+      '.vifm'
+    )
 
-  for file in "${homefiles[@]}"; do
-    local src="${HOME}/dotfiles/home/${file}"
-    local dest="${HOME}/${file}"
+    for file in "${homefiles[@]}"; do
+      local src="${HOME}/dotfiles/home/${file}"
+      local dest="${HOME}/${file}"
 
-    if [ -e "${dest}" ]; then
-      cp -f "${dest}" "${dest}.bak"
-      info "Backed up ${dest} to ${dest}.bak"
-    fi
-    if [ -e "${src}" ]; then
-      cp -f "${src}" "${dest}"
-      info "Copied ${src} to ${dest}"
-    else
-      info "Source file ${src} does not exist, skipping."
-    fi
-  done
+      if [ -e "${dest}" ]; then
+        cp -f "${dest}" "${dest}.bak"
+        info "Backed up ${dest} to ${dest}.bak"
+      fi
+      if [ -e "${src}" ]; then
+        cp -f "${src}" "${dest}"
+        info "Copied ${src} to ${dest}"
+      else
+        info "Source file ${src} does not exist, skipping."
+      fi
+    done
 
-  for dir in "${homedirs[@]}"; do
-    local src="${HOME}/dotfiles/home/${dir}"
-    local dest="${HOME}/${dir}"
+    for dir in "${homedirs[@]}"; do
+      local src="${HOME}/dotfiles/home/${dir}"
+      local dest="${HOME}/${dir}"
 
-    if [ -d "${dest}" ]; then
-      cp -a "${dest}" "${dest}.bak"
-      info "Backed up ${dest} to ${dest}.bak"
-    fi
-    if [ -d "${src}" ]; then
-      # create destination directory if it doesn't exist
-      mkdir -p "${dest}"
-      # copy all files and directories recursively
-      cp -a "${src}/" "${dest}/"
-      info "Copied ${src} to ${dest}"
-    else
-      info "Source directory ${src} does not exist, skipping."
-    fi
-  done
+      if [ -d "${dest}" ]; then
+        cp -a "${dest}" "${dest}.bak"
+        info "Backed up ${dest} to ${dest}.bak"
+      fi
+      if [ -d "${src}" ]; then
+        # create destination directory if it doesn't exist
+        mkdir -p "${dest}"
+        # copy all files and directories recursively
+        cp -a "${src}/" "${dest}/"
+        info "Copied ${src} to ${dest}"
+      else
+        info "Source directory ${src} does not exist, skipping."
+      fi
+    done
+  else
+    echo "Manual stow not supported, no POSIX shell found"
+  fi
 }
 
 ################################################################################################
