@@ -30,12 +30,12 @@ if command -v eza >/dev/null 2>&1; then
   alias ls='eza'
   ## ls aliases
   ## Colorize the ls output ##
-  alias ls='eza --color=always -F -G'
+  alias ls='eza --color=auto -F -G'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='eza -la --color=always | less'
+  alias ll='eza -la --color=auto | less'
   ## Show hidden files ##
-  alias ll.='eza -l -d -F -G --color=always .* | less'
-  alias ls.='eza -d -F -G --color=always .*'
+  alias ll.='eza -l -d -F -G --color=auto .* | less'
+  alias ls.='eza -d -F -G --color=auto .*'
   alias l='eza -lah'                  #size,show type,human readable
   alias la='eza -laAh -F'             #long list,show almost all,show type,human readable
   alias lr='eza -F -R -h -t modified' #sorted by date,recursive,show type,human readable
@@ -69,7 +69,7 @@ else
   ## Colorize the ls output ##
   alias ls='ls --color=auto -F'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='ls -la --color | less'
+  alias ll='ls -la --color=auto | less'
   ## Show hidden files ##
   alias ll.='ls -l -d -F --color=auto .* | less'
   alias ls.='ls -d -F --color=auto .*'
