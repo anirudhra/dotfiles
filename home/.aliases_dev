@@ -52,8 +52,8 @@ alias iperfup='iperf3 -c "${PVESERVER}"'
 alias gocode='cd "${HOME}/code"'
 alias gogit='cd "${HOME}/code/github"'
 alias gopkg='cd "${HOME}/packages/install"'
-alias godot='cd "${HOME}/dotfiles"'
-alias goans='cd "${HOME}/dotfiles/common/ansible/scripts"'
+alias godot='cd "${DOTFILES_HOME}/dotfiles"'
+alias goans='cd "${DOTFILES_HOME}/dotfiles/common/ansible/scripts"'
 
 #git
 alias gitpush="git pull && git add * && git commit -a && git push"
