@@ -24,25 +24,66 @@ source "${ALIASES_HOME}/.aliases_dev"
 alias getdot="git clone --depth 1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 
-## ls aliases
-## Colorize the ls output ##
-alias ls='ls --color=auto -F'
-#export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-alias ll='ls -la --color | less'
-## Show hidden files ##
-alias ll.='ls -l -d -F --color=auto .* | less'
-alias ls.='ls -d -F --color=auto .*'
+# if eza is installed, replace ls with eza
+if command -v eza >/dev/null 2>&1; then
+  unalias ls
+  alias ls='eza'
+  ## ls aliases
+  ## Colorize the ls output ##
+  alias ls='eza --color=always -F -G'
+  #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+  alias ll='eza -la --color=always | less'
+  ## Show hidden files ##
+  alias ll.='eza -l -d -F -G --color=always .* | less'
+  alias ls.='eza -d -F -G --color=always .*'
+  alias l='eza -lah'                  #size,show type,human readable
+  alias la='eza -laAh -F'             #long list,show almost all,show type,human readable
+  alias lr='eza -F -R -h -t modified' #sorted by date,recursive,show type,human readable
+  alias lt='eza -lh -F -t modified'   #long list,sorted by date,show type,human readable
+  alias ldot='eza -ld .*'
+  alias lS='eza -F -1S -s name'
+  alias lart='eza -1artm -F'
+  alias lrt='eza -1rtm -F'
+  alias lsr='eza -lARh -F' #Recursive list of files and directories
+  alias lsn='eza -1'       #A column contains name of files and directories
 
-alias l='ls -lFh'   #size,show type,human readable
-alias la='ls -lAFh' #long list,show almost all,show type,human readable
-alias lr='ls -tRFh' #sorted by date,recursive,show type,human readable
-alias lt='ls -ltFh' #long list,sorted by date,show type,human readable
-alias ldot='ls -ld .*'
-alias lS='ls -1FSsh'
-alias lart='ls -1Fcart'
-alias lrt='ls -1Fcrt'
-alias lsr='ls -lARFh' #Recursive list of files and directories
-alias lsn='ls -1'     #A column contains name of files and directories
+  # Detailed listings with icons and Git status
+  alias lsd='eza -l --icons --git'
+  alias lsa='eza -la --icons --git'
+  # Tree view
+  # alias tree='eza --tree --level=2' # Adjust --level for desired depth
+  # Show hidden files and directories
+  alias lh='eza -la --header --icons --git'
+  # Sort by modification time, newest first
+  alias lsnew='eza -l --sort newest'
+  # Sort by size, largest first
+  alias lss='eza -l --sort size'
+  # Show file permissions in octal
+  alias lso='eza -l --octal-permissions'
+  # List directories only
+  alias lsdir='eza -D'
+  # List files only
+  alias lsfiles='eza -F'
+else
+  ## ls aliases
+  ## Colorize the ls output ##
+  alias ls='ls --color=auto -F'
+  #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+  alias ll='ls -la --color | less'
+  ## Show hidden files ##
+  alias ll.='ls -l -d -F --color=auto .* | less'
+  alias ls.='ls -d -F --color=auto .*'
+  alias l='ls -lFh'   #size,show type,human readable
+  alias la='ls -lAFh' #long list,show almost all,show type,human readable
+  alias lr='ls -tRFh' #sorted by date,recursive,show type,human readable
+  alias lt='ls -ltFh' #long list,sorted by date,show type,human readable
+  alias ldot='ls -ld .*'
+  alias lS='ls -1FSsh'
+  alias lart='ls -1Fcart'
+  alias lrt='ls -1Fcrt'
+  alias lsr='ls -lARFh' #Recursive list of files and directories
+  alias lsn='ls -1'     #A column contains name of files and directories
+fi
 
 ## a quick way to get out of current directory ##
 alias cd..='cd ..'

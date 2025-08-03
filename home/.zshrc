@@ -1,5 +1,5 @@
 # make this the first, before p10k instant prompt is initialized
-source ${HOME}/.profile
+#source ${HOME}/.profile
 
 # User specific environment
 if ! [[ "$PATH" =~ "$HOME/.local/bin:$HOME/bin:" ]]; then
@@ -93,6 +93,7 @@ plugins=(git zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlightin
 
 # User configuration
 
+source ${HOME}/.profile
 # export MANPATH="/usr/local/man:$MANPATH"
 
 # You may need to manually set your language environment
