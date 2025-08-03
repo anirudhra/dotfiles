@@ -33,10 +33,14 @@ fi
 
 # other linux-only aliases
 alias booterrors='sudo journalctl  -b 0 -p 3'
-alias sysinfo='sudo inxi -Fzx'
+if [ -x "$(command -v inxi)" ]; then
+  alias sysinfo='sudo inxi -Fzx'
+fi
 alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias reservice='sudo systemctl daemon-reload'
 alias serialnum='sudo dmidecode -t system'
+
+alias showlog='sudo tail -f /var/log/messages'
 
 #ssd/nvme/hdd benchmarking
 alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
