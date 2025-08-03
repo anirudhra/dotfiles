@@ -45,6 +45,7 @@ export PVEUBUNTU="${NET1}.85"
 export PVEIMM="${NET1}.95"
 
 export SBC="${NET1}.64"
+export SBC1="${NET3}.64"
 export SBCWIFI="${NET1}.66"
 export SBCETH="${NET1}.67"
 
