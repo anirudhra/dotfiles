@@ -4,7 +4,8 @@
 
 # set aliases home directory, this is where all subscripts live
 # if not defined, set it to $HOME by default
-export ALIASES_HOME="${ALIASES_HOME:-$HOME}"
+export ALIASES_HOME="${ALIASES_HOME:-$HOME}"   #if stowed, then they must be same as home, else the locaitons for <path>/dotfiles/home, default to home
+export DOTFILES_HOME="${DOTFILES_HOME:-$HOME}" #usually under /home/<user> but sometimes could be different, default to home
 
 # source helpers
 source "${ALIASES_HOME}/.helperfuncs"
@@ -23,7 +24,7 @@ source "${ALIASES_HOME}/.aliases_dev"
 
 alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
-alias getdot="cd ${HOME} && wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && rm -rf ~/dotfiles-bak && mv ~/dotfiles ~/dotfiles-bak && tar xvf master.tar.gz && mv ~/dotfiles-main ~/dotfiles"
+alias getdot="cd ${DOTFILES_HOME} && wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && rm -rf ${DOTFILES_HOME}/dotfiles-bak && mv ${DOTFILES_HOME}/dotfiles ${DOTFILES_HOME}/dotfiles-bak && tar xvf master.tar.gz && mv ${DOTFILES_HOME}/dotfiles-main ${DOTFILES_HOME}/dotfiles"
 
 lscolors="auto"
 lesscolors=""

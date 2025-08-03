@@ -8,8 +8,16 @@ SOURCED_PROFILE_MX4300=1
 
 #PROMPT='%n@%m:%~%# '
 
-cp -f /opt/root/.vimrc /tmp/root/.vimrc
-ln -s /opt/root /tmp/root/home >/dev/null 2>&1
+#re-export just in case
+export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
+export ROOT_HOME="/opt/root"      #this is persistent on USB
+export ALIASES_HOME="${ROOT_HOME}/dotfiles/home"
+export DOTFILES_HOME="${ROOT_HOME}/dotfiles"
+
+# copy .vimrc on reboot, else vim will complain
+cp -f ${ROOT_HOME}/.vimrc ${TEMP_ROOT_HOME}/.vimrc
+# create symlink on reboot for persistent home under temp root folder
+ln -s ${ROOT_HOME} ${TEMP_ROOT_HOME}/home >/dev/null 2>&1
 
 echo
 uname -a
