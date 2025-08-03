@@ -1,10 +1,10 @@
 # Guard variable to ensure sourcing only once
-if [[ -v SOURCED_PROFILE ]]; then
+if [ -n "${SOURCED_PROFILE}" ]; then
   return 0 # Exit the script if already sourced
 fi
 
 # Set the guard variable
-SOURCED_PROFILE=1
+export SOURCED_PROFILE=1
 
 # . is POSIX version of "source"
 . "${HOME}/.aliases"
