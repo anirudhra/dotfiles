@@ -89,7 +89,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 #plugins=(git)
 plugins=(git zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting vscode ssh nmap rsync cp sudo systemd tmux urltools)
 
-source $ZSH/oh-my-zsh.sh
+[[ ! -f $ZSH/oh-my-zsh.sh ]] || source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
