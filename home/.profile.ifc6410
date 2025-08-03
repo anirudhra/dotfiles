@@ -10,6 +10,6 @@ lsb_release -a
 echo
 uname -a
 echo
-echo "Welcome to IFC6410 SBC shell"
+echo "Welcome to $(hostname) SBC shell"
 date
 echo
