@@ -134,10 +134,15 @@ alias count='find . -type f | wc -l'
 alias ffile='find . -type f -name'
 
 ## disk space clean output ##
+if command -v duf >/dev/null 2>&1; then
+  alias duf='duf -hide special'
+else
+  alias duf="df -h -P -T"
+fi
+
 alias dud='du -d 1 -h'
 alias df='df -P -h'
 alias du='du -ch'
-alias duf='duf -hide special'
 alias dirsize='du -sh'
 alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
 
