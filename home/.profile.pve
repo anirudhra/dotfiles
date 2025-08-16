@@ -6,6 +6,8 @@ fi
 # Set the guard variable
 SOURCED_PROFILE_PVE=1
 
+PROMPT='%n@%m:%~%# '
+
 #clear
 echo
 fastfetch
