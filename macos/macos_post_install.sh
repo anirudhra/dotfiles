@@ -9,19 +9,19 @@ SHELL_TYPE=$(detect_shell_type)
 
 # only run this script on macOS
 if [[ "${OS_TYPE}" != "macos" ]]; then
-  err "This script is only supported for macOS"
-  err "Please do not run this script from Linux/Windows etc."
-  err
+  error "This script is only supported for macOS"
+  error "Please do not run this script from Linux/Windows etc."
+  error
   exit 1
 fi
 
 # check if running from the right directory
 INSTALL_DIR=$(pwd)
 if [[ ${INSTALL_DIR} != *"/dotfiles/macos"* ]]; then
-  err "Script invoked from incorrect directory!"
-  err "The current directory is: ${INSTALL_DIR}"
-  err "Please run this script from .../dotfiles/macos directory"
-  err
+  error "Script invoked from incorrect directory!"
+  error "The current directory is: ${INSTALL_DIR}"
+  error "Please run this script from .../dotfiles/macos directory"
+  error
   exit 1
 fi
 
@@ -30,20 +30,20 @@ fi
 ####################################################################################
 # Generic function to backup existing files or directories
 backup_local_items() {
-    local type="$1"
-    local items_array=("${!2}")
-    
-    echo "Backing up existing $type items..."
-    
-    for item in "${items_array[@]}"; do
-        if [[ "$type" == "file" && -e "$item" ]]; then
-            cp -rf "$item" "${item}.bak"
-            echo "Backed up file: $item"
-        elif [[ "$type" == "dir" && -d "$item" ]]; then
-            mv "$item" "${item}.bak"
-            echo "Backed up directory: $item"
-        fi
-    done
+  local type="$1"
+  local items_array=("${!2}")
+
+  echo "Backing up existing $type items..."
+
+  for item in "${items_array[@]}"; do
+    if [[ "$type" == "file" && -e "$item" ]]; then
+      cp -rf "$item" "${item}.bak"
+      echo "Backed up file: $item"
+    elif [[ "$type" == "dir" && -d "$item" ]]; then
+      mv "$item" "${item}.bak"
+      echo "Backed up directory: $item"
+    fi
+  done
 }
 
 ####################################################################################
@@ -88,14 +88,14 @@ LOCAL_NVIM_DIR="$HOME/.config/nvim"
 
 # Define arrays for backup
 files_to_backup=(
-    "$LOCAL_PROFILE"
-    "$LOCAL_ZSHRC"
-    "$LOCAL_ALIASES"
-    "$LOCAL_P10K"
+  "$LOCAL_PROFILE"
+  "$LOCAL_ZSHRC"
+  "$LOCAL_ALIASES"
+  "$LOCAL_P10K"
 )
 
 dirs_to_backup=(
-    "$LOCAL_NVIM_DIR"
+  "$LOCAL_NVIM_DIR"
 )
 
 # Call the generic function for files
@@ -120,4 +120,3 @@ echo "==========================================================================
 ####################################################################################
 # END of script
 ####################################################################################
-

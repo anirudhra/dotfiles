@@ -188,7 +188,7 @@ else
     mount_nfs="${base_nfs}/${mount}"
     # create base directory, all server exportes will be mounted in /mnt/nfs directory, foe g.e., /mnt/nfs/sata-ssd
     mkdir -p "${base_nfs}"
-    
+
     if grep -wq "${mount_nfs} -fstype=nfs" ${client_auto_pveshare}; then
       echo "NFS share mount ${mount_nfs} already exists in ${client_auto_pveshare}! Check ${client_auto_master} if it does not work!"
       echo

@@ -28,7 +28,7 @@ install_file() {
 
   # Check if source file exists
   if [[ ! -f "$source_file" ]]; then
-    err "Warning: Source file $source_file does not exist, skipping $description"
+    erroror "Warning: Source file $source_file does not exist, skipping $description"
     return 1
   fi
 
@@ -36,14 +36,14 @@ install_file() {
   if [[ -e "$dest_file" ]]; then
     info "Backing up existing $description: $dest_file"
     sudo cp -f "$dest_file" "${dest_file}.bak" || {
-      err "Error: Failed to backup $dest_file"
+      error "Error: Failed to backup $dest_file"
       return 1
     }
   fi
 
   info "Installing $description: $source_file -> $dest_file"
   sudo cp -f "$source_file" "$dest_file" || {
-    err "Error: Failed to install $description"
+    error "Error: Failed to install $description"
     return 1
   }
 
@@ -115,24 +115,24 @@ echo
 # check if running from the right directory, OS and machine type
 INSTALL_DIR=$(pwd)
 if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
-  err "Script invoked from incorrect directory!"
-  err "The current directory is: ${INSTALL_DIR}"
-  err "Please run this script from .../dotfiles/linux directory"
-  err
+  error "Script invoked from incorrect directory!"
+  error "The current directory is: ${INSTALL_DIR}"
+  error "Please run this script from .../dotfiles/linux directory"
+  error
   exit 1
 fi
 
 if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
-  err "This script is only supported for Linux Client machines"
-  err "Please do not run this script from PVE Server/Guest/SBCs"
-  err
+  error "This script is only supported for Linux Client machines"
+  error "Please do not run this script from PVE Server/Guest/SBCs"
+  error
   exit 1
 fi
 
 if [[ ! "${OS_TYPE}" == "fedora" ]] || [[ ! "${OS_TYPE}" == "debian" ]]; then
-  err "This script is only supported for Fedora and Debian based Linux machines"
-  err "Please do not run this script from macOS/FreeBSD/Windows etc."
-  err
+  error "This script is only supported for Fedora and Debian based Linux machines"
+  error "Please do not run this script from macOS/FreeBSD/Windows etc."
+  error
   exit 1
 fi
 
@@ -238,7 +238,7 @@ elif [[ "${INSTALL_OS}" == "debian" ]]; then
 
 # unknown OS, exit
 else
-  err "Unknown OS, cannot proceed; exiting"
+  error "Unknown OS, cannot proceed; exiting"
   exit 1
 fi
 
@@ -459,11 +459,11 @@ backup_system_items "file" system_files_to_backup[@]
 # Create NFS mount point with proper permissions
 echo "Creating NFS mount point: $NFS_MOUNT_POINT"
 sudo mkdir -p "$NFS_MOUNT_POINT" || {
-  err "Error: Failed to create NFS mount point"
+  error "Error: Failed to create NFS mount point"
   exit 1
 }
 sudo chmod 755 "$NFS_MOUNT_POINT" || {
-  err "Error: Failed to set NFS mount point permissions"
+  error "Error: Failed to set NFS mount point permissions"
   exit 1
 }
 

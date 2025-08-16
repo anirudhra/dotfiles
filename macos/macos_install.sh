@@ -8,19 +8,19 @@ OS_TYPE=$(detect_os_type)
 
 # only run this script on macOS
 if [[ "${OS_TYPE}" != "macos" ]]; then
-  err "This script is only supported for macOS"
-  err "Please do not run this script from Linux/Windows etc."
-  err
+  error "This script is only supported for macOS"
+  error "Please do not run this script from Linux/Windows etc."
+  error
   exit 1
 fi
 
 # check if running from the right directory
 INSTALL_DIR=$(pwd)
 if [[ ${INSTALL_DIR} != *"/dotfiles/macos"* ]]; then
-  err "Script invoked from incorrect directory!"
-  err "The current directory is: ${INSTALL_DIR}"
-  err "Please run this script from .../dotfiles/macos directory"
-  err
+  error "Script invoked from incorrect directory!"
+  error "The current directory is: ${INSTALL_DIR}"
+  error "Please run this script from .../dotfiles/macos directory"
+  error
   exit 1
 fi
 

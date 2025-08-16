@@ -37,7 +37,7 @@ install_git_repo() {
   if git clone "$git_options" "$repo_url" "$dest_dir"; then
     echo "Successfully installed $description"
   else
-    err "Error: Failed to install $description"
+    error "Error: Failed to install $description"
     return 1
   fi
 }
@@ -74,32 +74,32 @@ echo
 # check if running from the right directory, OS and machine type
 INSTALL_DIR=$(pwd)
 if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
-  err "Script invoked from incorrect directory!"
-  err "The current directory is: ${INSTALL_DIR}"
-  err "Please run this script from .../dotfiles/linux directory"
-  err
+  error "Script invoked from incorrect directory!"
+  error "The current directory is: ${INSTALL_DIR}"
+  error "Please run this script from .../dotfiles/linux directory"
+  error
   exit 1
 fi
 
 if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
-  err "This script is only supported for Linux Client machines"
-  err "Please do not run this script from PVE Server/Guest/SBCs"
-  err
+  error "This script is only supported for Linux Client machines"
+  error "Please do not run this script from PVE Server/Guest/SBCs"
+  error
   exit 1
 fi
 
 if [[ ! "${OS_TYPE}" == "fedora" ]] || [[ ! "${OS_TYPE}" == "debian" ]]; then
-  err "This script is only supported for Fedora and Debian based Linux machines"
-  err "Please do not run this script from macOS/FreeBSD/Windows etc."
-  err
+  error "This script is only supported for Fedora and Debian based Linux machines"
+  error "Please do not run this script from macOS/FreeBSD/Windows etc."
+  error
   exit 1
 fi
 
 # check if oh-my-zsh is installed first
 if [ ! -d "${HOME}/.oh-my-zsh" ]; then
-  err "oh-my-zsh installation not detected!"
-  err "Install oh-my-zsh from : https://ohmyz.sh/ before running this script!"
-  err
+  error "oh-my-zsh installation not detected!"
+  error "Install oh-my-zsh from : https://ohmyz.sh/ before running this script!"
+  error
   exit 1
 fi
 

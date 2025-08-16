@@ -8,9 +8,9 @@ OS_TYPE=$(detect_os_type)
 
 # only run this script on macOS
 if [[ "${OS_TYPE}" != "macos" ]]; then
-  err "This script is only supported for macOS"
-  err "Please do not run this script from Linux/Windows etc."
-  err
+  error "This script is only supported for macOS"
+  error "Please do not run this script from Linux/Windows etc."
+  error
   exit 1
 fi
 
