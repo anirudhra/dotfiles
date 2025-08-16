@@ -170,12 +170,12 @@ detect_shell_type() {
   fi
 }
 
-# Detect the PVE server type
+# Detect the Machine type
 # Returns:
 #   - "pveserver" for PVE Server
 #   - "pveguest" for PVE Guest
 #   - "client" for Client
-detect_pve_server() {
+detect_machine_type() {
   #debuglog "Detecting machine type"
   # $HOSTNAME only works for bash shells, use more portable way
   #if [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then

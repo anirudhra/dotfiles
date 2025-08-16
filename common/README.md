@@ -1,4 +1,8 @@
-# ssh keys
+# Common scripts
+
+This directory contains configs/scripts etc. common for all machines/OS'.
+
+## ssh keys
 
 Sometimes the keys are not registered properly with the ssh-agent and will keep asking for passphrase. To solve that issue, after the keys have been generated, run:
 
@@ -6,3 +10,7 @@ Sometimes the keys are not registered properly with the ssh-agent and will keep 
 eval `ssh-agent -s`
 ssh-add ~/.ssh/id_rsa
 ```
+
+## ansible
+
+Contains the configs/hosts etc. for ansible playbooks, primarily for PVE server

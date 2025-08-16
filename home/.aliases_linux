@@ -12,9 +12,9 @@ SOURCED_ALIASES_LINUX=1
 
 source "${ALIASES_HOME}/.helperfuncs"
 
-OS_TYPE=$(detect_os_type)         # this is the OS of the machine running the script
-MACHINE_TYPE=$(detect_pve_server) # this is the machine type of the machine running the script
-desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
+OS_TYPE=$(detect_os_type)           # this is the OS of the machine running the script
+MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+desktopEnv=${XDG_CURRENT_DESKTOP}   #gnome, cinnamon, kde...
 
 debuglog "Machine Type: ${MACHINE_TYPE}"
 debuglog "Linux aliases sourced"
