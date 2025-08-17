@@ -1,4 +1,4 @@
-# HP Elitedesk 800 G4/G5 Desktop Mini as Server
+# HP Elitedesk 800 G4/G5 Desktop Mini as Proxmox Server
 
 ## BIOS Updates
 
@@ -10,6 +10,17 @@
 ## Proxmox, fwupdate and udisks2
 
 fwupdate requires udisks2, but proxmox has compatiblity issues with udisks2 and it is not recommended to install udisks2 as it will likely interfere with proxmox kernel updates and /boot/efi (ESP) locations. No known good solution as of now.
+
+If boot/ESP partition link to proxmox-boot-tool is incorrect, run the following commands:
+```
+proxmox-boot-tool status            # to check if ESP is detected, if not then run:
+lsblk -o +FSTYPE                    # look for /dev/xxx boot efi partition with type vfat
+umount /boot/efi
+proxmox-boot-tool init /dev/xxx     # replace 'xxx' with the partition from the lsblk command above
+mount -a
+proxmox-boot-tool refresh
+proxmox-boot-tool status
+```
 
 ## Custom scripts for Proxmox host and LXC setup and maintenance
 
