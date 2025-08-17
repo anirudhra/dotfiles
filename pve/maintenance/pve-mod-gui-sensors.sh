@@ -33,6 +33,9 @@ DEBUG_SAVE_FILENAME="sensorsdata.json"
 ##################### DO NOT EDIT BELOW #######################
 # Only to be used to debug on other systems. Save the "sensor -j" output into a json file.
 # Information will be loaded for script configuration and presented in Proxmox.
+
+# DEV NOTE: lm-sensors version >3.6.0 breakes properly formatted JSON output using 'sensors -j'. This implements a workaround using uses a python3 for formatting
+
 DEBUG_REMOTE=false
 DEBUG_JSON_FILE="/tmp/sensordata.json"
 
@@ -72,6 +75,11 @@ function usage {
 	exit 1
 }
 
+# System checks
+function check_root_privileges() {
+	[[ $EUID -eq 0 ]] || err "This script must be run as root. Please run it with 'sudo $0'."
+}
+
 # Define a function to install packages
 function install_packages {
 	# Check if the 'sensors' command is available on the system
@@ -105,7 +113,7 @@ function configure {
 		warn "Remote debugging is used. Sensor readings from dump file $DEBUG_JSON_FILE will be used."
 		sensorsOutput=$(cat $DEBUG_JSON_FILE)
 	else
-		sensorsOutput=$(sensors -j)
+		sensorsOutput=$(sensors -j 2>/dev/null | python3 -m json.tool)
 	fi
 
 	if [ $? -ne 0 ]; then
@@ -265,6 +273,8 @@ function configure {
 
 # Function to install the modification
 function install_mod {
+	check_root_privileges
+
 	if [[ -n $(cat $NODES_PM_FILE | grep -e "$res->{sensorsOutput}") ]] && [[ -n $(cat $NODES_PM_FILE | grep -e "$res->{systemInfo}") ]]; then
 		err "Mod is already installed. Uninstall existing before installing."
 		exit
@@ -320,9 +330,9 @@ function install_mod {
 		else
 			# WTF: sensors -f used for Fahrenheit breaks the fan speeds :|
 			#local sensorsCmd=$([[ "$TEMP_UNIT" = "F" ]] && echo "sensors -j -f" || echo "sensors -j")
-			sensorsCmd="sensors -j"
+			sensorsCmd="sensors -j 2>/dev/null | python3 -m json.tool"
 		fi
-		sed -i '/my \$dinfo = df('\''\/'\'', 1);/i\'$'\t''$res->{sensorsOutput} = `'"$sensorsCmd"'`;\n\t# sanitize JSON output\n\t$res->{sensorsOutput} =~ s/ERROR:.+\\s(\\w+):\\s(.+)/\\"$1\\": 0.000,/g;\n\t$res->{sensorsOutput} =~ s/ERROR:.+\\s(\\w+)!/\\"$1\\": 0.000,/g;\n\t$res->{sensorsOutput} =~ s/,(.*[.\\n]*.+})/$1/g;\n' "$NODES_PM_FILE"
+		sed -i '/my \$dinfo = df('\''\/'\'', 1);/i\'$'\t''$res->{sensorsOutput} = `'"$sensorsCmd"'`;\n\t# sanitize JSON output\n\t$res->{sensorsOutput} =~ s/ERROR:.+\\s(\\w+):\\s(.+)/\\"$1\\": 0.000,/g;\n\t$res->{sensorsOutput} =~ s/ERROR:.+\\s(\\w+)!/\\"$1\\": 0.000,/g;\n\t$res->{sensorsOutput} =~ s/,\s*(\})/$1/g;\n' "$NODES_PM_FILE"
 		msg "Sensors' output added to \"$NODES_PM_FILE\"."
 	fi
 
@@ -488,14 +498,19 @@ Ext.define('PVE.mod.TempHelper', {\n\
 			if (cpuKeysA.length > 0) {\n\
 				let bTccd = false;\n\
 				let bTctl = false;\n\
+				let bTdie = false;\n\
 				cpuKeysA.forEach((cpuKey, cpuIndex) => {\n\
 					let items = objValue[cpuKey];\n\
 					bTccd = Object.keys(items).findIndex(item => { return String(item).startsWith('Tccd'); }) >= 0;\n\
 					bTctl = Object.keys(items).findIndex(item => { return String(item).startsWith('Tctl'); }) >= 0;\n\
+					bTdie = Object.keys(items).findIndex(item => { return String(item).startsWith('Tdie'); }) >= 0;\n\
 				});\n\
 				if (bTccd && bTctl && '$CPU_TEMP_TARGET' == 'Core') {\n\
 					AMDPackagePrefix = 'Tccd';\n\
 					AMDPackageCaption = 'Chiplet';\n\
+				} else if (bTdie) {\n\
+					AMDPackagePrefix = 'Tdie';\n\
+					AMDPackageCaption = 'Temp';\n\
 				} else if (bTctl) {\n\
 					AMDPackagePrefix = 'Tctl';\n\
 					AMDPackageCaption = 'Temp';\n\
@@ -513,7 +528,7 @@ Ext.define('PVE.mod.TempHelper', {\n\
 			cpuKeys.forEach((cpuKey, cpuIndex) => {\n\
 				let cpuTemps = [];\n\
 				const items = objValue[cpuKey];\n\
-				const itemKeys = Object.keys(items).filter(item => { return String(item).startsWith(cpuItemPrefix); });\n\
+				const itemKeys = Object.keys(items).filter(item => { return String(item).includes(cpuItemPrefix); });\n\
 				itemKeys.forEach((coreKey) => {\n\
 					try {\n\
 						let tempVal = NaN, tempMax = NaN, tempCrit = NaN;\n\
@@ -535,12 +550,19 @@ Ext.define('PVE.mod.TempHelper', {\n\
 								tempStyle = 'color: red; font-weight: bold;';\n\
 							}\n\
 							let tempStr = '';\n\
-							let tempIndex = coreKey.match(/\\\S+\\\s*(\\\d+)/);\n\
+							let tempIndex = coreKey.match(\/(?:P\\\s+Core|E\\\s+Core|Core)\\\s*(\\\d+)\/);\n\
 							if (tempIndex !== null && tempIndex.length > 1) {\n\
 								tempIndex = tempIndex[1];\n\
-								tempStr = \`\${cpuTempCaption}&nbsp;\${tempIndex}:&nbsp;<span style=\"\${tempStyle}\">\${Ext.util.Format.number(tempVal, formatTemp)}\${cpuTempHelper.getUnit()}</span>\`;\n\
+								let coreType = coreKey.startsWith('P Core') ? 'P Core' :\n\
+											   coreKey.startsWith('E Core') ? 'E Core' :\n\
+											   cpuTempCaption;\n\
+								tempStr = \`\${coreType}&nbsp;\${tempIndex}:&nbsp;<span style=\"\${tempStyle}\">\${Ext.util.Format.number(tempVal, formatTemp)}\${cpuTempHelper.getUnit()}</span>\`;\n\
 							} else {\n\
-								tempStr = \`\${cpuTempCaption}:&nbsp;\${Ext.util.Format.number(tempVal, formatTemp)}\${cpuTempHelper.getUnit()}\`;\n\
+								// fallback for CPUs which do not have a core index\n\
+								let coreType = coreKey.startsWith('P Core') ? 'P Core' :\n\
+									coreKey.startsWith('E Core') ? 'E Core' :\n\
+									cpuTempCaption;\n\
+								tempStr = \`\${coreType}:&nbsp;<span style=\"\${tempStyle}\">\${Ext.util.Format.number(tempVal, formatTemp)}\${cpuTempHelper.getUnit()}</span>\`;\n\
 							}\n\
 							cpuTemps.push(tempStr);\n\
 						}\n\
@@ -943,6 +965,8 @@ Ext.define('PVE.mod.TempHelper', {\n\
 
 # Function to uninstall the modification
 function uninstall_mod {
+	check_root_privileges
+
 	msg "\nRestoring modified files..."
 	# Find the latest Nodes.pm file using the find command
 	local latest_nodes_pm=$(find "$BACKUP_DIR" -name "Nodes.pm.*" -type f -printf '%T+ %p\n' 2>/dev/null | sort -r | head -n 1 | awk '{print $2}')
@@ -995,7 +1019,7 @@ function save_sensors_data {
 		local choiceContinue=$(ask "Do you wish to continue? (y/n)")
 		case "$choiceContinue" in
 			[yY])
-				sensors -j >"$filepath"
+				sensors -j 2>/dev/null | python3 -m json.tool >"$filepath"
 				msgb "Sensors data saved in $filepath."
 				;;
 			*)
