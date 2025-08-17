@@ -2,6 +2,8 @@
 #################
 lazy-lock.json
 lazyvim.json
+# keep btop config machine specific
+btop.conf
 btop.log 
 *vifminfo.json
 # don't save tmux git repos
