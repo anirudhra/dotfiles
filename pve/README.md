@@ -7,6 +7,10 @@
 3. Rename "Qxx_< ver >.bin" as "firmware.bin" in this directory
 4. Reboot to BIOS and choose to upgrade BIOS from local storage/media
 
+## Proxmox, fwupdate and udisks2
+
+fwupdate requires udisks2, but proxmox has compatiblity issues with udisks2 and it is not recommended to install udisks2 as it will likely interfere with proxmox kernel updates and /boot/efi (ESP) locations. No known good solution as of now.
+
 ## Custom scripts for Proxmox host and LXC setup and maintenance
 
 Installation script:
