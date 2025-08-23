@@ -29,7 +29,7 @@ alias sshsbcwifi='ssh "${SSHROOT}@${SBCWIFI}" -t "${SSHTMUX}"'
 #alias sshsbc1='ssh "${SSHROOT}@${SBC1}" -t "${SSHTMUX}"'
 
 alias sshwg='ssh "${SSHROOT}@${PVWG}" -t "${SSHTMUX}"'
-#alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
+alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
 alias sshvega='ssh "${SSHROOT}@${PVEVEGA}" -t "${SSHTMUX}"'
 alias sshblanka='ssh "${SSHROOT}@${PVEBLANKA}" -t "${SSHTMUX}"'
 alias sshha='ssh "${SSHROOT}@${PVEHA}" -t "${SSHTMUX}"'

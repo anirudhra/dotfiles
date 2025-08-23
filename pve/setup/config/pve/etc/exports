@@ -2,5 +2,5 @@
 # disabling following line as docker containers have permission issues writing to nfs share
 # /mnt/sata-ssd 10.100.100.0/24(rw,sync,no_subtree_check,no_root_squash,no_all_squash)
 # add following instead to resolve write permission issues, set all accesses to root:root from (0) clients, nobody:nogroup corresponds to 65534:65534 but that has issues as well
-/mnt/sata-ssd 10.100.100.0/24(rw,sync,no_subtree_check,all_squash,anonuid=0,anongid=0)
-/mnt/nvme-ssd 10.100.100.0/24(rw,sync,no_subtree_check,all_squash,anonuid=0,anongid=0)
+/mnt/sata-ssd 10.100.10.0/24(rw,sync,no_subtree_check,all_squash,anonuid=0,anongid=0)
+/mnt/nvme-ssd 10.100.10.0/24(rw,sync,no_subtree_check,all_squash,anonuid=0,anongid=0)

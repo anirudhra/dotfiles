@@ -71,6 +71,7 @@ export PVESAGAT="${NET1}.66"
 export PVEKUMA="${NET1}.67"
 export PVELMS="${NET1}.68"
 export PVEIMM="${NET1}.69"
+export PVEVENTOY="${NET1}.71"
 
 # Guest network hosts
 export FRIDGE="${NET2}.15"
