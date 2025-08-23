@@ -25,62 +25,88 @@ export SBCHOST="ifc6410"
 export PVEHOST="pve"
 
 #subnets
-export NET1="10.100.100"
-export NET2="192.168.4"
-export NET3="192.168.1"
+export NET1="10.100.10"
+# guest
+export NET2="192.168.123"
+# network#2
+#export NET3="10.100.100"
+# network#2 guest
+#export NET4="192.168.4"
+# usg
+#export NET4="192.168.1"
 
-# Main network hosts
-export ROUTER="${NET1}.1"
-export DDWRTROUTER="${NET3}.1"
+# Routers
+#export ROUTER="${NET3}.1"
+export DDWRTROUTER="${NET1}.1"
+#export USG="${NET5}.1"
 
-export PVESERVER="${NET1}.50"
-export PVEVENTOY="${NET1}.51"
-export PVWG="${NET1}.55"
-export PVEVEGA="${NET1}.60"
-export PVEBLANKA="${NET1}.65"
-export PVEHA="${NET1}.70"
-export PVESAGAT="${NET1}.75"
-export PVEJF="${NET1}.80"
-export PVEUBUNTU="${NET1}.85"
-export PVEIMM="${NET1}.95"
+# Clients
+export GUILE="${NET1}.20"
+export GUILELAN="${NET1}.21"
+export KEN="${NET1}.22"
+export KENLAN="${NET1}.23"
+export RYULAN="${NET1}.24"
+export RYU="${NET1}.25"
 
-export SBC="${NET1}.64"
-export SBC1="${NET3}.64"
-export SBCWIFI="${NET1}.66"
-export SBCETH="${NET1}.67"
-
+# Devices
+export SOUNDBAR="${NET1}.26"
+export PRINTER="${NET1}.30"
 export CAM_BASE="${NET1}.40"
-export THERMOSTAT="${NET1}.41"
-export ENTRANCE_LIGHT="${NET1}.42"
-export PRINTER="${NET1}.45"
+
+# Servers
+export PVESERVER="${NET1}.50"
+export SBC="${NET1}.51"
+export SBCWIFI="${NET1}.52"
+#export SBC1="${NET3}.53"
+#export SBCETH="${NET1}.54"
+
+# LXC/VMs
+export PVEJF="${NET1}.60"
+export PVEVEGA="${NET1}.61"
+export PVEBLANKA="${NET1}.62"
+export PVWG="${NET1}.63"
+export PVEHA="${NET1}.64"
+export PVEUBUNTU="${NET1}.65"
+export PVESAGAT="${NET1}.66"
+export PVEKUMA="${NET1}.67"
+export PVELMS="${NET1}.68"
+export PVEIMM="${NET1}.69"
 
 # Guest network hosts
 export FRIDGE="${NET2}.15"
+
+# iRobot
 export ROOMBA="${NET2}.16"
 export BRAVAJET="${NET2}.17"
 
-export KD110_DOORBELL="${NET2}.18"
-export TAPO_C210_CAMERA="${NET2}.19"
-export MYQGARAGE="${NET2}.20"
+export MYQGARAGE="${NET2}.18"
 
-export S500D_GUEST_CEILING="${NET2}.21"
-export S500D_KITCHEN_HALL="${NET2}.22"
-export S505D_CEILING="${NET2}.23"
-export S500D_OFFICE_CEILING="${NET2}.24"
-export S500D_MASTER_CEILING="${NET2}.25"
-export S505_CHANDELIER="${NET2}.26"
-export DINING_LIGHT="${NET2}.27"
-export OFFICE_LIGHT="${NET2}.28"
+# Tapo
+export KD110_DOORBELL="${NET2}.19"
+export TAPO_C210_CAM="${NET2}.20"
 
-export SPRINKLER="${NET2}.29"
-export TV_LAMP="${NET2}.30"
-export HALLWAY_LAMP="${NET2}.31"
-export NIGHT_LAMP1="${NET2}.32"
+export THERMOSTAT="${NET2}.21"
+export ENTRANCE_LIGHT="${NET2}.22"
 
-export MASTER_POWER_STRIP="${NET2}.33"
-export MEDIA_CENTER_POWER_STRIP="${NET2}.38"
+# Powerstrips
+export MASTER_POWER_STRIP="${NET2}.23"
+export MEDIA_CENTER_POWER_STRIP="${NET2}.24"
 
-export GUEST_LIGHT="${NET2}.34"
-export GUEST_LAMP="${NET2}.35"
-export KITCHEN_FAN="${NET2}.36"
-export ISLAND_FAN="${NET2}.37"
+# Fans
+export LIVINGROOM_FAN="${NET2}.25"
+export MASTER_FAN="${NET2}.26"
+
+# Tapo
+export S505D_CEILING="${NET2}.27"
+export S505_CHANDELIER="${NET2}.28"
+export S500D_GUEST_CEILING="${NET2}.29"
+export S500D_OFFICE_CEILING="${NET2}.30"
+export S500D_MASTER_CEILING="${NET2}.31"
+export S500D_KITCHEN_HALL="${NET2}.32"
+
+# Tuya
+export DINING_LIGHT="${NET2}.33"
+export OFFICE_LIGHT="${NET2}.34"
+export GUEST_LIGHT="${NET2}.35"
+export NIGHT_LAMP1="${NET2}.36"
+export GUEST_LAMP="${NET2}.37"

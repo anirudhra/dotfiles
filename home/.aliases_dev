@@ -15,19 +15,21 @@ debuglog "Dev/Homelab aliases sourced"
 source "${ALIASES_HOME}/.aliases_hosts"
 
 # ssh aliases
-alias sshrouter='ssh "${ROUTERUSER}@${ROUTER}" -p "${ROUTERPORT}" -t "${SSHTMUX}"'
+#alias sshrouter='ssh "${ROUTERUSER}@${ROUTER}" -p "${ROUTERPORT}" -t "${SSHTMUX}"'
 alias sshddwrt='ssh "${SSHROOT}@${DDWRTROUTER}" -t "${SSHTMUX}"'
+#alias sshusg='ssh "${SSHROOT}@${USG}" -t "${SSHTMUX}"'
+#alias sshusg='ssh "${SSHROOT}@${USG}"'
 
 alias sshpve='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}" -t "${SSHTMUX}"'
 alias sshserver='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}"' #non-tmux version
 
-alias sshsbcwifi='ssh "${SSHROOT}@${SBCWIFI}" -t "${SSHTMUX}"'
-alias sshsbceth='ssh "${SSHROOT}@${SBCETH}" -t "${SSHTMUX}"'
 alias sshsbc='ssh "${SSHROOT}@${SBC}" -t "${SSHTMUX}"'
-alias sshsbc1='ssh "${SSHROOT}@${SBC1}" -t "${SSHTMUX}"'
+alias sshsbcwifi='ssh "${SSHROOT}@${SBCWIFI}" -t "${SSHTMUX}"'
+#alias sshsbceth='ssh "${SSHROOT}@${SBCETH}" -t "${SSHTMUX}"'
+#alias sshsbc1='ssh "${SSHROOT}@${SBC1}" -t "${SSHTMUX}"'
 
 alias sshwg='ssh "${SSHROOT}@${PVWG}" -t "${SSHTMUX}"'
-alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
+#alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
 alias sshvega='ssh "${SSHROOT}@${PVEVEGA}" -t "${SSHTMUX}"'
 alias sshblanka='ssh "${SSHROOT}@${PVEBLANKA}" -t "${SSHTMUX}"'
 alias sshha='ssh "${SSHROOT}@${PVEHA}" -t "${SSHTMUX}"'
@@ -36,12 +38,15 @@ alias sshsagat='ssh "${SSHROOT}@${PVESAGAT}" -t "${SSHTMUX}"'
 alias sshimm='ssh "${SSHROOT}@${PVEIMM}" -t "${SSHTMUX}"'
 alias sshubuntu='ssh "${SSHROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
 alias sshubuntuuser='ssh "${SSHNONROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
+alias sshkuma='ssh "${SSHROOT}@${PVEKUMA}" -t "${SSHTMUX}"'
+alias sshlms='ssh "${SSHROOT}@${PVELMS}" -t "${SSHTMUX}"'
 
 # generic tmux ssh aliases
 alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
 
 # ping aliases
-alias pingrouter='ping "${ROUTER}"'
+#alias pingrouter='ping "${ROUTER}"'
+alias pingddwrt='ping "${DDWRTROUTER}"'
 alias pingserver='ping "${PVESERVER}"'
 
 # iperf3 aliases for network testing
@@ -53,6 +58,8 @@ alias gocode='cd "${HOME}/code"'
 alias gogit='cd "${HOME}/code/github"'
 alias gopkg='cd "${HOME}/packages/install"'
 alias godot='cd "${DOTFILES_HOME}/dotfiles"'
+alias gopve='cd "${DOTFILES_HOME}/dotfiles/pve"'
+alias goscripts='cd "${DOTFILES_HOME}/dotfiles/common/scripts"'
 alias goans='cd "${DOTFILES_HOME}/dotfiles/common/ansible/scripts"'
 
 #git
