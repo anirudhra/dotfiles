@@ -7,8 +7,18 @@ fi
 SOURCED_PROFILE=1
 
 # . is POSIX version of "source"
-export ALIASES_HOME="${ALIASES_HOME:-$HOME}"   #if stowed, then they must be same as home, else the locaitons for <path>/dotfiles/home, default to home
-export DOTFILES_HOME="${DOTFILES_HOME:-$HOME}" #usually under /home/<user> but sometimes could be different, default to home
+#export ALIASES_HOME="${ALIASES_HOME:-$HOME}"   #if stowed, then they must be same as home, else the locaitons for <path>/dotfiles/home, default to home
+#export DOTFILES_HOME="${DOTFILES_HOME:-$HOME}" #usually under /home/<user> but sometimes could be different, default to home
+
+# below is more robust than above settings
+if [[ -z "${DOTFILES_HOME}" ]]; then
+  export DOTFILES_HOME="${HOME}"
+fi
+
+if [[ -z "${ALIASES_HOME}" ]]; then
+  export ALIASES_HOME="${HOME}"
+fi
+
 . "${ALIASES_HOME}/.aliases"
 
 #macos only, test by checking if "diskutil" command exists (macos-only)
