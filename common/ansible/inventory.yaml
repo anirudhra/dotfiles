@@ -1,65 +1,75 @@
 dockerlxc:
   hosts:
     wg:
-      ansible_host: 10.100.100.55
+      ansible_host: 10.100.10.63
     vega:
-      ansible_host: 10.100.100.60
+      ansible_host: 10.100.10.61
     blanka:
-      ansible_host: 10.100.100.65
+      ansible_host: 10.100.10.62
     sagat:
-      ansible_host: 10.100.100.75
+      ansible_host: 10.100.10.66
     immich:
-      ansible_host: 10.100.100.95
+      ansible_host: 10.100.10.69
   vars:
     ansible_user: root
 
 nondockerlxc:
   hosts:
+    uptimekuma:
+      ansible_host: 10.100.10.67
+    lms:
+      ansible_host: 10.100.10.68
     jf:
-      ansible_host: 10.100.100.80
+      ansible_host: 10.100.10.60
   vars:
     ansible_user: root
 
 toolslxc:
   hosts:
     ventoy:
-      ansible_host: 10.100.100.51
+      ansible_host: 10.100.10.71
     ubuntu:
-      ansible_host: 10.100.100.85
+      ansible_host: 10.100.10.65
   vars:
     ansible_user: root
 
 servicevm:
   hosts:
     ha:
-      ansible_host: 10.100.100.70
+      ansible_host: 10.100.10.64
   vars:
     ansible_user: root
 
 server:
   hosts:
     pve:
-      ansible_host: 10.100.100.50 
+      ansible_host: 10.100.10.50
   vars:
     ansible_user: root
 
 router:
   hosts:
-    asus:
-      ansible_host: 10.100.100.1 
+    linksys:
+      ansible_host: 10.100.10.1
   vars:
-    ansible_user: admin
-    ansible_port: 12372
+    ansible_user: root
     ansible_python_interpreter: /opt/bin/python3
+
+#router:
+#  hosts:
+#    asus:
+#      ansible_host: 10.100.100.1
+#  vars:
+#    ansible_user: admin
+#    ansible_port: 6666
+#    ansible_python_interpreter: /opt/bin/python3
 
 sbc:
   hosts:
     sbceth:
-      ansible_host: 10.100.100.64 
+      ansible_host: 10.100.10.51
     sbcwifi:
-      ansible_host: 10.100.100.66 
-    sbceth1:
-      ansible_host: 10.100.100.67 
+      ansible_host: 10.100.10.52
   vars:
     ansible_user: root
 
