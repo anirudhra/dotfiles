@@ -28,6 +28,9 @@ if [[ "${MACHINE_TYPE}" == "router" ]]; then
   alias showbootpart="fw_printenv -n boot_part"
   alias setbootpart="fw_setenv boot_part" # usage: setbootpart 1 or 2
   alias upgrade="opkg update && opkg upgrade"
+  # because the usb mount directories are different, redefine "godot" behavior for DDWRT
+  unalias godot
+  alias godot="cd ${DOTFILES_HOME}"
 fi
 
 if command -v fwupdmgr >/dev/null 2>&1; then
