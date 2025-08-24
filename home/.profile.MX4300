@@ -16,7 +16,14 @@ export DOTFILES_DIR="${DOTFILES_HOME}/dotfiles"
 export ALIASES_HOME="${DOTFILES_DIR}/home"
 
 # copy .vimrc on reboot, else vim will complain
-cp -f ${ROOT_HOME}/.vimrc ${TEMP_ROOT_HOME}/.vimrc
+#cp -f ${ROOT_HOME}/.vimrc ${TEMP_ROOT_HOME}/.vimrc
+
+# write basic .vimrc file from here instead of copying as above
+cat <<'EOF' >"/tmp/root/.vimrc"
+set nu
+set wrap
+EOF
+
 # create symlink on reboot for persistent home under temp root folder
 ln -s ${ROOT_HOME} ${TEMP_ROOT_HOME}/home >/dev/null 2>&1
 ln -s ${DOTFILES_DIR} ${TEMP_ROOT_HOME}/dotfiles >/dev/null 2>&1
