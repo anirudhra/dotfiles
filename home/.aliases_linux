@@ -30,7 +30,7 @@ if [[ "${MACHINE_TYPE}" == "router" ]]; then
   alias upgrade="opkg update && opkg upgrade"
   # because the usb mount directories are different, redefine "godot" behavior for DDWRT
   unalias godot
-  alias godot="cd ${DOTFILES_HOME}"
+  alias godot="cd ${DOTFILES_HOME}/dotfiles"
 fi
 
 if command -v fwupdmgr >/dev/null 2>&1; then
