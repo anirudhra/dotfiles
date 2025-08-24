@@ -49,6 +49,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
   export PATH="./:${PATH}"
+  export TERM="xterm-256color"
 fi
 
 HOST_PROFILE_ZSH="${ALIASES_HOME}/.profile.${HOST%%.*}"
