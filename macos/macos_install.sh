@@ -24,9 +24,13 @@ if [[ ${INSTALL_DIR} != *"/dotfiles/macos"* ]]; then
   exit 1
 fi
 
-# installs homebrew, oh-my-zsh, powerlevel10k
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-brew install homebrew/cask/brew-cask
+if command -v brew &>/dev/null; then
+  echo "homebrew is installed and is available, skipping installation."
+else
+  echo "homebrew is not installed, launching installation."
+  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+  brew install homebrew/cask/brew-cask
+fi
 
 # command line apps
 corepackages=(
@@ -56,9 +60,8 @@ corepackages=(
   'coreutils'
   'figlet'
   'neovim'
-  'iterm2'
-  'vimr'
   'duf'
+  'most'
   'stow'
   'usbutils'
   'git'
@@ -106,26 +109,32 @@ guipackages=(
   'gimp'
   'xquartz'
   'macfuse'
+  'vimr'
+  'iterm2'
 )
 
+echo
 echo "Installing command line apps..."
 brew install "${corepackages[@]}"
-#install itemr2 shell integration
+#install iterm2 shell integration
 curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh
-echo "Installing command line apps... done!"
+echo "Installing command line apps: done!"
 
-echo "Installing nerd fonts..."
-brew install --cask "${nerdfonts[@]}"
-echo "Installing command line apps... done!"
-
+echo
 echo "Installing GUI apps..."
 brew install "${gtkpackages[@]}" "${guipackages[@]}"
-echo "Installing GUI apps... done!"
+echo "Installing GUI apps: done!"
 
+echo
+echo "Installing nerd fonts..."
+brew install --cask "${nerdfonts[@]}"
+echo "Installing nerd fonts: done!"
+
+echo
 echo "Cleaning up..."
 brew cleanup
 #brew cask cleanup
-echo "Cleaning up... done!"
+echo "Cleaning up: done!"
 
 echo "==============================================================================================="
 echo "Installing oh-my-zsh. The script will exit automatically after this."
@@ -133,4 +142,6 @@ echo "Once oh-my-zsh is installed, quit and reopen terminal and run the macos_po
 echo "==============================================================================================="
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+echo
 echo "Done!"
+echo

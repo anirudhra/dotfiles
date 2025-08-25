@@ -24,7 +24,8 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   source <(fzf --zsh)
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-  eval "$(/usr/local/bin/brew shellenv)"
+  # /usr/local/bin/brew on Intel Macs and /opt/homebrew/bin/brew on Apple Silicon
+  eval "$(brew shellenv)"
 
   export XDG_CONFIG_HOME=${HOME}/.config
   export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
@@ -41,7 +42,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export LESS=' -R -X -F '
 
   echo
-  cowsay $(fortune -s)
+  cowsay "$(fortune -s)"
   echo
 else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
@@ -56,7 +57,7 @@ fi
 HOST_PROFILE_ZSH="${ALIASES_HOME}/.profile.${HOST%%.*}"
 HOST_PROFILE_BASH="${ALIASES_HOME}/.profile.${HOSTNAME%%.*}"
 
-# hostname specific commands, both point to the same file and will run only once
+# hostname specific commands, both point to the same file and only one will run
 # bash specific
 [ -f "${HOST_PROFILE_BASH}" ] && . "${HOST_PROFILE_BASH}"
 
