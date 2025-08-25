@@ -14,16 +14,12 @@ export ROOT_HOME="/opt/root"      #this is persistent on USB
 export DOTFILES_HOME="${ROOT_HOME}"
 export ALIASES_HOME="${DOTFILES_DIR}/home"
 
-# write basic .vimrc file from here instead of copying as above
-#cat <<'EOF' >"/tmp/root/.vimrc"
-#set nu
-#set wrap
-#EOF
-
 # create symlink on reboot for persistent link to home and dotfiles under temp root folder
 ln -s "${ROOT_HOME}" "${TEMP_ROOT_HOME}/home" >/dev/null 2>&1
 ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
 
 echo
 uname -a
