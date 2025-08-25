@@ -26,14 +26,20 @@ cd "${PKG_INSTALL_DIR}/themes" || {
 }
 
 # run update.sh script from each directory above where supported, if at least one was sync'd
+echo ""
+echo "######################################"
 echo "Installing/Updating GTK UI themes..."
+echo "######################################"
+echo ""
+
 find . -maxdepth 1 -type d ! -name . | while read -r THEME_DIR; do
   if [[ -x "$THEME_DIR/update.sh" ]]; then
-    echo "Updating theme in $THEME_DIR"
+    echo "Running install/update script from: $THEME_DIR"
     (cd "$THEME_DIR" && ./update.sh)
   else
-    echo "No update.sh found in $THEME_DIR, skipping."
+    echo "No update.sh script found in $THEME_DIR, skipping."
   fi
+  echo " "
 done
 
 exit 0
