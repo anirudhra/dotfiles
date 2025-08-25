@@ -150,7 +150,7 @@ else
 fi
 
 alias dud='du -d 1 -h'
-alias df='df -P -h'
+alias df='df -P -h -T'
 alias du='du -ch'
 alias dirsize='du -sh'
 alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
