@@ -15,14 +15,15 @@ export DOTFILES_HOME="${ROOT_HOME}"
 export ALIASES_HOME="${DOTFILES_DIR}/home"
 
 # write basic .vimrc file from here instead of copying as above
-cat <<'EOF' >"/tmp/root/.vimrc"
-set nu
-set wrap
-EOF
+#cat <<'EOF' >"/tmp/root/.vimrc"
+#set nu
+#set wrap
+#EOF
 
 # create symlink on reboot for persistent link to home and dotfiles under temp root folder
 ln -s "${ROOT_HOME}" "${TEMP_ROOT_HOME}/home" >/dev/null 2>&1
 ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
 
 echo
 uname -a
