@@ -1,6 +1,6 @@
 set nocompatible
-source $VIMRUNTIME/vimrc_example.vim
-source $VIMRUNTIME/mswin.vim
+"source $VIMRUNTIME/vimrc_example.vim
+"source $VIMRUNTIME/mswin.vim
 syntax enable
 set number
 set tabstop=4
@@ -28,11 +28,10 @@ set backupskip=/tmp/*,/private/tmp/*
 set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set writebackup
 
-
-set guifont=Menlo\ Regular:h15
+"set guifont=Menlo\ Regular:h15
 "set guifont=Monospace\ Regular:h12
 "colorscheme lucario
-colorscheme catppuccin_macchiato
+"colorscheme catppuccin_macchiato
 set guioptions-=T
 
 set diffexpr=MyDiff()
@@ -64,3 +63,4 @@ function MyDiff()
     let &shellxquote=l:shxq_sav
   endif
 endfunction
+
