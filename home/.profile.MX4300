@@ -12,7 +12,7 @@ SOURCED_PROFILE_MX4300=1
 export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
 export ROOT_HOME="/opt/root"      #this is persistent on USB
 export DOTFILES_HOME="${ROOT_HOME}"
-export ALIASES_HOME="${DOTFILES_DIR}/home"
+export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
 
 # create symlink on reboot for persistent link to home and dotfiles under temp root folder
 ln -s "${ROOT_HOME}" "${TEMP_ROOT_HOME}/home" >/dev/null 2>&1
