@@ -51,6 +51,11 @@ else
   export PATH="./:${PATH}"
 fi
 
+# force fix for kitty terminals, tmux won't work otherwise for ssh
+if [ "${TERM}" = "xterm-kitty" ]; then
+  export TERM="xterm-256color"
+fi
+
 HOST_PROFILE_ZSH="${ALIASES_HOME}/.profile.${HOST%%.*}"
 HOST_PROFILE_BASH="${ALIASES_HOME}/.profile.${HOSTNAME%%.*}"
 
