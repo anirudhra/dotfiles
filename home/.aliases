@@ -35,12 +35,12 @@ alias clonedot="git clone --depth=1 --single-branch --branch main https://github
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 alias getdot="cd ${DOTFILES_HOME} && wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && rm -rf ${DOTFILES_HOME}/dotfiles-bak && mv ${DOTFILES_HOME}/dotfiles ${DOTFILES_HOME}/dotfiles-bak && tar xvf master.tar.gz && mv ${DOTFILES_HOME}/dotfiles-main ${DOTFILES_HOME}/dotfiles && rm ${DOTFILES_HOME}/master.tar.gz"
 
-lscolors="auto"
-lesscolors=""
+export lscolors="auto"
+export lesscolors=""
 # if the terminal supports colors, set lscolors to always
-if [[ -n "${TERM}" ]] && [[ "$TERM" =~ "color" ]]; then
-  lscolors="always"
-  lesscolors="-R"
+if [[ "$TERM" =~ ^(xterm-256color|screen-256color|xterm-kitty)$ ]]; then
+  export lscolors="always"
+  export lesscolors="-R"
 fi
 
 # if eza is installed, replace ls with eza

@@ -2,18 +2,11 @@
 -- Default options that are always set: https://github.com/LazyVim/LazyVim/blob/main/lua/lazyvim/config/options.lua
 -- Add any additional options here
 --
--- vim.opt.rnu = false
--- vim.opt.wrap = true
---vim.g.codeium_os = "Darwin"
---vim.g.codeium_arch = "x86_64"
-
 vim.cmd("set expandtab")
 vim.cmd("set tabstop=2")
 vim.cmd("set softtabstop=2")
 vim.cmd("set shiftwidth=2")
-vim.g.mapleader = " "
 
-vim.opt.swapfile = false
 vim.wo.number = true
 
 -- new additions
@@ -23,6 +16,7 @@ vim.g.autoformat = true
 vim.g.lazyvim_picker = "auto"
 
 local opt = vim.opt
+opt.swapfile = false
 opt.ignorecase = true
 opt.clipboard = vim.env.SSH_TTY and "" or "unnamedplus"
 opt.autowrite = true

@@ -5,6 +5,7 @@ vim.api.nvim_set_keymap("i", "jj", "<Esc>", { noremap = false })
 vim.api.nvim_set_keymap("i", "jk", "<Esc>", { noremap = false })
 
 vim.g.mapleader = " "
+vim.g.maplocalleader = "\\"
 
 -- Navigate vim panes better
 -- vim.keymap.set("n", "<c-k>", ":wincmd k<CR>")
@@ -13,6 +14,4 @@ vim.g.mapleader = " "
 -- vim.keymap.set("n", "<c-l>", ":wincmd l<CR>")
 
 -- vim.keymap.set("n", "<leader>h", ":nohlsearch<CR>")
-
 -- new additions
-vim.g.maplocalleader = "\\"
