@@ -8,6 +8,7 @@ SOURCED_PROFILE_IFC6410=1
 
 PROMPT='%n@%m:%~%# '
 
+echo
 lsb_release -a
 echo
 uname -a
