@@ -12,11 +12,7 @@ SOURCED_PROFILE_MX4300=1
 export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
 export ROOT_HOME="/opt/root"      #this is persistent on USB
 export DOTFILES_HOME="${ROOT_HOME}"
-export DOTFILES_DIR="${DOTFILES_HOME}/dotfiles"
 export ALIASES_HOME="${DOTFILES_DIR}/home"
-
-# copy .vimrc on reboot, else vim will complain
-#cp -f ${ROOT_HOME}/.vimrc ${TEMP_ROOT_HOME}/.vimrc
 
 # write basic .vimrc file from here instead of copying as above
 cat <<'EOF' >"/tmp/root/.vimrc"
@@ -24,9 +20,9 @@ set nu
 set wrap
 EOF
 
-# create symlink on reboot for persistent home under temp root folder
-ln -s ${ROOT_HOME} ${TEMP_ROOT_HOME}/home >/dev/null 2>&1
-ln -s ${DOTFILES_DIR} ${TEMP_ROOT_HOME}/dotfiles >/dev/null 2>&1
+# create symlink on reboot for persistent link to home and dotfiles under temp root folder
+ln -s "${ROOT_HOME}" "${TEMP_ROOT_HOME}/home" >/dev/null 2>&1
+ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
 
 echo
 uname -a
