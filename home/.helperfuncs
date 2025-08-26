@@ -1,8 +1,9 @@
 #!/bin/bash
+# (c) 2025 Anirudh Acharya
 # Helper functions for dotfiles
+# detects various system types, OS and architectures
 
 # Guard variable to ensure sourcing only once
-#if [[ -v SOURCED_HELPERFUNCS ]]; then
 if [ -n "${SOURCED_HELPERFUNCS}" ]; then
   return 0 # Exit the script if already sourced
 fi
@@ -43,13 +44,18 @@ debuglog "Helper functions sourced"
 
 # Detect the operating system type
 # Returns:
-#   - "macos" for macOS,
+#   - "macos" for macOS
 #   - "debian" for Debian-based systems
 #   - "fedora" for Fedora-based systems
-#   - "linux" for other Linux distributions
 #   - "arch" for Arch-based systems
 #   - "gentoo" for Gentoo-based systems
 #   - "slackware" for Slackware-based systems
+#   - "linux" for other Linux distributions
+#   - "freebsd" for FreeBSD
+#   - "openbsd" for OpenBSD
+#   - "netbsd" for NetBSD
+#   - "dragonfly" for DragonFly BSD
+#   - "bsd" for other/unknown BSDs
 #   - "unknown" for other systems
 detect_os_type() {
   uname_os="$(uname -s)"
@@ -99,40 +105,153 @@ detect_os_type() {
       echo "linux"
     fi
   else
-    # Neither macOS nor Linux
-    echo "unknown"
+    # Non-Linux, Non-macOS: Detect BSD variants
+    case "${uname_os}" in
+      FreeBSD)
+        echo "freebsd"
+        ;;
+      OpenBSD)
+        echo "openbsd"
+        ;;
+      NetBSD)
+        echo "netbsd"
+        ;;
+      DragonFly)
+        echo "dragonfly"
+        ;;
+      *BSD*)
+        echo "bsd"
+        ;;
+      *)
+        echo "unknown"
+        ;;
+    esac
   fi
 }
 
 # Detect the architecture type
 # Returns:
-#   - "x86_64" for x86_64
-#   - "aarch64" for aarch64
-#   - "arm64" for arm64
-#   - "armv7l" for armv7l
-#   - "armv7h" for armv7h
+#   - "x86_64" for x86_64 systems
+#   - "aarch64" for ARM64 systems (aarch64, arm64, armv8*, armv9*)
+#   - "armv7l" for ARMv7 systems (little endian)
+#   - "armv7h" for ARMv7 systems (hard float)
+#   - "armv7" for other ARMv7 systems
+#   - "armv6" for ARMv6 systems
+#   - "armv5" for ARMv5 systems
+#   - "ppc64le" for PowerPC 64-bit little-endian systems
+#   - "ppc64" for PowerPC 64-bit big-endian systems
+#   - "ppc" for PowerPC 32-bit systems
+#   - "mips" for MIPS systems (big endian)
+#   - "mipsel" for MIPS systems (little endian)
 #   - "unknown" for other architectures
 detect_arch_type() {
   #debuglog "Detecting architecture type"
-  if [[ "$(uname -m)" == "x86_64" ]]; then
-    #debuglog "Detected x86_64 architecture"
-    echo "x86_64" # combination of echo and return used to return strings in functions
-  elif [[ "$(uname -m)" == "aarch64" ]]; then
-    #debuglog "Detected aarch64 architecture"
-    echo "aarch64" # combination of echo and return used to return strings in functions
-  elif [[ "$(uname -m)" == "arm64" ]]; then
-    #debuglog "Detected arm64 architecture"
-    echo "aarch64" # combination of echo and return used to return strings in functions
-  elif [[ "$(uname -m)" == "armv7l" ]]; then
-    #debuglog "Detected armv7l architecture"
-    echo "armv7l" # combination of echo and return used to return strings in functions
-  elif [[ "$(uname -m)" == "armv7h" ]]; then
-    #debuglog "Detected armv7h architecture"
-    echo "armv7h" # combination of echo and return used to return strings in functions
-  else
-    #debuglog "Unknown architecture"
-    echo "unknown" # combination of echo and return used to return strings in functions
-  fi
+  arch="$(uname -m 2>/dev/null || echo unknown)"
+  
+  case "$arch" in
+    x86_64)
+      #debuglog "Detected x86_64 architecture"
+      echo "x86_64"
+      ;;
+    aarch64|arm64|armv8*|armv9*)
+      #debuglog "Detected aarch64/arm64 architecture"
+      echo "aarch64"
+      ;;
+    armv7l)
+      #debuglog "Detected armv7l architecture (little endian)"
+      echo "armv7l"
+      ;;
+    armv7h)
+      #debuglog "Detected armv7h architecture (hard float)"
+      echo "armv7h"
+      ;;
+    armv7)
+      #debuglog "Detected armv7 architecture"
+      echo "armv7"
+      ;;
+    armv6|armv6l)
+      #debuglog "Detected armv6 architecture"
+      echo "armv6"
+      ;;
+    armv5|armv5l|armv5te|armv5tel)
+      #debuglog "Detected armv5 architecture"
+      echo "armv5"
+      ;;
+    ppc64le|powerpc64le)
+      #debuglog "Detected PowerPC 64-bit little-endian"
+      echo "ppc64le"
+      ;;
+    ppc64|powerpc64)
+      #debuglog "Detected PowerPC 64-bit big-endian"
+      echo "ppc64"
+      ;;
+    ppc|powerpc)
+      #debuglog "Detected PowerPC 32-bit"
+      echo "ppc"
+      ;;
+    mips)
+      #debuglog "Detected mips architecture (big endian)"
+      echo "mips"
+      ;;
+    mipsel|mips64el)
+      #debuglog "Detected mipsel architecture (little endian)"
+      echo "mipsel"
+      ;;
+    *)
+      # Fallback to /proc/cpuinfo for embedded systems (DDWRT/OpenWRT)
+      if [ -f /proc/cpuinfo ]; then
+        if grep -qi 'mips' /proc/cpuinfo 2>/dev/null; then
+          if grep -qi 'little endian' /proc/cpuinfo 2>/dev/null; then
+            #debuglog "Detected mipsel architecture from /proc/cpuinfo"
+            echo "mipsel"
+          else
+            #debuglog "Detected mips architecture from /proc/cpuinfo"
+            echo "mips"
+          fi
+        elif grep -qi 'powerpc\|ppc' /proc/cpuinfo 2>/dev/null; then
+          # Try to infer 64-bit vs 32-bit and endianness
+          if grep -qi 'ppc64' /proc/cpuinfo 2>/dev/null; then
+            if grep -qi 'little endian' /proc/cpuinfo 2>/dev/null; then
+              echo "ppc64le"
+            else
+              echo "ppc64"
+            fi
+          else
+            echo "ppc"
+          fi
+        elif grep -qi 'ARMv7' /proc/cpuinfo 2>/dev/null; then
+          # Attempt to distinguish hard-float vs soft-float if possible
+          if command -v readelf >/dev/null 2>&1; then
+            if readelf -A /proc/self/exe 2>/dev/null | grep -q 'Tag_ABI_VFP_args'; then
+              #debuglog "Detected armv7h (hard-float) via readelf ABI tag"
+              echo "armv7h"
+            else
+              #debuglog "Detected armv7l (likely soft-float) via absence of VFP args tag"
+              echo "armv7l"
+            fi
+          else
+            #debuglog "ARMv7 detected but cannot distinguish; returning generic armv7"
+            echo "armv7"
+          fi
+        elif grep -qi 'ARMv6' /proc/cpuinfo 2>/dev/null; then
+          #debuglog "Detected armv6 architecture from /proc/cpuinfo"
+          echo "armv6"
+        elif grep -qi 'ARMv5' /proc/cpuinfo 2>/dev/null; then
+          #debuglog "Detected armv5 architecture from /proc/cpuinfo"
+          echo "armv5"
+        elif grep -qi 'AArch64\|ARMv8\|ARMv9' /proc/cpuinfo 2>/dev/null; then
+          #debuglog "Detected aarch64 architecture from /proc/cpuinfo"
+          echo "aarch64"
+        else
+          #debuglog "Unknown architecture"
+          echo "unknown"
+        fi
+      else
+        #debuglog "Unknown architecture"
+        echo "unknown"
+      fi
+      ;;
+  esac
 }
 
 # Detect the shell type
@@ -143,6 +262,7 @@ detect_arch_type() {
 #   - "fish" for fish
 #   - "tcsh" for tcsh
 #   - "ash" for ash
+#   - "busybox" for BusyBox shells
 #   - "unknown" for other shells
 detect_shell_type() {
 
@@ -175,6 +295,9 @@ detect_shell_type() {
     else
       echo "ash"
     fi
+  elif [[ "$exe" == *"/busybox" ]]; then
+    #debuglog "Detected busybox shell via executable path"
+    echo "busybox"
   else
     #debuglog "Unknown shell"
     echo "unknown" # combination of echo and return used to return strings in functions
