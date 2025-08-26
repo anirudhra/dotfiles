@@ -145,6 +145,9 @@ detect_arch_type() {
 #   - "ash" for ash
 #   - "unknown" for other shells
 detect_shell_type() {
+
+  exe=$(readlink "/proc/$$/exe" 2>/dev/null)
+
   #debuglog "Detecting shell type"
   if [[ "$SHELL" == *"/bash" ]]; then
     #debuglog "Detected bash shell"
@@ -154,7 +157,11 @@ detect_shell_type() {
     echo "zsh" # combination of echo and return used to return strings in functions
   elif [[ "$SHELL" == *"/sh" ]]; then
     #debuglog "Detected sh shell"
-    echo "sh"
+    if [[ "$exe" == *"/busybox" ]]; then
+      echo "busybox"
+    else
+      echo "sh"
+    fi
   elif [[ "$SHELL" == *"/fish" ]]; then
     #debuglog "Detected fish shell"
     echo "fish"
@@ -163,13 +170,16 @@ detect_shell_type() {
     echo "tcsh"
   elif [[ "$SHELL" == *"/ash" ]]; then
     #debuglog "Detected ash shell"
-    echo "ash"
+    if [[ "$exe" == *"/busybox" ]]; then
+      echo "busybox"
+    else
+      echo "ash"
+    fi
   else
     #debuglog "Unknown shell"
     echo "unknown" # combination of echo and return used to return strings in functions
   fi
 }
-
 # Detect the Machine type
 # Returns:
 #   - "pveserver" for PVE Server

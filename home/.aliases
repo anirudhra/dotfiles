@@ -20,7 +20,7 @@ fi
 source "${ALIASES_HOME}/.helperfuncs"
 
 OS_TYPE=$(detect_os_type)
-#SHELL_TYPE=$(detect_shell_type)
+SHELL_TYPE=$(detect_shell_type)
 
 ################################################################################################
 #   OS agnostic aliases
@@ -40,7 +40,11 @@ export lesscolors=""
 # if the terminal supports colors, set lscolors to always
 if [ "${TERM}" = "xterm-kitty" ] || [ "${TERM}" = "xterm-256color" ] || [ "${TERM}" = "screen-256color" ]; then
   export lscolors="always"
-  export lesscolors="-R"
+
+  # busybox does not support less "-R" option for colors
+  if [ "${SHELL_TYPE}" != "busybox" ]; then
+    export lesscolors="-R"
+  fi
 fi
 
 # if eza is installed, replace ls with eza
