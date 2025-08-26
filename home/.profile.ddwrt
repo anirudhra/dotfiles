@@ -3,6 +3,9 @@
 
 . /opt/etc/profile
 
+# overwrite for color terminal
+export TERM=xterm-256color
+
 export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
 export ROOT_HOME="/opt/root"      #this is persistent on USB
 export DOTFILES_HOME="${ROOT_HOME}"
