@@ -1,0 +1,8 @@
+# This file is to be used only on DD-WRT/OpenWRT routers that have temp root home directory
+# This file must be called by the startup script to set the correct directories for proper alias/script sourcing
+export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
+export ROOT_HOME="/opt/root"      #this is persistent on USB
+export DOTFILES_HOME="${ROOT_HOME}"
+export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
+
+. "${ALIASES_HOME}/.profile"
