@@ -5,17 +5,13 @@ return {
     lazy = false,
     priority = 1000,
 
-    specs = {
-      {
-        "akinsho/bufferline.nvim",
-        after = "catppuccin",
-        config = function()
-          require("bufferline").setup({
-            highlights = require("catppuccin.groups.integrations.bufferline").get_theme(),
-          })
-        end,
-      },
-    },
+    opts = function(_, opts)
+      local module = require("catppuccin.groups.integrations.bufferline")
+      if module then
+        module.get = module.get_theme
+      end
+      return opts
+    end,
 
     config = function()
       require("catppuccin").setup()
