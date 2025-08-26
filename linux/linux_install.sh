@@ -277,7 +277,7 @@ CORE_PACKAGES=(
   'iftop'
   'atop'
   'dnf-plugins-core'
-  'vifm' #replaced by yazi
+  #'vifm' #replaced by yazi
   #'golang'
   #'cmake'
   #'gcc'
@@ -300,6 +300,7 @@ CORE_PACKAGES=(
   'iperf3'
   'ncdu'
   'bat'
+  'yazi'
   's-tui'
   'solaar' #logitech config utility
   'papirus-icon-theme'
