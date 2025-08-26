@@ -1,6 +1,7 @@
 return {
   {
     "tiagovla/tokyodark.nvim",
+    enabled = false, -- change this to enable
     lazy = true,
     priority = 1000,
     opts = {
