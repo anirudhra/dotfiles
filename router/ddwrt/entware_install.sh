@@ -87,17 +87,18 @@ post_install_menu() {
   esac
 }
 
+# Main script logic
+echo
+echo "###########################################################"
+info "Entware installer script"
+echo "###########################################################"
+
 # check if entware is already installed
 if opkg list-installed | grep -q "entware"; then
   info "entware is already installed."
   post_install_menu
   exit 0
 fi
-
-# Main script logic
-echo
-info "Entware installer script"
-echo
 
 # debugLog / error etc. functions can only be used after sourcing helperfuncs
 # Detect CPU architecture using the merged function
@@ -153,4 +154,3 @@ read -p "Press any key to continue..."
 post_install_menu
 
 exit 0
-
