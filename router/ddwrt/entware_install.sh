@@ -23,6 +23,82 @@ else
   exit 1
 fi
 
+# Function definitions
+# Install entware based on detected architecture
+install_entware() {
+  #run installer
+  OPTWARE_DIR="/opt"
+  INSTALLER_FILE="entware_installer.sh"
+
+  # download and run installer
+  cd "${OPTWARE_DIR}" || error "Failed to change to ${OPTWARE_DIR}"
+  rm -f "${INSTALLER_FILE}" || error "Failed to remove existing installer"
+  info "Downloading installer..."
+  curl -L -o "${INSTALLER_FILE}" "${ENTWARE_URL}"
+
+  # run installer
+  info "Running installer..."
+  sh "${INSTALLER_FILE}" || error "Failed to run installer"
+
+  # remove installer
+  rm "${INSTALLER_FILE}"
+}
+
+# Post-installation menu for package management
+post_install_menu() {
+  echo
+  echo "Options:"
+  echo "  1) Install packages from ${SCRIPT_DIR}/entware_packages.txt"
+  echo "  2) Install packages from ~/local_entware_packages.txt (create a temporary list locally)"
+  echo "  3) Quit"
+  echo
+  read -p "Enter your choice (1, 2 or 3): " choice
+
+  case "$choice" in
+    1)
+      info "Installing packages from entware_packages.txt..."
+      if [ -f "${SCRIPT_DIR}/entware_packages.txt" ]; then
+        while IFS= read -r package; do
+          opkg install "$package" || error "Failed to install $package"
+        done < "${SCRIPT_DIR}/entware_packages.txt" || error "Failed to install packages"
+        info "Package installation complete."
+      else
+        error "entware_packages.txt not found in ${SCRIPT_DIR}"
+      fi
+      ;;
+    2)
+      info "Installing packages from ~/local_entware_packages.txt..."
+      if [ -f "${HOME}/local_entware_packages.txt" ]; then
+        while IFS= read -r package; do
+          opkg install "$package" || error "Failed to install $package"
+        done < "${HOME}/local_entware_packages.txt" || error "Failed to install packages"
+        info "Package installation complete."
+      else
+        error "local_entware_packages.txt not found in ${HOME}"
+      fi
+      ;;
+    3)
+      info "Quitting as requested."
+      exit 0
+      ;;
+    *)
+      error "Invalid choice. Please run the script again and select 1, 2, or 3."
+      ;;
+  esac
+}
+
+# check if entware is already installed
+if opkg list-installed | grep -q "entware"; then
+  info "entware is already installed."
+  post_install_menu
+  exit 0
+fi
+
+# Main script logic
+echo
+info "Entware installer script"
+echo
+
 # debugLog / error etc. functions can only be used after sourcing helperfuncs
 # Detect CPU architecture using the merged function
 CPU_ARCH="$(detect_arch_type)"
@@ -47,3 +123,18 @@ case "$CPU_ARCH" in
   unsupported|unknown|*)
     error "entware is unsupported for this platform ($CPU_ARCH)." ;;
  esac
+
+# Install entware
+install_entware
+
+# update database
+info "Updating database..."
+opkg update
+opkg upgrade
+
+info "Entware installation complete."
+
+# Show post-installation menu
+post_install_menu
+
+exit 0
