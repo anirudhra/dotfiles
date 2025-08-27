@@ -26,4 +26,5 @@ tree
 iptraf-ng
 bzip2
 wget-ssl
+bind-tools
 ca-certificates
