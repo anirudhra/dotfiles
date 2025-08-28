@@ -14,10 +14,6 @@ else
 	config.color_scheme = "Catppuccin Latte"
 end
 
--- Slightly transparent and blurred background
-config.window_background_opacity = 0.9
-config.macos_window_background_blur = 30
-
 -- config.font = wezterm.font("JetBrains Mono Nerd Font")
 
 if target_triple:find("apple-darwin") then
@@ -32,6 +28,7 @@ if target_triple:find("apple-darwin") then
 elseif target_triple:find("linux") then
 	-- Linux specific configurations
 	config.font = wezterm.font("JetBrains Mono Nerd Font")
+	config.window_background_opacity = 0.9
 	config.font_size = 11
 	config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 	-- config.window_decorations = "RESIZE"
