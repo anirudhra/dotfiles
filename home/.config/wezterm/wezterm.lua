@@ -1,6 +1,6 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
-
+local target_triple = wezterm.target_triple
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
@@ -14,22 +14,26 @@ else
 	config.color_scheme = "Catppuccin Latte"
 end
 
--- This is where you actually apply your config choices.
-
--- For example, changing the initial geometry for new windows:
-config.initial_cols = 120
-config.initial_rows = 28
-
 -- Slightly transparent and blurred background
 config.window_background_opacity = 0.9
 config.macos_window_background_blur = 30
 
--- or, changing the font size and color scheme.
 config.font = wezterm.font("JetBrains Mono Nerd Font")
-config.font_size = 11
---config.color_scheme = "Catppuccin Mocha"
--- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
-config.window_decorations = "RESIZE"
+
+if target_triple:find("apple-darwin") then
+	-- macOS specific configurations
+	config.font_size = 14
+	config.macos_window_background_blur = 10
+	config.send_composed_key_when_right_alt_is_pressed = true
+elseif target_triple:find("linux") then
+	-- Linux specific configurations
+	config.font_size = 11
+	-- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+	config.window_decorations = "RESIZE"
+else
+	-- Default configurations for other platforms
+	config.font_size = 11
+end
 
 -- Powerline statusbar on top right tab bar
 local function segments_for_right_status(window)
