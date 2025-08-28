@@ -38,9 +38,29 @@ alias firefox="open -a firefox"
 alias chrome="open -a google\ chrome"
 alias textedit='open -a TextEdit'
 
+# hotcorner settings
+#0: No Option
+#2: Mission Control
+#3: Show application windows
+#4: Desktop
+#5: Start screen saver
+#6: Disable screen saver
+#7: Dashboard
+#10: Put display to sleep
+#11: Launchpad
+#12: Notification Center
+#13: Lock Screen
+alias sethc="defaults write com.apple.dock wvous-tl-corner -int 2 && \
+             defaults write com.apple.dock wvous-tr-corner -int 6 && \
+             defaults write com.apple.dock wvous-bl-corner -int 13 && \
+             defaults write com.apple.dock wvous-br-corner -int 10 && \
+             killall Dock"
+
 #monitor cpu clock
 alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
 
 # jupyterlab aliases
 alias ipy="jupyter lab ~/code/github/jupyternb"
+
+# goto aliases
 alias gooc='cd ~/code/OpenCore'
