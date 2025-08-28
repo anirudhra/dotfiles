@@ -24,14 +24,15 @@ if target_triple:find("apple-darwin") then
 	config.send_composed_key_when_right_alt_is_pressed = true
 	config.initial_rows = 48
 	config.initial_cols = 150
-	config.window_decorations = "MACOS_FORCE_ENABLE_SHADOW|RESIZE"
+	config.window_decorations = "MACOS_FORCE_ENABLE_SHADOW | RESIZE"
 elseif target_triple:find("linux") then
 	-- Linux specific configurations
 	config.font = wezterm.font("JetBrains Mono Nerd Font")
 	config.window_background_opacity = 0.9
 	config.font_size = 11
-	config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
-	-- config.window_decorations = "RESIZE"
+	-- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+	config.window_decorations = "RESIZE"
+	-- config.integrated_title_button_style = "Gnome"
 	config.initial_rows = 48
 	config.initial_cols = 150
 else
@@ -134,7 +135,6 @@ config.key_tables = {
 
 -- Table mapping keypresses to actions
 config.keys = {
-
 	-- As Ctrl+F is leader, to actually send a Ctrl+A, press it twice
 	{
 		key = "f",
