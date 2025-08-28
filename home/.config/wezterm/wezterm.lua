@@ -18,18 +18,24 @@ end
 config.window_background_opacity = 0.9
 config.macos_window_background_blur = 30
 
-config.font = wezterm.font("JetBrains Mono Nerd Font")
+-- config.font = wezterm.font("JetBrains Mono Nerd Font")
 
 if target_triple:find("apple-darwin") then
 	-- macOS specific configurations
-	config.font_size = 14
+	config.font = wezterm.font("JetBrainsMono Nerd Font")
+	config.font_size = 18
 	config.macos_window_background_blur = 10
 	config.send_composed_key_when_right_alt_is_pressed = true
+	config.initial_rows = 48
+	config.initial_cols = 150
 elseif target_triple:find("linux") then
 	-- Linux specific configurations
+	config.font = wezterm.font("JetBrains Mono Nerd Font")
 	config.font_size = 11
 	-- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 	config.window_decorations = "RESIZE"
+	config.initial_rows = 48
+	config.initial_cols = 150
 else
 	-- Default configurations for other platforms
 	config.font_size = 11
