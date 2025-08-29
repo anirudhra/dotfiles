@@ -21,19 +21,19 @@ end
 
 config.bold_brightens_ansi_colors = true
 
-if target_triple:find("apple-darwin") then
+if target_triple == "aarch64-apple-darwin" or target_triple == "apple-darwin" then
 	-- macOS specific configurations
 	config.font = wezterm.font("JetBrainsMono Nerd Font")
-	config.font_size = 18
+	config.font_size = 14
 
 	--config.window_decorations = "MACOS_FORCE_ENABLE_SHADOW | RESIZE"
 	config.window_background_opacity = 0.95
 	config.macos_window_background_blur = 10
 	config.send_composed_key_when_right_alt_is_pressed = true
 
-	config.initial_rows = 45
-	config.initial_cols = 150
-elseif target_triple:find("linux") then
+	config.initial_rows = 65
+	config.initial_cols = 120
+elseif target_triple == "linux" then
 	-- Linux specific configurations
 	config.font = wezterm.font("JetBrains Mono Nerd Font")
 	config.font_size = 11
