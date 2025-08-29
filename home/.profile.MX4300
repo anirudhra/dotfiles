@@ -9,14 +9,15 @@ SOURCED_PROFILE_MX4300=1
 #PROMPT='%n@%m:%~%# '
 
 #re-export just in case
-export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
-export ROOT_HOME="/opt/root"      #this is persistent on USB
+export TEMP_ROOT_HOME="/tmp/root" # this gets wiped on every reboot
+export ROOT_HOME="/opt/root"      # this is persistent on USB
+export JFFS_HOME="/jffs"          # this is persistent on EMMC
 export DOTFILES_HOME="${ROOT_HOME}"
 export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
 
 # create symlink on reboot for persistent link to home and dotfiles under temp root folder
 ln -s "${ROOT_HOME}" "${TEMP_ROOT_HOME}/home" >/dev/null 2>&1
-ln -s "${ROOT_HOME}/.ssh" "${TEMP_ROOT_HOME}/.ssh" >/dev/null 2>&1
+ln -s "${JFFS_HOME}/.ssh" "${TEMP_ROOT_HOME}/.ssh" >/dev/null 2>&1
 ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
