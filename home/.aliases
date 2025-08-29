@@ -40,15 +40,15 @@ export lesscolors="-R"
 # if the terminal supports colors, set lscolors to always
 if [ "${TERM}" = "xterm-kitty" ] || [ "${TERM}" = "xterm-256color" ] || [ "${TERM}" = "screen-256color" ]; then
   export lscolors="always"
+fi
 
-  # busybox does not support less "-R" option for colors
-  if [ "${SHELL_TYPE}" = "busybox" ]; then
-    # busybox version of less does not support -R argument for colors
-    if detect_busybox_alias "less"; then
-      export lesscolors=""
-    fi
-    # else if gnu "less" is installed on busybox, retain the color mode
+# busybox does not support less "-R" option for colors
+if [ "${SHELL_TYPE}" = "busybox" ]; then
+  # busybox version of less does not support -R argument for colors
+  if detect_busybox_alias "less"; then
+    export lesscolors=""
   fi
+  # else if gnu "less" is installed on busybox, retain the color mode
 fi
 
 # default pagination
