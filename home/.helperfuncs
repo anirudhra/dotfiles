@@ -315,7 +315,7 @@ detect_busybox_alias() {
   alias_info=$(${SHELL} -ic "type $command_name" 2>/dev/null)
 
   # Check if the command is an alias and if its definition contains "busybox".
-  if [[ "$alias_info" == *'is aliased to'* && "$alias_info" == *'busybox'* ]]; then
+  if [[ "$alias_info" == *'BusyBox'* || "$alias_info" == *'busybox'* ]]; then
     echo "busybox_true" # Success: It's an alias to busybox
   else
     echo "busybox_false" # Failure: It's not an alias to busybox
