@@ -36,10 +36,11 @@ alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 alias getdot="cd ${DOTFILES_HOME} && wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && rm -rf ${DOTFILES_HOME}/dotfiles-bak && mv ${DOTFILES_HOME}/dotfiles ${DOTFILES_HOME}/dotfiles-bak && tar xvf master.tar.gz && mv ${DOTFILES_HOME}/dotfiles-main ${DOTFILES_HOME}/dotfiles && rm ${DOTFILES_HOME}/master.tar.gz"
 
 export lscolors="auto"
-export lesscolors="-R"
+export lesscolors=""
 # if the terminal supports colors, set lscolors to always
 if [ "${TERM}" = "xterm-kitty" ] || [ "${TERM}" = "xterm-256color" ] || [ "${TERM}" = "screen-256color" ]; then
   export lscolors="always"
+  export lesscolors="-R"
 fi
 
 # busybox does not support less "-R" option for colors
@@ -51,6 +52,8 @@ if [ "${SHELL_TYPE}" = "busybox" ]; then
     export lesscolors=""
   fi
   # else if gnu "less" is installed on busybox, retain the color mode
+  # FIXME: force no colors for now as the detect_busybox_alias function does not work for now
+  export lesscolors=""
 fi
 
 # default pagination

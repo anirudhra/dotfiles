@@ -306,6 +306,7 @@ detect_shell_type() {
 
 # check if any shell command is aliases to busybox
 # A function to check if a command is an alias and if it points to busybox.
+# FIXME: this is currently broken
 detect_busybox_alias() {
   local command_name="$1"
 
