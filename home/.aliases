@@ -45,7 +45,9 @@ fi
 # busybox does not support less "-R" option for colors
 if [ "${SHELL_TYPE}" = "busybox" ]; then
   # busybox version of less does not support -R argument for colors
-  if detect_busybox_alias "less"; then
+  busybox_less="busybox_false"
+  busybox_less=$(detect_busybox_alias "less")
+  if [ "${busybox_less}" = "busybox_true" ]; then
     export lesscolors=""
   fi
   # else if gnu "less" is installed on busybox, retain the color mode
