@@ -19,7 +19,6 @@ else
 	config.color_scheme = "Catppuccin Latte"
 end
 
-config.text_min_contrast_ratio = 4.5
 config.bold_brightens_ansi_colors = true
 
 if target_triple:find("apple-darwin") then
@@ -40,6 +39,7 @@ elseif target_triple:find("linux") then
 	config.font_size = 11
 
 	config.window_background_opacity = 0.95
+	config.text_min_contrast_ratio = 4.5
 	-- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
 	-- config.window_decorations = "RESIZE"
 	-- config.integrated_title_button_style = "Gnome"

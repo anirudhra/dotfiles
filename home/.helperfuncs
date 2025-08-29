@@ -107,24 +107,24 @@ detect_os_type() {
   else
     # Non-Linux, Non-macOS: Detect BSD variants
     case "${uname_os}" in
-      FreeBSD)
-        echo "freebsd"
-        ;;
-      OpenBSD)
-        echo "openbsd"
-        ;;
-      NetBSD)
-        echo "netbsd"
-        ;;
-      DragonFly)
-        echo "dragonfly"
-        ;;
-      *BSD*)
-        echo "bsd"
-        ;;
-      *)
-        echo "unknown"
-        ;;
+    FreeBSD)
+      echo "freebsd"
+      ;;
+    OpenBSD)
+      echo "openbsd"
+      ;;
+    NetBSD)
+      echo "netbsd"
+      ;;
+    DragonFly)
+      echo "dragonfly"
+      ;;
+    *BSD*)
+      echo "bsd"
+      ;;
+    *)
+      echo "unknown"
+      ;;
     esac
   fi
 }
@@ -147,110 +147,110 @@ detect_os_type() {
 detect_arch_type() {
   #debuglog "Detecting architecture type"
   arch="$(uname -m 2>/dev/null || echo unknown)"
-  
+
   case "$arch" in
-    x86_64)
-      #debuglog "Detected x86_64 architecture"
-      echo "x86_64"
-      ;;
-    aarch64|arm64|armv8*|armv9*)
-      #debuglog "Detected aarch64/arm64 architecture"
-      echo "aarch64"
-      ;;
-    armv7l)
-      #debuglog "Detected armv7l architecture (little endian)"
-      echo "armv7l"
-      ;;
-    armv7h)
-      #debuglog "Detected armv7h architecture (hard float)"
-      echo "armv7h"
-      ;;
-    armv7)
-      #debuglog "Detected armv7 architecture"
-      echo "armv7"
-      ;;
-    armv6|armv6l)
-      #debuglog "Detected armv6 architecture"
-      echo "armv6"
-      ;;
-    armv5|armv5l|armv5te|armv5tel)
-      #debuglog "Detected armv5 architecture"
-      echo "armv5"
-      ;;
-    ppc64le|powerpc64le)
-      #debuglog "Detected PowerPC 64-bit little-endian"
-      echo "ppc64le"
-      ;;
-    ppc64|powerpc64)
-      #debuglog "Detected PowerPC 64-bit big-endian"
-      echo "ppc64"
-      ;;
-    ppc|powerpc)
-      #debuglog "Detected PowerPC 32-bit"
-      echo "ppc"
-      ;;
-    mips)
-      #debuglog "Detected mips architecture (big endian)"
-      echo "mips"
-      ;;
-    mipsel|mips64el)
-      #debuglog "Detected mipsel architecture (little endian)"
-      echo "mipsel"
-      ;;
-    *)
-      # Fallback to /proc/cpuinfo for embedded systems (DDWRT/OpenWRT)
-      if [ -f /proc/cpuinfo ]; then
-        if grep -qi 'mips' /proc/cpuinfo 2>/dev/null; then
-          if grep -qi 'little endian' /proc/cpuinfo 2>/dev/null; then
-            #debuglog "Detected mipsel architecture from /proc/cpuinfo"
-            echo "mipsel"
-          else
-            #debuglog "Detected mips architecture from /proc/cpuinfo"
-            echo "mips"
-          fi
-        elif grep -qi 'powerpc\|ppc' /proc/cpuinfo 2>/dev/null; then
-          # Try to infer 64-bit vs 32-bit and endianness
-          if grep -qi 'ppc64' /proc/cpuinfo 2>/dev/null; then
-            if grep -qi 'little endian' /proc/cpuinfo 2>/dev/null; then
-              echo "ppc64le"
-            else
-              echo "ppc64"
-            fi
-          else
-            echo "ppc"
-          fi
-        elif grep -qi 'ARMv7' /proc/cpuinfo 2>/dev/null; then
-          # Attempt to distinguish hard-float vs soft-float if possible
-          if command -v readelf >/dev/null 2>&1; then
-            if readelf -A /proc/self/exe 2>/dev/null | grep -q 'Tag_ABI_VFP_args'; then
-              #debuglog "Detected armv7h (hard-float) via readelf ABI tag"
-              echo "armv7h"
-            else
-              #debuglog "Detected armv7l (likely soft-float) via absence of VFP args tag"
-              echo "armv7l"
-            fi
-          else
-            #debuglog "ARMv7 detected but cannot distinguish; returning generic armv7"
-            echo "armv7"
-          fi
-        elif grep -qi 'ARMv6' /proc/cpuinfo 2>/dev/null; then
-          #debuglog "Detected armv6 architecture from /proc/cpuinfo"
-          echo "armv6"
-        elif grep -qi 'ARMv5' /proc/cpuinfo 2>/dev/null; then
-          #debuglog "Detected armv5 architecture from /proc/cpuinfo"
-          echo "armv5"
-        elif grep -qi 'AArch64\|ARMv8\|ARMv9' /proc/cpuinfo 2>/dev/null; then
-          #debuglog "Detected aarch64 architecture from /proc/cpuinfo"
-          echo "aarch64"
+  x86_64)
+    #debuglog "Detected x86_64 architecture"
+    echo "x86_64"
+    ;;
+  aarch64 | arm64 | armv8* | armv9*)
+    #debuglog "Detected aarch64/arm64 architecture"
+    echo "aarch64"
+    ;;
+  armv7l)
+    #debuglog "Detected armv7l architecture (little endian)"
+    echo "armv7l"
+    ;;
+  armv7h)
+    #debuglog "Detected armv7h architecture (hard float)"
+    echo "armv7h"
+    ;;
+  armv7)
+    #debuglog "Detected armv7 architecture"
+    echo "armv7"
+    ;;
+  armv6 | armv6l)
+    #debuglog "Detected armv6 architecture"
+    echo "armv6"
+    ;;
+  armv5 | armv5l | armv5te | armv5tel)
+    #debuglog "Detected armv5 architecture"
+    echo "armv5"
+    ;;
+  ppc64le | powerpc64le)
+    #debuglog "Detected PowerPC 64-bit little-endian"
+    echo "ppc64le"
+    ;;
+  ppc64 | powerpc64)
+    #debuglog "Detected PowerPC 64-bit big-endian"
+    echo "ppc64"
+    ;;
+  ppc | powerpc)
+    #debuglog "Detected PowerPC 32-bit"
+    echo "ppc"
+    ;;
+  mips)
+    #debuglog "Detected mips architecture (big endian)"
+    echo "mips"
+    ;;
+  mipsel | mips64el)
+    #debuglog "Detected mipsel architecture (little endian)"
+    echo "mipsel"
+    ;;
+  *)
+    # Fallback to /proc/cpuinfo for embedded systems (DDWRT/OpenWRT)
+    if [ -f /proc/cpuinfo ]; then
+      if grep -qi 'mips' /proc/cpuinfo 2>/dev/null; then
+        if grep -qi 'little endian' /proc/cpuinfo 2>/dev/null; then
+          #debuglog "Detected mipsel architecture from /proc/cpuinfo"
+          echo "mipsel"
         else
-          #debuglog "Unknown architecture"
-          echo "unknown"
+          #debuglog "Detected mips architecture from /proc/cpuinfo"
+          echo "mips"
         fi
+      elif grep -qi 'powerpc\|ppc' /proc/cpuinfo 2>/dev/null; then
+        # Try to infer 64-bit vs 32-bit and endianness
+        if grep -qi 'ppc64' /proc/cpuinfo 2>/dev/null; then
+          if grep -qi 'little endian' /proc/cpuinfo 2>/dev/null; then
+            echo "ppc64le"
+          else
+            echo "ppc64"
+          fi
+        else
+          echo "ppc"
+        fi
+      elif grep -qi 'ARMv7' /proc/cpuinfo 2>/dev/null; then
+        # Attempt to distinguish hard-float vs soft-float if possible
+        if command -v readelf >/dev/null 2>&1; then
+          if readelf -A /proc/self/exe 2>/dev/null | grep -q 'Tag_ABI_VFP_args'; then
+            #debuglog "Detected armv7h (hard-float) via readelf ABI tag"
+            echo "armv7h"
+          else
+            #debuglog "Detected armv7l (likely soft-float) via absence of VFP args tag"
+            echo "armv7l"
+          fi
+        else
+          #debuglog "ARMv7 detected but cannot distinguish; returning generic armv7"
+          echo "armv7"
+        fi
+      elif grep -qi 'ARMv6' /proc/cpuinfo 2>/dev/null; then
+        #debuglog "Detected armv6 architecture from /proc/cpuinfo"
+        echo "armv6"
+      elif grep -qi 'ARMv5' /proc/cpuinfo 2>/dev/null; then
+        #debuglog "Detected armv5 architecture from /proc/cpuinfo"
+        echo "armv5"
+      elif grep -qi 'AArch64\|ARMv8\|ARMv9' /proc/cpuinfo 2>/dev/null; then
+        #debuglog "Detected aarch64 architecture from /proc/cpuinfo"
+        echo "aarch64"
       else
         #debuglog "Unknown architecture"
         echo "unknown"
       fi
-      ;;
+    else
+      #debuglog "Unknown architecture"
+      echo "unknown"
+    fi
+    ;;
   esac
 }
 
@@ -303,6 +303,25 @@ detect_shell_type() {
     echo "unknown" # combination of echo and return used to return strings in functions
   fi
 }
+
+# check if any shell command is aliases to busybox
+# A function to check if a command is an alias and if it points to busybox.
+detect_busybox_alias() {
+  local command_name="$1"
+
+  # Use an interactive shell to expand aliases, then capture the type output.
+  # The 'type' command with the -t flag outputs the type of command (e.g., alias, file).
+  # Without -t, it provides the full definition of the alias.
+  alias_info=$(${SHELL} -ic "type $command_name" 2>/dev/null)
+
+  # Check if the command is an alias and if its definition contains "busybox".
+  if [[ "$alias_info" == *'is aliased to'* && "$alias_info" == *'busybox'* ]]; then
+    echo "busybox_true" # Success: It's an alias to busybox
+  else
+    echo "busybox_false" # Failure: It's not an alias to busybox
+  fi
+}
+
 # Detect the Machine type
 # Returns:
 #   - "pveserver" for PVE Server
