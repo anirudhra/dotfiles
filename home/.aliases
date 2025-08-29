@@ -47,17 +47,28 @@ if [ "${TERM}" = "xterm-kitty" ] || [ "${TERM}" = "xterm-256color" ] || [ "${TER
   fi
 fi
 
+# default pagination
+export pages="less ${lesscolors}"
+# check if most is installed, if so, replace less with most
+if command -v most >/dev/null 2>&1; then
+  export pages="most"
+fi
+
+# Enable syntax-highlighting in less/cat
+# Note: needs source-highlight and highlight brew packages for these to work
+alias lessc='less -R'
+alias more='${pages}'
+
 # if eza is installed, replace ls with eza
 if command -v eza >/dev/null 2>&1; then
   unalias ls >/dev/null 2>&1
   alias ls='eza'
   ## ls aliases
-  ## Colorize the ls output ##
   alias ls='eza --color=${lscolors} -F -G'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='eza -la --color=${lscolors} --header --icons --git | less ${lesscolors}'
+  alias ll='eza -la --color=${lscolors} --header --icons --git | ${pages}'
   ## Show hidden files ##
-  alias ll.='eza -l -d -F -G --color=${lscolors} .* | less ${lesscolors}'
+  alias ll.='eza -l -d -F -G --color=${lscolors} .* | ${pages}'
   alias ls.='eza -d -F -G --color=${lscolors} .*'
   alias l='eza -lah'                  #size,show type,human readable
   alias la='eza -laAh -F'             #long list,show almost all,show type,human readable
@@ -91,9 +102,9 @@ else
   ## Colorize the ls output ##
   alias ls='ls --color=${lscolors} -F'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='ls -la --color=${lscolors} | less ${lesscolors}'
+  alias ll='ls -la --color=${lscolors} | ${pages}'
   ## Show hidden files ##
-  alias ll.='ls -l -d -F --color=${lscolors} .* | less ${lesscolors}'
+  alias ll.='ls -l -d -F --color=${lscolors} .* | ${pages}'
   alias ls.='ls -d -F --color=${lscolors} .*'
   alias l='ls -lFh'   #size,show type,human readable
   alias la='ls -lAFh' #long list,show almost all,show type,human readable
@@ -224,7 +235,7 @@ alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclu
 
 # pager and readme aliases
 alias pager="${PAGER}"
-alias readme="find . -maxdepth 1 -iname \"readme*\" -exec less ${lesscolors} {} \;"
+alias readme="find . -maxdepth 1 -iname \"readme*\" -exec \"${pages}\" {} \;"
 
 # Tree
 if [ ! -x "$(which tree 2>/dev/null)" ]; then
@@ -235,14 +246,6 @@ fi
 alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._.DS_Store -delete'
 alias dotclean='find . -name ._\* -delete'
 
-# Enable syntax-highlighting in less/cat
-# Note: needs source-highlight and highlight brew packages for these to work
-#export LESSOPEN="| /usr/local/bin/src-hilite-lesspipe.sh %s"
-#export LESS=" -R "
-#alias less='less -m -N -g -i -J --underline-special --SILENT'
-alias lessc='less -R'
-alias more='less ${lesscolors}'
-#alias cat='less'
 #use column command for a table. syntax: column -t -s "separator like , :" <filename>
 alias table='column -t -s'
 

@@ -252,6 +252,7 @@ sudo ${INSTALLER} update && sudo ${INSTALLER} upgrade
 # list of core packages
 CORE_PACKAGES=(
   'tmux'
+  'most'
   'duf'
   'code'
   'btop'
