@@ -19,6 +19,7 @@ export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
 ln -s "${ROOT_HOME}" "${TEMP_ROOT_HOME}/home" >/dev/null 2>&1
 ln -s "${JFFS_HOME}/.ssh" "${TEMP_ROOT_HOME}/.ssh" >/dev/null 2>&1
 ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
+ln -s "${DOTFILES_HOME}/dotfiles" "${JFFS_HOME}/dotfiles" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
