@@ -4,6 +4,10 @@ local target_triple = wezterm.target_triple
 -- This will hold the configuration.
 local config = wezterm.config_builder()
 
+-- plugins
+local bar = wezterm.plugin.require("https://github.com/adriankarlen/bar.wezterm")
+-- local tabline = wezterm.plugin.require("https://github.com/michaelbrusegard/tabline.wez")
+
 -- Import our new module appearance.lua (put this near the top of your wezterm.lua)
 local appearance = require("appearance")
 
@@ -30,11 +34,11 @@ elseif target_triple:find("linux") then
 	config.font = wezterm.font("JetBrains Mono Nerd Font")
 	config.window_background_opacity = 0.9
 	config.font_size = 11
-	-- config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
-	config.window_decorations = "RESIZE"
+	--config.window_decorations = "INTEGRATED_BUTTONS|RESIZE"
+	-- config.window_decorations = "RESIZE"
 	-- config.integrated_title_button_style = "Gnome"
-	config.initial_rows = 48
-	config.initial_cols = 150
+	-- config.initial_rows = 28
+	-- config.initial_cols = 100
 else
 	-- Default configurations for other platforms
 	config.font_size = 11
@@ -62,7 +66,7 @@ wezterm.on("update-status", function(window, _)
 	-- Each powerline segment is going to be coloured progressively
 	-- darker/lighter depending on whether we're on a dark/light colour
 	-- scheme. Let's establish the "from" and "to" bounds of our gradient.
-	local gradient_to, gradient_from = bg
+	local gradient_to, gradient_from = bg, bg
 	if appearance.is_dark() then
 		gradient_from = gradient_to:lighten(0.2)
 	else
@@ -98,7 +102,8 @@ wezterm.on("update-status", function(window, _)
 		table.insert(elements, { Text = " " .. seg .. " " })
 	end
 
-	window:set_right_status(wezterm.format(elements))
+	-- disabled when using bar.wizterm, they conflict
+	--window:set_right_status(wezterm.format(elements))
 end)
 
 -- If you're using emacs you probably wanna choose a different leader here,
@@ -185,6 +190,17 @@ config.keys = {
 		}),
 	},
 }
+
+-- plugins application to config
+bar.apply_to_config(config, {
+	modules = {
+		spotify = {
+			enabled = false,
+		},
+	},
+})
+
+-- tabline.apply_to_config(config)
 
 -- Finally, return the configuration to wezterm:
 return config
