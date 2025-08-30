@@ -8,7 +8,9 @@
 
 export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
 export ROOT_HOME="/opt/root"      #this is persistent on USB
-export DOTFILES_HOME="${ROOT_HOME}"
+export JFFS_HOME="/jffs"          #this is persistent on USB
+#export DOTFILES_HOME="${ROOT_HOME}"
+export DOTFILES_HOME="${JFFS_HOME}" # new dotfiles home, instead of /opt/root to handle bad USB cases
 export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
 
 . "${ALIASES_HOME}/.profile"
