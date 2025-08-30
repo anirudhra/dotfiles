@@ -1,7 +1,8 @@
 # This file is to be used only on DD-WRT/OpenWRT routers that have temp root home directory
 # This file must be called by the startup script to set the correct directories for proper alias/script sourcing
 
-. /opt/etc/profile
+# source entware profile, if file exists
+[ -f /opt/etc/profile ] && . /opt/etc/profile
 
 # overwrite for color terminal, may not always work
 #export TERM=xterm-256color
