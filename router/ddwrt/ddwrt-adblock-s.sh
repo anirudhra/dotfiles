@@ -2,7 +2,6 @@
 #DEBUG=; set -x # comment/uncomment to disable/enable debug mode
 
 # name: ddwrt-adblock-s.sh
-# https://github.com/egc112/ddwrt/tree/main/adblock/smartdns
 # version: 0.3, 28-mrt-2024, by egc, based on eibgrads ddwrt-blacklist-domains-adblock
 # purpose: blacklist specific domains in smartdns using a list of domains
 # script type: shell script
@@ -38,15 +37,12 @@
 #       contain *very* large lists of blacklisted domains, which may exceed
 #       the memory capacity of the router and/or smartdns, and *may* have a
 #       detrimental affect on dns performance
-# Good source (but change https to http): https://github.com/hagezi/dns-blocklists/tree/main/domains
-URL_LIST='
-http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.txt
-'
+URL_LIST='http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.plus.txt'
 
-#BACKUP URL block list
-#http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.plus.txt 
-# https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/light.txt
-# https://small.oisd.nl/domainswild2
+#URL list backup
+#https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/light.txt
+#http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.txt
+#https://small.oisd.nl/domainswild2
 
 # exceptions: domains (and their sub-domains) NOT to be blacklisted
 # note: matching only occurs on whole parts of the domain name, moving right
@@ -54,17 +50,10 @@ http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/p
 #       also match xyz.somedomain.com, but NOT match xyzsomedomain.com nor
 #       xyz.somedomain.com.us; wildcards (*) are NOT supported and will be
 #       removed
-MYWHITELIST='
-localhost
-'
-#Backup initial whitelist
-#googleadservices.com
-#services.googleapis.com
-#dd-wrt.com
+MYWHITELIST=''
 
 # websites/domains you manually want to blacklist
-MYBLACKLIST='
-'
+MYBLACKLIST=''
 
 # maximum time (in secs) alloted to any curl/wget operation
 MAX_WAIT=60

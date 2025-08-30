@@ -24,11 +24,15 @@ else
 fi
 
 # Function definitions
-# Install entware based on detected architecture
+# Download entware installer based on detected architecture and install
 install_entware() {
   #run installer
-  OPTWARE_DIR="/opt"
+  OPTWARE_DIR="/opt" # change if optware/entware/USB mount is different
   INSTALLER_FILE="entware_installer.sh"
+
+  if [ ! -n "${ENTWARE_URL}" ]; then
+    error "Entware URL is empty: ${ENTWARE_URL}. Check for errors and fix them."
+  fi
 
   # download and run installer
   cd "${OPTWARE_DIR}" || error "Failed to change to ${OPTWARE_DIR}"
@@ -103,6 +107,7 @@ fi
 # debugLog / error etc. functions can only be used after sourcing helperfuncs
 # Detect CPU architecture using the merged function
 CPU_ARCH="$(detect_arch_type)"
+ENTWARE_URL=""
 
 # Build per-arch Entware installer URL or exit if unsupported
 case "$CPU_ARCH" in
