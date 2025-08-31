@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # (c) Anirudh Acharya 2024
 # Unmounts ZFS filesystem and exports the pool for safe USB removal.
 

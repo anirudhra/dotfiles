@@ -60,6 +60,8 @@ common_packages=(
   'duf'
   'nfs-common'
   'tmux'
+  'vim'
+  'git'
   'reptyr'
   'ncdu'
   'autofs'
@@ -113,8 +115,10 @@ server_mounts=(
   'sata-ssd'
   'nvme-ssd'
 )
-server_subnet="10.100.100.0/24"
-server_ip="10.100.100.50"
+
+server_subnet_prefix="10.100.10"
+server_subnet="${server_subnet_prefix}.0/24"
+server_ip="${server_subnet_prefix}.50"
 
 #files
 serve_nfs_exports="/etc/exports"
@@ -233,24 +237,27 @@ apt clean
 apt autoclean
 apt autoremove
 
-echo
-echo Configuring shell aliases...
-echo
+#echo
+#echo Configuring shell aliases...
+#echo
 
 # add useful aliases to profile, works for bash and zsh
-source_aliases="source ${HOME}/.aliases"
-shell_profile="${HOME}/.profile"
+#source_aliases="source ${HOME}/.aliases"
+#shell_profile="${HOME}/.profile"
 
-if grep -wq "${source_aliases}" "${shell_profile}"; then
-  echo "Aliases file already sourced"
-else
-  # source aliases in shell profile after creating backup
-  cp "${shell_profile}" "${shell_profile}.bak"
-  echo "${source_aliases}" >>"${shell_profile}"
-  cp ../../home/.aliases "${HOME}/.aliases"
-fi
+#if grep -wq "${source_aliases}" "${shell_profile}"; then
+#  echo "Aliases file already sourced"
+#else
+#  # source aliases in shell profile after creating backup
+#  cp "${shell_profile}" "${shell_profile}.bak"
+#  echo "${source_aliases}" >>"${shell_profile}"
+#  cp ../../home/.aliases "${HOME}/.aliases"
+#fi
 
 echo
+echo "Manually run powertop and add to startup. Also manually mount SSDs to /mnt directory, if not already added to fstab:"
+echo "UUID=<UUID> /mnt/sata-ssd    ext4    defaults 0   2"
+echo "UUID=<UUID> /mnt/nvme-ssd    ext4    defaults 0   2"
 echo "Manually install Intel GPU Media non-free driver: intel-media-va-driver-non-free,"
 echo "   after enabling non-free repo in /etc/apt/sources.list.d/debian"
 echo
