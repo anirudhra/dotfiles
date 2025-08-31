@@ -20,6 +20,8 @@ sleep 10
 cat <<'EOF' >"/tmp/root/.ashrc"
 source /jffs/dotfiles/home/.profile.ddwrt
 EOF
+# Trigger Avahi/mDNS restart, due to a dbus dependency issue
+service mdns start 
 ```
 
 ## USB Commands
