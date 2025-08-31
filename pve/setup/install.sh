@@ -54,14 +54,12 @@ echo "Installing packages in \"${mode}\" mode..."
 echo
 
 common_packages=(
-  'neovim'
   'btop'
   'avahi-daemon'
   'avahi-utils'
   'duf'
   'nfs-common'
   'tmux'
-  'screen'
   'reptyr'
   'ncdu'
   'autofs'
@@ -70,21 +68,18 @@ common_packages=(
 )
 
 pve_packages=(
-  #'inxi'
   'iotop'
   'atop'
   'iftop'
-  'git'
-  'gh'
   'alsa-utils'
-  'cpufrequtils'
+  #'cpufrequtils'
   'nfs-kernel-server'
   'lm-sensors'
   'powertop'
   'usbutils'
   'pciutils'
   'iperf3'
-  'intel-media-va-driver-non-free'
+  #'intel-media-va-driver-non-free' # this needs to be installed after enabling non-free repo in /etc/apt/sources.list.d/debian
   'vainfo'
   'intel-gpu-tools'
 )
@@ -255,6 +250,9 @@ else
   cp ../../home/.aliases "${HOME}/.aliases"
 fi
 
+echo
+echo "Manually install Intel GPU Media non-free driver: intel-media-va-driver-non-free,"
+echo "   after enabling non-free repo in /etc/apt/sources.list.d/debian"
 echo
 echo "Done! Logout and log back in for changes"
 echo
