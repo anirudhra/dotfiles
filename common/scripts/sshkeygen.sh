@@ -3,7 +3,7 @@
 ## generate and copy ssh keys to servers
 
 # Guard variable to ensure sourcing only once
-if [[ -v SOURCED_SSHKEYGEN ]]; then
+if [ -n "${SOURCED_SSHKEYGEN}" ]; then
   return 0 # Exit the script if already sourced
 fi
 
