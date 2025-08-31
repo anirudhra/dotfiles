@@ -77,6 +77,7 @@ pve_packages=(
   #'cpufrequtils'
   'nfs-kernel-server'
   'lm-sensors'
+  'nfs-server'
   'powertop'
   'usbutils'
   'pciutils'
@@ -237,6 +238,7 @@ apt clean
 apt autoclean
 apt autoremove
 
+# aliases below is disabled as all hosts are now expected to use dotfiles repo
 #echo
 #echo Configuring shell aliases...
 #echo
