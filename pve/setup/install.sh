@@ -55,6 +55,8 @@ echo
 
 common_packages=(
   'btop'
+  'sudo'
+  'stow'
   'avahi-daemon'
   'avahi-utils'
   'duf'
