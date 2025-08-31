@@ -86,7 +86,6 @@ pve_packages=(
   'iperf3'
   'iptraf-ng'
   'linux-cpupower'
-  'xset'
   #'intel-media-va-driver-non-free' # this needs to be installed after enabling non-free repo in /etc/apt/sources.list.d/debian
   'vainfo'
   'intel-gpu-tools'
