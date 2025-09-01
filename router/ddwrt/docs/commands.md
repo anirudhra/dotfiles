@@ -15,13 +15,15 @@ sleep 10
 /opt/etc/init.d/rc.unslung start
 #
 # smartdns adblock script: https://github.com/egc112/ddwrt/tree/main/adblock/smartdns
+cp /opt/root/ddwrt-adblock-s.sh /jffs/ddwrt-adblock-s.sh
 /jffs/ddwrt-adblock-s.sh &
 # create login shell init script, sync dotfiles repo first
 cat <<'EOF' >"/tmp/root/.ashrc"
-source /jffs/dotfiles/home/.profile.ddwrt
+#source /jffs/dotfiles/home/.profile.ddwrt
+source /opt/root/dotfiles/home/.profile.ddwrt
 EOF
-# Trigger Avahi/mDNS restart, due to a dbus dependency issue
-service mdns start 
+# Trigger Avahi/mDNS to restart, due to a bug
+service mdns start
 ```
 
 ## USB Commands
