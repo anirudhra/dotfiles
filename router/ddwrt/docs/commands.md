@@ -39,11 +39,12 @@ ln -sf /opt/logs/system /jffs/messages
 ## Firewall command
 
 * Add commands under admin > commands > firewall
-* Enables only HomeAssistant IP from main network br0 one-way access to Guest network bridge br1
+* Enables only HomeAssistant/UptimeKuma hosts, on main network br0, one-way access to Guest network bridge br1
 
 ```
-# allow HASS one-way access to guest network
+# allow HASS and UptimeKuma one-way access to guest network
 iptables -I FORWARD -i br0 -s <HASSIP> -o br1 -m state --state NEW -j ACCEPT
+iptables -I FORWARD -i br0 -s <KIMAIP> -o br1 -m state --state NEW -j ACCEPT
 ```
 
 ## Cron commands
