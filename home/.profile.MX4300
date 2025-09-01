@@ -8,21 +8,6 @@ SOURCED_PROFILE_MX4300=1
 
 #PROMPT='%n@%m:%~%# '
 
-#re-export just in case
-export TEMP_ROOT_HOME="/tmp/root" # this gets wiped on every reboot
-export ROOT_HOME="/opt/root"      # this is persistent on USB, entware root's home
-export JFFS_HOME="/jffs"          # this is persistent on EMMC
-
-export DOTFILES_HOME="${ROOT_HOME}"
-#export DOTFILES_HOME="${JFFS_HOME}" # new home, so that if usb fails router still has access to all scripts
-export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
-
-# create symlink on reboot for persistent link to home and dotfiles under temp root folder
-ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
-
 echo
 uname -a
 echo

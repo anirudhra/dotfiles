@@ -1,5 +1,9 @@
+#!/bin/bash
 # This file is to be used only on DD-WRT/OpenWRT routers that have temp root home directory
 # This file must be called by the startup script to set the correct directories for proper alias/script sourcing
+
+#This file is called before the router specific .profile.<hostname> is called, in order to set the correct directories and symlinks.
+#This is necessary as ddwrt's ${HOME} is a ramdisk and gets wiped on reboot
 
 # source entware profile, if file exists
 [ -f /opt/etc/profile ] && . /opt/etc/profile
@@ -10,8 +14,17 @@
 export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
 export ROOT_HOME="/opt/root"      #this is persistent on USB
 export JFFS_HOME="/jffs"          #this is persistent on USB
+
+# choose between /jffs (emmc) and /opt/root (USB) home directories
 export DOTFILES_HOME="${ROOT_HOME}"
 #export DOTFILES_HOME="${JFFS_HOME}" # new dotfiles home, instead of /opt/root to handle bad USB cases, however the router randomly wipes /jffs, so revert to /opt/root on USB
 export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
 
+# create symlink on reboot for persistent link to home and dotfiles under temp root folder
+ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
+
+# source .profile, that will source .aliases
 . "${ALIASES_HOME}/.profile"
