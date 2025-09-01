@@ -66,6 +66,9 @@ SOURCE_MEDIA_DIR_LIST=(
   'MusicLibrary'
 )
 
+# temporary files to skip
+EXCLUDE_PATTERN="--exclude=\".DS_Store\" --exclude=\"._*\""
+
 echo "================================================================================"
 echo " Backing up following directories from user's home directory: $HOME"
 echo " Source Directories: ${SOURCE_HOME_DIR_LIST[@]}"
@@ -76,6 +79,8 @@ echo
 ANSWER="y" # default answer
 # timestamp
 TODAY=$(date -I)
+
+ANSWER="y"
 
 for i in "${SOURCE_HOME_DIR_LIST[@]}"; do
 
@@ -89,7 +94,7 @@ for i in "${SOURCE_HOME_DIR_LIST[@]}"; do
 
   # /usr/bin/rsync uses Apple's version that understands APFS better and avoid recopyiong
   # -hvrltD --modify-window=1 works for exfat or fat32 destinations, -a will recopy everytime
-  echo "Command: rsync -hvrltD --delete --modify-window=1 ${SOURCE_PATH} ${DEST_PATH}"
+  echo "Command: rsync -hvrltD ${EXCLUDE_PATTERN} --delete --modify-window=1 ${SOURCE_PATH} ${DEST_PATH}"
 
   #FIXME: following does not work
   #/usr/bin/rsync --dry-run -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}
@@ -101,7 +106,7 @@ for i in "${SOURCE_HOME_DIR_LIST[@]}"; do
   #fi
   #echo "Continuing..."
 
-  /usr/bin/rsync -hvrltD --delete --modify-window=1 "${SOURCE_PATH}" "${DEST_PATH}"
+  /usr/bin/rsync -hvrltD "${EXCLUDE_PATTERN}" --delete --modify-window=1 "${SOURCE_PATH}" "${DEST_PATH}"
   echo "Done backing up: ${i}"
   echo "Backed up on ${TODAY}" >"${DEST_PATH}/log.txt"
 done
@@ -113,7 +118,7 @@ echo "==========================================================================
 echo
 
 # reset for next section
-ANSWER=y
+#ANSWER=y
 
 for j in "${SOURCE_MEDIA_DIR_LIST[@]}"; do
   # reset flag
@@ -126,7 +131,7 @@ for j in "${SOURCE_MEDIA_DIR_LIST[@]}"; do
 
   # /usr/bin/rsync uses Apple's version that understands APFS better and avoid recopyiong
   # -hvrltD --modify-window=1 works for exfat or fat32 destinations, -a will recopy everytime
-  echo "Command: rsync -hvrltD --delete --modify-window=1 ${SOURCE_PATH} ${DEST_PATH}"
+  echo "Command: rsync -hvrltD ${EXCLUDE_PATTERN} --delete --modify-window=1 ${SOURCE_PATH} ${DEST_PATH}"
 
   #FIXME: Following does not work
   #/usr/bin/rsync --dry-run -hvrltD --delete --modify-window=1 ${source_path} ${dest_path}
@@ -137,7 +142,7 @@ for j in "${SOURCE_MEDIA_DIR_LIST[@]}"; do
   #   exit 1
   #echo "Continuing..."
 
-  /usr/bin/rsync -hvrltD --delete --modify-window=1 "${SOURCE_PATH}" "${DEST_PATH}"
+  /usr/bin/rsync -hvrltD "${EXCLUDE_PATTERN}" --delete --modify-window=1 "${SOURCE_PATH}" "${DEST_PATH}"
   echo "Backed up on ${TODAY}" >"${DEST_PATH}/log.txt"
   echo "Done backing up: ${j}"
 done
