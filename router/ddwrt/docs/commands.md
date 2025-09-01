@@ -4,7 +4,7 @@ Following details the manual commands for each type. Put them under Administrati
 
 ## Startup Commands  
 
-* Add under admin > commands > startup
+* Add commands under admin > commands > startup
 
 * mount --bind should be skipped typically as it is not a good idea to have /jffs on external USB (mounted at /opt). Any failure will take down the router with it
 * Below assumes dotfiles is on /jffs (persistent emmc internal storage)
@@ -26,7 +26,7 @@ service mdns start
 
 ## USB Commands
 
-* Add them under admin > commands > USB Script
+* Add commands under admin > commands > USB Script
 
 ```
 # syslogd logs to entware USB drive and creates symlink for webui access
@@ -36,9 +36,19 @@ syslogd -Z -L -s 1024 -O /opt/logs/system
 ln -sf /opt/logs/system /jffs/messages
 ```
 
+## Firewall command
+
+* Add commands under admin > commands > firewall
+* Enables only HomeAssistant IP from main network br0 one-way access to Guest network bridge br1
+
+```
+# allow HASS one-way access to guest network
+iptables -I FORWARD -i br0 -s <HASSIP> -o br1 -m state --state NEW -j ACCEPT
+```
+
 ## Cron commands
 
-* Add them under admin > Management
+* Add commands under admin > Management
 
 ```
 0 0 * * 0 root rm /opt/logs/system
