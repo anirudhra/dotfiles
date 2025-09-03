@@ -37,10 +37,14 @@
 #       contain *very* large lists of blacklisted domains, which may exceed
 #       the memory capacity of the router and/or smartdns, and *may* have a
 #       detrimental affect on dns performance
-URL_LIST='http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.plus.txt'
+URL_LIST='
+http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.plus.txt
+https://small.oisd.nl/domainswild2
+'
 
 #URL list backup
 #https://raw.githubusercontent.com/hagezi/dns-blocklists/main/domains/light.txt
+#http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.plus.txt
 #http://raw.githubusercontent.com/hagezi/dns-blocklists/refs/heads/main/domains/pro.txt
 #https://small.oisd.nl/domainswild2
 
