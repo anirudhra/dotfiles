@@ -31,6 +31,29 @@ SHELL_TYPE=$(detect_shell_type)
 source "${ALIASES_HOME}/.aliases_dev"
 ################################################
 
+######## functions ######################
+
+mkcd() {
+  case $# in
+  1)
+    mkdir -p "$1"
+    cd "$1" || return
+    ;;
+  *)
+    info "USAGE : mkcd <directory>"
+    ;;
+  esac
+}
+
+# for machines without gnu stow
+manualstow() {
+  # manually copy all dot files and directories
+  SOURCE_DIR="${HOME}/dotfiles/home"
+  DEST_DIR="${HOME}"
+  cp -a "${SOURCE_DIR}/." "${DEST_DIR}/"
+}
+#########################################
+
 alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
 alias getdot="cd ${DOTFILES_HOME} && wget http://github.com/anirudhra/dotfiles/archive/master.tar.gz && rm -rf ${DOTFILES_HOME}/dotfiles-bak && mv ${DOTFILES_HOME}/dotfiles ${DOTFILES_HOME}/dotfiles-bak && tar xvf master.tar.gz && mv ${DOTFILES_HOME}/dotfiles-main ${DOTFILES_HOME}/dotfiles && rm ${DOTFILES_HOME}/master.tar.gz"
@@ -291,27 +314,16 @@ else
   alias dotstow='cp -f "${HOME}/dotfiles/home"/.* "${HOME}"'
 fi
 
-######## functions ######################
-
-mkcd() {
-  case $# in
-  1)
-    mkdir -p "$1"
-    cd "$1" || return
-    ;;
-  *)
-    info "USAGE : mkcd <directory>"
-    ;;
-  esac
-}
-
-# for machines without gnu stow
-manualstow() {
-  # manually copy all dot files and directories
-  SOURCE_DIR="${HOME}/dotfiles/home"
-  DEST_DIR="${HOME}"
-  cp -a "${SOURCE_DIR}/." "${DEST_DIR}/"
-}
+# if bat utility (batcat on debian distros) is installed
+if command -v batcat >/dev/null 2>&1; then
+  alias bat="batcat --color=always"
+  alias cat="bat"
+# if bat utility (batcat on debian distros) is installed
+elif command -v bat >/dev/null 2>&1; then
+  # alias cat to bat with syntax highlighting
+  alias bat="bat --color=${lscolors}"
+  alias cat="bat"
+fi
 
 ################################################################################################
 #   END: OS agnostic aliases

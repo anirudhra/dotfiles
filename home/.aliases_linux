@@ -23,54 +23,20 @@ if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_
   source "${ALIASES_HOME}/.aliases_linux_${OS_TYPE}"
 fi
 
-# linksys router aliases
-if [[ "${MACHINE_TYPE}" == "router" ]]; then
-  alias showbootpart="fw_printenv -n boot_part"
-  alias setbootpart="fw_setenv boot_part" # usage: setbootpart 1 or 2
-  alias upgrade="opkg update && opkg upgrade"
-fi
-
-if command -v fwupdmgr >/dev/null 2>&1; then
-  alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
-  alias checkfw='sudo fwupdmgr get-devices'
-else
-  alias fwupdate="echo fwupdmgr not found, skipping fwupdate"
-  alias checkfw="echo fwupdmgr not found, skipping checkfw"
-fi
-
-# other linux-only aliases
-if command -v inxi >/dev/null 2>&1; then
-  alias sysinfo='sudo inxi -Fzx'
-fi
-
-alias booterrors='sudo journalctl  -b 0 -p 3'
-alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
-alias reservice='sudo systemctl daemon-reload'
-alias serialnum='sudo dmidecode -t system'
-alias showlog='sudo tail -f /var/log/messages'
-
-#ssd/nvme/hdd benchmarking
-alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
-alias sdaperf='sudo hdparm -Tt /dev/sda'
-
-if [[ "${desktopEnv}" == "GNOME" ]]; then
-  alias fm='nautilus . &'
-  alias dconf_ext_backup="dconf dump /org/gnome/shell/extensions/ > ./gnome_extensions_backup.dconf && sed -i '/locations/d' ./gnome_extensions_backup.dconf"
-  alias dconf_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf && sed -i '/locations/d' ./gnome_settings_backup.dconf"
-  alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
-  alias dconf_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
-  alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
-  alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
-fi
-
-# generic  aliases
-alias gomedia='cd ${MEDIADIR}'
-alias godata='cd ${DATADIR}'
-alias gonvme='cd ${NVMEDIR}'
-alias godocker='cd ${DOCKERDIR}'
-alias gopve='cd ${PVEDIR}'
-
 ######## functions ######################
+
+#intended to be run on PVE guests/SBC only
+dockerupdateall() {
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+    if command -v docker >/dev/null 2>&1; then #ensure docker is installed on host
+      cd "${DOCKERDIR}" || exit
+      find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
+      docker image prune -a -f
+      docker system prune --volumes -f
+      cd - || return
+    fi
+  fi
+}
 
 #intended to be run on PVE guests/SBC/Client only
 movemovie() {
@@ -124,3 +90,185 @@ copyallrockboxthemes() {
         " \;
   fi
 }
+
+# this function copies the compiled kernel image and modules archives into "artifacts" directory
+# and creates 3 versions of the kernel image to boot from: sdcard, emmc and USB1/SATA
+# Run this on the host that builds the Linux kernel
+getsbckernels() {
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
+    local DATE=$(date +%Y%m%d)
+    local KERNEL_VER="6.6.9"
+
+    local KERNEL_IMG_BUILDNAME="boot-qcom-apq8064-ifc6410-qcom-armv7a.img"
+    local MODULES_TAR_BUILDNAME="modules-qcom-armv7a.tgz"
+    local KERNEL_IMG_BASE="boot-ifc6410-armv7a-${KERNEL_VER}-${DATE}"
+    local MODULES_TAR="modules-ifc6410-armv7a-${KERNEL_VER}-${DATE}.tgz"
+
+    local KERNEL_IMG_SDA1="${KERNEL_IMG_BASE}-sda1.img"
+    local KERNEL_IMG_SDCARD="${KERNEL_IMG_BASE}-sdcard.img"
+    local KERNEL_IMG_EMMC="${KERNEL_IMG_BASE}-emmc.img"
+
+    local BOOTCFG_BASE="bootimg"
+    local BOOTCFG="${BOOTCFG_BASE}.cfg"
+    local BOOTCFG_SDA1="${BOOTCFG_BASE}-sda1.cfg"
+    local BOOTCFG_SDCARD="${BOOTCFG_BASE}-sdcard.cfg"
+    local BOOTCFG_EMMC="${BOOTCFG_BASE}-emmc.cfg"
+
+    # packaged kernel and initird
+    local ZIMAGE="zImage"
+    local INITRDIMAGE="initrd.img"
+
+    local BUILD_DIR="./tmp/deploy/images/qcom-armv7a"
+    local KERNEL_CONFIG="./tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
+    local KERNEL_DEFCONFIG="defconfig"
+    local WORKING_DIR="."
+    local ARTIFACTS_DIR="${WORKING_DIR}/artifacts"
+
+    # create a backup if directory already exists
+    if [ -d "${ARTIFACTS_DIR}" ]; then
+      rm -rf "${ARTIFACTS_DIR}_backup"
+      mv -f "${ARTIFACTS_DIR}" "${ARTIFACTS_DIR}_backup"
+    fi
+
+    # copy build artifacts
+    mkdir -p "${ARTIFACTS_DIR}"
+    sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${KERNEL_CONFIG}" "${ARTIFACTS_DIR}/${KERNEL_DEFCONFIG}"
+    info "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
+
+    # fix permisisons
+    #sudo chown -R nobody:nogroup *
+    cd "${ARTIFACTS_DIR}" || exit
+    sudo chown -R nonroot:nonroot *
+
+    # rename build artifacts with kernel version and timestamp
+    mv -f "${MODULES_TAR_BUILDNAME}" "${MODULES_TAR}"
+    cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDA1}"
+    cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDCARD}"
+    mv -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_EMMC}"
+
+    # extract default built image and cleanup
+    abootimg -x "${KERNEL_IMG_SDA1}"
+    rm -rf "${ZIMAGE}"
+    rm -rf "${INITRDIMAGE}"
+    cp -f "${BOOTCFG}" "${BOOTCFG_SDA1}"
+    cp -f "${BOOTCFG}" "${BOOTCFG_SDCARD}"
+    mv -f "${BOOTCFG}" "${BOOTCFG_EMMC}"
+
+    # replace root partitions in cfg files
+    sed -i 's|root=/dev/sda1|root=/dev/mmcblk0p1|g' ${BOOTCFG_SDCARD}
+    sed -i 's|root=/dev/sda1|root=/dev/mmcblk2p13|g' ${BOOTCFG_EMMC}
+
+    # repackage kernel files with new kernel command line
+    abootimg -u "${KERNEL_IMG_SDCARD}" -f "${BOOTCFG_SDCARD}"
+    abootimg -u "${KERNEL_IMG_EMMC}" -f "${BOOTCFG_EMMC}"
+
+    # done
+    cd .. || exit
+  fi
+}
+
+##############################################
+
+if command -v fwupdmgr >/dev/null 2>&1; then
+  alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
+  alias checkfw='sudo fwupdmgr get-devices'
+else
+  alias fwupdate="echo fwupdmgr not found, skipping fwupdate"
+  alias checkfw="echo fwupdmgr not found, skipping checkfw"
+fi
+
+# other linux-only aliases
+if command -v inxi >/dev/null 2>&1; then
+  alias sysinfo='sudo inxi -Fzx'
+fi
+
+alias booterrors='sudo journalctl  -b 0 -p 3'
+alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
+alias reservice='sudo systemctl daemon-reload'
+alias serialnum='sudo dmidecode -t system'
+alias showlog='sudo tail -f /var/log/messages'
+
+#ssd/nvme/hdd benchmarking
+alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
+alias sdaperf='sudo hdparm -Tt /dev/sda'
+
+if [[ "${desktopEnv}" == "GNOME" ]]; then
+  alias fm='nautilus . &'
+  alias dconf_ext_backup="dconf dump /org/gnome/shell/extensions/ > ./gnome_extensions_backup.dconf && sed -i '/locations/d' ./gnome_extensions_backup.dconf"
+  alias dconf_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf && sed -i '/locations/d' ./gnome_settings_backup.dconf"
+  alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+  alias dconf_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
+  alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+  alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
+fi
+
+#docker and other homelab specific aliases
+if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+  # PVE go shortcuts
+  export MEDIADIR="/mnt/sata-ssd/ssd-media/media"
+  export DATADIR="/mnt/sata-ssd/ssd-data"
+  export NVMEDIR="/mnt/nvme-ssd/nvme-data"
+  export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
+  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+  alias upgrade='fullupdate && fullclean && fwupdate'
+elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+  # LXC/VM and SBC shortcuts
+  if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+    export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
+    export DOCKERDIR="/opt/dockerapps"
+    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+    alias dockerbackup='sudo tar -zcvf ${DATA_DIR}/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
+    # script to copy compiled kernel modules from PVE LXC to SBC
+    alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
+    alias update='fullupdate && fullclean' # alias without dockerupdate
+  else                                     
+    # LXC/VM debian
+    export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/pve-sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
+    export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
+    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+    
+    alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}_$(date -I).tar.gz ${DOCKERDIR}'
+    # yocto kernel compile macros
+    alias bbmenu="bitbake -c menuconfig virtual/kernel"
+    alias bbmake="bitbake core-image-minimal"
+    alias bbsync="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && git pull && cd meta-qcom && git pull && cd .."
+    alias bbinit="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom"
+    alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
+  fi
+
+  #  Other common non-PVE server aliases
+  alias upgrade="fullupdate && fullclean && dockerupdateall" #no firmware update
+  # dockerupdateall is defined in .aliases_dev, which is sourced by .aliases before this file
+  alias dockerup='docker compose up -d'
+  alias dockerdown='docker compose down'
+  alias dockerrestart='docker compose down && docker compose up -d'
+  alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+  alias dockerclean='docker system prune --volumes'
+
+# for client machines
+elif [[ "${MACHINE_TYPE}" == "client" ]]; then
+# set the right nfs directories
+  export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
+  export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
+  export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
+  export DOCKERDIR="${DATADIR}/dockerapps"
+  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+  # Client only aliases, usually for laptops
+  alias upgrade='fullupdate && fullclean && fwupdate'
+fi
+
+# generic  aliases
+alias gomedia='cd ${MEDIADIR}'
+alias godata='cd ${DATADIR}'
+alias gonvme='cd ${NVMEDIR}'
+alias godocker='cd ${DOCKERDIR}'
+alias gopve='cd ${PVEDIR}'

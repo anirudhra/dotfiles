@@ -327,6 +327,8 @@ detect_busybox_alias() {
 # Returns:
 #   - "pveserver" for PVE Server
 #   - "pveguest" for PVE Guest
+#   - "router" for ASUS/OpenWRT/DDWRT router
+#   - "sbc" for linux on SBC
 #   - "client" for Client
 detect_machine_type() {
   #debuglog "Detecting machine type"

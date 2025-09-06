@@ -15,3 +15,6 @@ source "${ALIASES_HOME}/.helperfuncs"
 MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
 
 debuglog "Arch aliases sourced"
+
+export pkgmgr="pacman"
+export pkgmgraur="yay"
