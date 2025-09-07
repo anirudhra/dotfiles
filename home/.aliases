@@ -335,7 +335,7 @@ fi
 
 debuglog "OS Detected: ${OS_TYPE}"
 
-if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
   source "${ALIASES_HOME}/.aliases_linux"
 elif [[ "${OS_TYPE}" == "macos" ]]; then
   source "${ALIASES_HOME}/.aliases_macos"
