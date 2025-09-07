@@ -6,6 +6,7 @@
 *Trash*
 *vscode*
 *cache*
+*Cursor*
 *Cache*
 *python3*
 *site-packages*
@@ -28,6 +29,12 @@
 *chromium*
 *zsh_history*
 *storage.lock*
+*.code*
+*.cursor*
+*Kiro*
+*.local/share/backgrounds*
+*/Applications*
+*.kiro*
 *.log*
 *.swp*
 *.tmp*
