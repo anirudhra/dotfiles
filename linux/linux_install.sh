@@ -73,16 +73,16 @@ create_repo_file() {
   local os_type="$3"
 
   if [[ ! -e "$repo_file" ]]; then
-    echo "Creating repository file: $repo_file"
+    info "Creating repository file: $repo_file"
     if [[ "$os_type" == "debian" ]]; then
       # For Debian/Ubuntu, use add-apt-repository
-      echo "$repo_content" | sudo add-apt-repository -y
+      info "$repo_content" | sudo add-apt-repository -y
     else
       # For Fedora/RHEL, create repo file
-      echo -e "$repo_content" | sudo tee "$repo_file" >/dev/null
+      info -e "$repo_content" | sudo tee "$repo_file" >/dev/null
     fi
   else
-    echo "Repository file already exists: $repo_file"
+    info "Repository file already exists: $repo_file"
   fi
 }
 
@@ -91,15 +91,15 @@ backup_system_items() {
   local type="$1"
   local items_array=("${!2}")
 
-  echo "Backing up existing $type items..."
+  info "Backing up existing $type items..."
 
   for item in "${items_array[@]}"; do
     if [[ "$type" == "file" && -e "$item" ]]; then
       sudo cp -rf "$item" "${item}.bak"
-      echo "Backed up file: $item"
+      info "Backed up file: $item"
     elif [[ "$type" == "dir" && -d "$item" ]]; then
       sudo mv "$item" "${item}.bak"
-      echo "Backed up directory: $item"
+      info "Backed up directory: $item"
     fi
   done
 }
@@ -107,9 +107,9 @@ backup_system_items() {
 ####################################################################################
 
 echo
-echo "===================================================================================="
-echo "Starting automated installer..."
-echo "===================================================================================="
+info "===================================================================================="
+info "Starting automated installer..."
+info "===================================================================================="
 echo
 
 # check if running from the right directory, OS and machine type
@@ -118,21 +118,25 @@ if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
   error "Script invoked from incorrect directory!"
   error "The current directory is: ${INSTALL_DIR}"
   error "Please run this script from .../dotfiles/linux directory"
-  error
+  echo
   exit 1
 fi
 
 if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
   error "This script is only supported for Linux Client machines"
-  error "Please do not run this script from PVE Server/Guest/SBCs"
-  error
+  error "Please do not run this script from/on PVE Server/Guests/SBCs/Routers"
+  echo
   exit 1
 fi
 
-if [[ ! "${OS_TYPE}" == "fedora" ]] || [[ ! "${OS_TYPE}" == "debian" ]]; then
-  error "This script is only supported for Fedora and Debian based Linux machines"
+if [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "debian" ]]; then
+  info "Detected supported OS Type: ${OS_TYPE}"
+else
+  error "This script is only supported for Fedora, Arch and Debian based Linux Clients"
+  error "Detected OS (should be fedora/arch/debian): ${OS_TYPE}"
   error "Please do not run this script from macOS/FreeBSD/Windows etc."
-  error
+  error "For macOS, run macOS-specific installer script."
+  echo
   exit 1
 fi
 
@@ -157,7 +161,7 @@ fi
 LANGSET=${LANG}
 
 if [[ "${INSTALL_OS}" == "fedora" ]]; then
-  echo "Fedora detected!"
+  info "Fedora or derivative detected!"
   echo
   INSTALLER="dnf"
   INSTALL_OPTIONS="--skip-unavailable" #skip unavailable goes here
@@ -186,10 +190,10 @@ if [[ "${INSTALL_OS}" == "fedora" ]]; then
 
 # Debian and derivative distros
 elif [[ "${INSTALL_OS}" == "debian" ]]; then
-  echo "Debian or derivative detected!"
+  info "Debian or derivative detected!"
   echo
-  echo "Before you run this script, enable non-free and non-free-firmware repos"
-  echo "!!!Press Ctrl-C to quit now to enable and re-run this script!!! If enabled, press Enter"
+  info "Before you run this script, enable non-free and non-free-firmware repos"
+  info "!!!Press Ctrl-C to quit now to enable and re-run this script!!! If enabled, press Enter"
   echo
   read -p "===================================================================================="
 
@@ -225,25 +229,36 @@ elif [[ "${INSTALL_OS}" == "debian" ]]; then
   #sudo dpkg-reconfigure console-setup
   # Configure timezone and locale for en/UTF-8
   if [[ ! "${TZSET}" == "${L_TZ}" ]]; then
-    echo "Configuring Timezone..."
+    info "Configuring Timezone..."
     #sudo dpkg-reconfigure tzdata
     sudo timedatectl set-timezone "${L_TZ}" #set automatically
   fi
 
   if [[ ! "${LANGSET}" == "${L_LANG}" ]]; then
-    echo "Configuring Locales..."
+    info "Configuring Locales..."
     #sudo dpkg-reconfigure locales
     sudo update-locale LANG=${L_LANG} #set automatically
   fi
+
+elif [[ "${INSTALL_OS}" == "arch" ]]; then
+  info "Arch or derivative detected!"
+  echo
+
+  INSTALLER="yay"        # don't run this as sudo
+  INSTALLER_ALT="pacman" # run this as sudo
+  INSTALL_OPTIONS="-Sy"  # skip unavailable goes here
+
+  # sync and update repo
+  sudo ${INSTALLER_ALT} ${INSTALL_OPTIONS}u
+  # now install yay
+  sudo ${INSTALLER_ALT} ${INSTALL_OPTIONS} --needed git base-devel
+  sudo ${INSTALLER_ALT} ${INSTALL_OPTIONS} ${INSTALLER}
 
 # unknown OS, exit
 else
   error "Unknown OS, cannot proceed; exiting"
   exit 1
 fi
-
-# refresh again to be sure
-sudo ${INSTALLER} update && sudo ${INSTALLER} upgrade
 
 ####################################################################################
 # Install packages
@@ -258,9 +273,7 @@ CORE_PACKAGES=(
   'btop'
   'stress'
   'zsh'
-  'avahi-daemon'
-  'powertop'
-  'vainfo'
+  #'powertop'
   'usbutils'
   'pciutils'
   'autofs'
@@ -271,23 +284,14 @@ CORE_PACKAGES=(
   'smartmontools'
   'intel-gpu-tools'
   'git'
-  'gh'
   'stow'
   'vlc'
   'iotop'
   'iftop'
   'atop'
-  'dnf-plugins-core'
-  #'vifm' #replaced by yazi
-  #'golang'
-  #'cmake'
-  #'gcc'
-  #'inxi'
   #'gem'
   #'luarocks'
   'fzf'
-  'fd-find'
-  'python3-pip'
   'rdfind'
   'lolcat'
   'p7zip'
@@ -344,15 +348,20 @@ NERD_FONTS=(
   #'UbuntuMono'
 )
 
+info "Starting ${INSTALL_OS} installer..."
+
 # OS specific packages are listed in this block
 if [ "${INSTALL_OS}" == "fedora" ]; then
   # Fedora specific packages
   OS_PACKAGES=(
     'throttled'
+    'dnf-plugins-core'
     'fastfetch'
+    'fd-find'
     'lm_sensors'
     'p7zip-plugins'
     'nfs-utils'
+    'python3-pip'
     'intel-media-driver'
     'epapirus-icon-theme'
     'papirus-icon-theme-dark'
@@ -362,11 +371,13 @@ if [ "${INSTALL_OS}" == "fedora" ]; then
     'heif-pixbuf-loader'
     'libheif-freeworld'
     'libheif'
+    'vainfo'
+    'avahi-daemon'
     'easyeffects'
     'zoxide'
+    'gh'
     'fuse'
     'fuse-libs'
-    'inxi'
     'meson'
     'ninja'
   )
@@ -377,21 +388,23 @@ if [ "${INSTALL_OS}" == "fedora" ]; then
     'gtk2-engines'
   )
 
-  echo "${INSTALL_OS} installer..."
-
   # following conflicts with throttled
   sudo ${INSTALLER} remove thermald -y
   sudo ${INSTALLER} copr enable abn/throttled -y
-else
-  # Debian/Ubuntu specific packages
+
+# Debian/Ubuntu specific packages
+elif [ "${INSTALL_OS}" == "debian" ]; then
   OS_PACKAGES=(
     'apt-transport-https'
+    'avahi-daemon'
     'lm-sensors'
+    'fd-find'
     'neofetch'
     'avahi-utils'
     'nfs-common'
     'systemd-resolved'
     'cifs-utils'
+    'gh'
     'alsa-utils'
     'intel-media-va-driver-non-free'
     'ulauncher'
@@ -399,11 +412,13 @@ else
     'build-essential'
     'python3-dev'
     'libdbus-glib-1-dev'
+    'vainfo'
     'libgirepository1.0-dev'
     'libcairo2-dev'
     'python3-cairo-dev'
     'python3-venv'
     'python3-wheel'
+    'python3-pip'
     #'unattended-upgrades'
     #'apt-listchanges'
   )
@@ -415,19 +430,63 @@ else
     'gnome-shell-extension-prefs'
   )
 
-  echo "${INSTALL_OS} installer..."
+  # conflicts with throttled, remove
   sudo ${INSTALLER} remove thermald -y
 
+# Arch specific packages
+elif [ "${INSTALL_OS}" == "arch" ]; then
+  OS_PACKAGES=(
+    'throttled'
+    'github-cli'
+    'fastfetch'
+    'fd'
+    'lm_sensors'
+    'avahi'
+    'nfs-utils'
+    'intel-media-driver'
+    'linux-firmware'
+    'vulkan-intel'
+    'libva-utils'
+    'python-pip'
+    'ulauncher'
+    #'btrfs-assistant' #this needs QT libraries
+    'libheif'
+    'easyeffects'
+    'zoxide'
+    'fuse'
+    'meson'
+    'ninja'
+  )
+
+  OS_GNOME_PKGS=(
+    'gtk-engine-murrine'
+    'extension-manager'
+    'gtk-engines'
+  )
 fi
 
-# install all non-gnome packages
-sudo ${INSTALLER} install "${CORE_PACKAGES[@]}" "${INSTALL_OPTIONS}"
-sudo ${INSTALLER} install "${OS_PACKAGES[@]}" "${INSTALL_OPTIONS}"
+if [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "debian" ]]; then
+  # refresh again to be sure
+  sudo ${INSTALLER} update && sudo ${INSTALLER} upgrade
 
-# on gnome, install gnome-only packages
-if [ "${desktopEnv}" == "GNOME" ]; then
-  sudo ${INSTALLER} install "${CORE_GNOME_PKGS[@]}" "${INSTALL_OPTIONS}"
-  sudo ${INSTALLER} install "${OS_GNOME_PKGS[@]}" "${INSTALL_OPTIONS}"
+  # install all non-gnome packages
+  sudo ${INSTALLER} install "${CORE_PACKAGES[@]}" "${INSTALL_OPTIONS}"
+  sudo ${INSTALLER} install "${OS_PACKAGES[@]}" "${INSTALL_OPTIONS}"
+
+  # on gnome, install gnome-only packages
+  if [ "${desktopEnv}" == "GNOME" ]; then
+    sudo ${INSTALLER} install "${CORE_GNOME_PKGS[@]}" "${INSTALL_OPTIONS}"
+    sudo ${INSTALLER} install "${OS_GNOME_PKGS[@]}" "${INSTALL_OPTIONS}"
+  fi
+elif [[ "${OS_TYPE}" == "arch" ]]; then
+
+  ${INSTALLER} "${INSTALL_OPTIONS}" "${CORE_PACKAGES[@]}"
+  ${INSTALLER} "${INSTALL_OPTIONS}" "${OS_PACKAGES[@]}"
+
+  if [[ "${desktopEnv}" == "GNOME" ]]; then
+    ${INSTALLER} "${INSTALL_OPTIONS}" "${CORE_GNOME_PKGS[@]}"
+    ${INSTALLER} "${INSTALL_OPTIONS}" "${OS_GNOME_PKGS[@]}"
+  fi
 fi
 
 ####################################################################################
@@ -485,7 +544,7 @@ install_file "$SOURCE_THROTTLED_FILE" "$SYS_THROTTLED_FILE" "Throttled configura
 # Install UI/Customizations
 ####################################################################################
 
-echo "Current directory: ${INSTALL_DIR}"
+debuglog "Current directory: ${INSTALL_DIR}"
 
 # Replace audio alert file
 AUDIO_ALERT_FILE="/usr/share/sounds/gnome/default/alerts/hum.ogg"
@@ -513,11 +572,13 @@ cd "${SOURCE_NERD_FONT_DIR}" || exit 1
 FONTS_DIR="${HOME}/.local/share/fonts"
 mkdir -p "${FONTS_DIR}"
 
+info "Installing Nerf Fonts..."
+
 #array defined at the top of the file, change list and version there
 for font in "${NERD_FONTS[@]}"; do
   ZIP_FILE="${font}.zip"
   DOWNLOAD_URL="https://github.com/ryanoasis/nerd-fonts/releases/download/v${NERD_FONT_VER}/${ZIP_FILE}"
-  echo "Downloading ${DOWNLOAD_URL}"
+  info "Downloading ${DOWNLOAD_URL}"
   wget "${DOWNLOAD_URL}"
   unzip -o "${ZIP_FILE}" -d "${FONTS_DIR}"
   rm "${ZIP_FILE}"
@@ -526,14 +587,14 @@ find "${FONTS_DIR}" -name '*Windows Compatible*' -delete
 fc-cache -fv
 
 ## install gtk themes
-echo "Installing GTK themes..."
+info "Installing GTK themes..."
 # change back to original installation directory
 cd "${INSTALL_DIR}" || exit 1
 /bin/bash ./gtk/gtkthemes.sh
 
 if [[ "${desktopEnv}" == "GNOME" ]]; then
   # set GTK and icon themes
-  echo "Setting GTK and Icon themes..."
+  info "Setting GTK and Icon themes..."
   gsettings set org.gnome.desktop.interface gtk-theme "'Orchis-Dark-Compact'"
   # following fails and needs to be manually enabled in GNOME Tweaks
   gsettings set org.gnome.shell.extensions user-theme "'Orchis-Dark-Compact'"
@@ -570,14 +631,18 @@ sudo systemctl enable tlp
 sudo systemctl start tlp
 sudo tlp start
 
+sudo systemctl enable rpcbind
+sudo systemctl start rpcbind
+
 sudo systemctl enable autofs
 sudo systemctl start autofs
 
 # only on fedora. on debian and derivatives, this happens
 # as part of manual installation/script
-if [[ "${INSTALL_OS}" == "fedora" ]]; then
+if [[ "${INSTALL_OS}" == "fedora" ]] || [[ "${INSTALL_OS}" == "arch" ]]; then
   sudo systemctl enable throttled
   sudo systemctl start throttled
+  sudo systemctl mask systemd-rfkill.socket
 fi
 
 # Disable services: thermald conflicts with throttled
@@ -594,44 +659,44 @@ chsh -s "$(which zsh)"
 ####################################################################################
 
 echo
-echo "==========================================================================================="
+info "==========================================================================================="
 echo
 if [[ "${desktopEnv}" == "GNOME" ]]; then
-  echo "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
-  echo "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
-  echo "Removable Drive Menu, OpenBar, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
+  info "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
+  info "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
+  info "Removable Drive Menu, OpenBar, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
   echo
-  echo "Manually set GNOME Shell theme and Hum alert sound in settings"
+  info "Manually set GNOME Shell theme and Hum alert sound in settings"
   echo
 fi
 # no need to install easyeffects presets, now part of repo and stowed
 #echo "EasyEffects presets: bash -c \"$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)\""
 #echo "and https://github.com/shuhaowu/linux-thinkpad-speaker-improvements"
 #echo
-echo "Manually set Nerd Font in: Terminal, Gnome Tweaks (if GNOME DE) and VSCode etc."
+info "Manually set Nerd Font in: Terminal, Gnome Tweaks (if GNOME DE) and VSCode etc."
 echo
-echo "UI customizations have been cloned in ${PKG_INSTALL_DIR}, for future git pulls and "
-echo "updates or can be manually removed to save space."
+info "UI customizations have been cloned in ${PKG_INSTALL_DIR}, for future git pulls and "
+info "updates or can be manually removed to save space."
 echo
-echo "==========================================================================================="
+info "==========================================================================================="
 echo
 
 ####################################################################################
 # ZSH and customizations
 ####################################################################################
 
-echo "==========================================================================================="
-echo "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script."
-echo "Before running the post-installer script, install oh-my-zsh manually from: https://ohmyz.sh/"
+info "==========================================================================================="
+info "Done! Logout and log back in for changes then login to github and run linux_post_installer.sh script."
+info "Before running the post-installer script, install oh-my-zsh manually from: https://ohmyz.sh/"
 if [[ "${INSTALL_OS}" == "debian" ]]; then
   # install latest version of zoxide as debian repos have an old buggy version
   curl -sS https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | bash
   echo
-  echo "Install 'throttled' manually (https://github.com/erpalma/throttled) for Debian and derivatives"
-  echo "Repo has been sync'd in ${PKG_INSTALL_DIR}. Run \"sudo ./throttled/install.sh\" from this directory"
+  info "Install 'throttled' manually (https://github.com/erpalma/throttled) for Debian and derivatives"
+  info "Repo has been sync'd in ${PKG_INSTALL_DIR}. Run \"sudo ./throttled/install.sh\" from this directory"
   echo
 fi
-echo "==========================================================================================="
+info "==========================================================================================="
 
 # installing oh-my-zsh will exit this script, needs to debugged
 #ohmyzshinstallurl="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"

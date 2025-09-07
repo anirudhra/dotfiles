@@ -29,13 +29,13 @@ install_git_repo() {
   local git_options="${4:-}"
 
   if [[ -d "$dest_dir" ]]; then
-    echo "$description already exists: $dest_dir"
+    info "$description already exists: $dest_dir"
     return 0
   fi
 
-  echo "Installing $description..."
+  info "Installing $description..."
   if git clone "$git_options" "$repo_url" "$dest_dir"; then
-    echo "Successfully installed $description"
+    info "Successfully installed $description"
   else
     error "Error: Failed to install $description"
     return 1
@@ -47,15 +47,15 @@ backup_local_items() {
   local type="$1"
   local items_array=("${!2}")
 
-  echo "Backing up existing $type items..."
+  info "Backing up existing $type items..."
 
   for item in "${items_array[@]}"; do
     if [[ "$type" == "file" && -e "$item" ]]; then
       cp -rf "$item" "${item}.bak"
-      echo "Backed up file: $item"
+      info "Backed up file: $item"
     elif [[ "$type" == "dir" && -d "$item" ]]; then
       mv "$item" "${item}.bak"
-      echo "Backed up directory: $item"
+      info "Backed up directory: $item"
     fi
   done
 }
@@ -63,11 +63,11 @@ backup_local_items() {
 ####################################################################################
 
 echo
-echo "==============================================================================================================="
-echo "Starting automated POST-installer script. This should be run AFTER linux_install.sh script is run and "
-echo "logging out and log back in. Make sure oh-my-zsh is installed first (after creating empty .zshrc file)"
+info "==============================================================================================================="
+info "Starting automated POST-installer script. This should be run AFTER linux_install.sh script is run and "
+info "logging out and log back in. Make sure oh-my-zsh is installed first (after creating empty .zshrc file)"
 echo
-echo "If not, Press Ctrl+C now to quit, else Press Enter to continue"
+info "If not, Press Ctrl+C now to quit, else Press Enter to continue"
 read -p "================================================================================================================"
 echo
 
@@ -88,10 +88,14 @@ if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
   exit 1
 fi
 
-if [[ ! "${OS_TYPE}" == "fedora" ]] || [[ ! "${OS_TYPE}" == "debian" ]]; then
-  error "This script is only supported for Fedora and Debian based Linux machines"
+if [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "debian" ]]; then
+  info "Detected supported OS Type: ${OS_TYPE}"
+else
+  error "This script is only supported for Fedora, Arch and Debian based Linux Clients"
+  error "Detected OS (should be fedora/arch/debian): ${OS_TYPE}"
   error "Please do not run this script from macOS/FreeBSD/Windows etc."
-  error
+  error "For macOS, run macOS-specific installer script."
+  echo
   exit 1
 fi
 
@@ -120,7 +124,7 @@ fi
 ####################################################################################
 if [[ "${SHELL_TYPE}" == "zsh" ]]; then
   # install powerlevel10k
-  echo "Installing powerlevel10k and oh-my-zsh plugins..."
+  info "Installing powerlevel10k and oh-my-zsh plugins..."
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 
   #install oh-my-zsh plugins
@@ -157,10 +161,10 @@ backup_local_items "file" files_to_backup[@]
 # Call the generic function for directories
 backup_local_items "dir" dirs_to_backup[@]
 
-echo "Backup pre-stow completed"
+info "Backup pre-stow completed"
 
 # activate stow
-echo "Stowing dotfiles..."
+info "Stowing dotfiles..."
 cd "${INSTALL_DIR}/../home" || exit 1
 stow --verbose=1 --target="${HOME}" --stow --adopt .
 # above will overwrite git repo if files already exist in $HOME,
@@ -173,20 +177,20 @@ cd "${INSTALL_DIR}" || exit 1
 ####################################################################################
 
 if [ "${desktopEnv}" == "GNOME" ]; then
-  echo "Restoring GNOME shell extension settings..."
+  info "Restoring GNOME shell extension settings..."
   dconf load /org/gnome/shell/extensions/ <"${INSTALL_DIR}/config/extensions/gnome_extensions_backup.dconf"
 fi
 
 echo
-echo "==========================================================================================="
-echo "All done, logout and log back in for changes to take effect."
+info "==========================================================================================="
+info "All done, logout and log back in for changes to take effect."
 if [[ "${OS_TYPE}" == "debian" ]]; then
   if [ ! -e "/usr/bin/fastfetch" ]; then
     echo
-    echo "Install fastfetch from https://github.com/fastfetch-cli/fastfetch"
+    info "Install fastfetch from https://github.com/fastfetch-cli/fastfetch"
   fi
 fi
-echo "==========================================================================================="
+info "==========================================================================================="
 
 ####################################################################################
 # END of script
