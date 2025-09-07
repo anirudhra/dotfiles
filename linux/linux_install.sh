@@ -122,13 +122,6 @@ if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
   exit 1
 fi
 
-if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
-  error "This script is only supported for Linux Client machines"
-  error "Please do not run this script from/on PVE Server/Guests/SBCs/Routers"
-  echo
-  exit 1
-fi
-
 if [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "debian" ]]; then
   info "Detected supported OS Type: ${OS_TYPE}"
 else
@@ -138,6 +131,22 @@ else
   error "For macOS, run macOS-specific installer script."
   echo
   exit 1
+fi
+
+if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
+  warn "WARNING: This script is intended to be run only on 'client' Linux machines"
+  warn "Detected machine type: ${MACHINE_TYPE}"
+  warn "This script is NOT recommended for PVE Server/Guest/SBCs/others"
+  warn "Running this script on non-client machines may cause issues or unexpected behavior"
+  echo
+  read -p "Do you really want to continue anyway? (y/N): " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    info "Script execution cancelled by user."
+    exit 0
+  fi
+  warn "Proceeding with script execution on ${MACHINE_TYPE} machine..."
+  echo
 fi
 
 # get desktop environment
@@ -355,6 +364,7 @@ if [ "${INSTALL_OS}" == "fedora" ]; then
   # Fedora specific packages
   OS_PACKAGES=(
     'throttled'
+    'xcursorgen'
     'dnf-plugins-core'
     'fastfetch'
     'fd-find'
@@ -399,7 +409,9 @@ elif [ "${INSTALL_OS}" == "debian" ]; then
     'avahi-daemon'
     'lm-sensors'
     'fd-find'
-    'neofetch'
+    'xcursorgen'
+    #'neofetch'
+    'fastfetch'
     'avahi-utils'
     'nfs-common'
     'systemd-resolved'
@@ -439,6 +451,7 @@ elif [ "${INSTALL_OS}" == "arch" ]; then
     'throttled'
     'github-cli'
     'fastfetch'
+    'xorg-xcursorgen'
     'fd'
     'lm_sensors'
     'avahi'

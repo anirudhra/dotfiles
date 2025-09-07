@@ -21,6 +21,18 @@ MACHINE_TYPE=$(detect_machine_type)
 # Functions
 ####################################################################################
 
+# Function to install zsh/oh-my-zsh plugins
+install_zsh_plugins() {
+  info "Installing powerlevel10k and oh-my-zsh plugins..."
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+
+  #install oh-my-zsh plugins
+  git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
+  git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autocomplete"
+}
+
 # Function to install git repository
 install_git_repo() {
   local repo_url="$1"
@@ -81,13 +93,6 @@ if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
   exit 1
 fi
 
-if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
-  error "This script is only supported for Linux Client machines"
-  error "Please do not run this script from PVE Server/Guest/SBCs"
-  error
-  exit 1
-fi
-
 if [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "debian" ]]; then
   info "Detected supported OS Type: ${OS_TYPE}"
 else
@@ -107,31 +112,61 @@ if [ ! -d "${HOME}/.oh-my-zsh" ]; then
   exit 1
 fi
 
-# git login, if not yet
-GIT_LOGIN=$(gh auth status 2>&1 | grep -i "not logged into")
-NOLOGINTEXT="You are not logged into any GitHub hosts. To log in, run: gh auth login"
+if [[ ! "${MACHINE_TYPE}" == "client" ]]; then
+  warn "WARNING: This script is intended to be run only on 'client' Linux machines"
+  warn "Detected machine type: ${MACHINE_TYPE}"
+  warn "This script is NOT recommended for PVE Server/Guest/SBCs/others"
+  warn "Running this script on non-client machines may cause issues or unexpected behavior"
+  echo
+  read -p "Do you really want to continue anyway? (y/N): " -n 1 -r
+  echo
+  if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+    info "Script execution cancelled by user."
+    exit 0
+  fi
+  warn "Proceeding with script execution on ${MACHINE_TYPE} machine..."
+  echo
+fi
 
-if [ "${GIT_LOGIN}" == "${NOLOGINTEXT}" ]; then
-  #debug
-  warn "Not logged into git, logging in..."
-  #git login
-  gh auth login #for browser based git login instead of token
-  git config --global core.editor "nano"
+# git login, if not yet
+echo
+info "Do you want to configure git-cli (GitHub authentication and basic settings)?"
+read -p "This will run 'gh auth login' and set git editor to nano. Continue? (y/N): " -n 1 -r
+echo
+if [[ $REPLY =~ ^[Yy]$ ]]; then
+  GIT_LOGIN=$(gh auth status 2>&1 | grep -i "not logged into")
+  NOLOGINTEXT="You are not logged into any GitHub hosts. To log in, run: gh auth login"
+
+  if [ "${GIT_LOGIN}" == "${NOLOGINTEXT}" ]; then
+    #debug
+    warn "Not logged into git, logging in..."
+    #git login
+    gh auth login #for browser based git login instead of token
+    git config --global core.editor "nano"
+  else
+    info "Already logged into GitHub, skipping authentication."
+    git config --global core.editor "nano"
+  fi
+else
+  info "Skipping git-cli configuration."
 fi
 
 ####################################################################################
 # Zsh/oh-my-zsh plugins, all these are enabled in "stowed zshrc" already
 ####################################################################################
 if [[ "${SHELL_TYPE}" == "zsh" ]]; then
-  # install powerlevel10k
-  info "Installing powerlevel10k and oh-my-zsh plugins..."
-  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-
-  #install oh-my-zsh plugins
-  git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
-  git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autocomplete"
+  install_zsh_plugins
+else
+  warn "Detected shell type: ${SHELL_TYPE} (not zsh)"
+  warn "The following commands are designed for zsh/oh-my-zsh setup."
+  echo
+  read -p "Do you want to install zsh/oh-my-zsh plugins anyway? (y/N): " -n 1 -r
+  echo
+  if [[ $REPLY =~ ^[Yy]$ ]]; then
+    install_zsh_plugins
+  else
+    info "Skipping zsh/oh-my-zsh plugin installation."
+  fi
 fi
 
 ####################################################################################
@@ -184,11 +219,9 @@ fi
 echo
 info "==========================================================================================="
 info "All done, logout and log back in for changes to take effect."
-if [[ "${OS_TYPE}" == "debian" ]]; then
-  if [ ! -e "/usr/bin/fastfetch" ]; then
-    echo
-    info "Install fastfetch from https://github.com/fastfetch-cli/fastfetch"
-  fi
+if [ ! -e "/usr/bin/fastfetch" ]; then
+  echo
+  info "Fastfetch not detected. Install fastfetch from https://github.com/fastfetch-cli/fastfetch"
 fi
 info "==========================================================================================="
 
