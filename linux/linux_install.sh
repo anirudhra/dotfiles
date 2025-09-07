@@ -649,6 +649,13 @@ fi
 sudo systemctl disable thermald.service
 sudo systemctl mask thermald.service
 
+# grant btop GPU monitoring capabilities
+# Check if btop exists/installed correctly using command -v
+BTOP_PATH=$(command -v btop)
+if [ -n "${BTOP_PATH}" ]; then
+  sudo setcap cap_perfmon=+ep "${BTOP_PATH}"
+fi
+
 # change shell to zsh, need to logout and back in to take effect
 # if zsh wasn't installed, this will automatically fail, not altering current shell
 touch ~/.zshrc
