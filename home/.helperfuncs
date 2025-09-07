@@ -74,7 +74,7 @@ detect_os_type() {
       fedora | rhel | centos | rocky | almalinux | ol | oracle)
         echo "fedora"
         ;;
-      arch | manjaro | endeavouros | artix)
+      arch | manjaro | endeavouros | artix | cachyos)
         echo "arch"
         ;;
       gentoo | funtoo | calculate)
