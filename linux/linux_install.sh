@@ -61,8 +61,8 @@ append_entry_to_file() {
     warn "$description already exists in $file"
   else
     info "Adding $description to $file"
-    info "# Adding $description" | sudo tee -a "$file"
-    info "$entry" | sudo tee -a "$file"
+    echo "# Adding $description" | sudo tee -a "$file"
+    echo "$entry" | sudo tee -a "$file"
   fi
 }
 
@@ -76,10 +76,10 @@ create_repo_file() {
     info "Creating repository file: $repo_file"
     if [[ "$os_type" == "debian" ]]; then
       # For Debian/Ubuntu, use add-apt-repository
-      info "$repo_content" | sudo add-apt-repository -y
+      echo "$repo_content" | sudo add-apt-repository -y
     else
       # For Fedora/RHEL, create repo file
-      info -e "$repo_content" | sudo tee "$repo_file" >/dev/null
+      echo -e "$repo_content" | sudo tee "$repo_file" >/dev/null
     fi
   else
     info "Repository file already exists: $repo_file"
