@@ -10,22 +10,23 @@ Following details the manual commands for each type. Put them under Administrati
 * Below assumes dotfiles is on /jffs (persistent emmc internal storage)
 
 ```
-# entware initialization
+### Entware initialization ###
 sleep 10
 /opt/etc/init.d/rc.unslung start
-# export dir variables for use
+### export dir variables for use ###
 export ROOT_HOME="/opt/root"
 export JFFS_HOME="/jffs"
-export DOTFILES_HOME=${ROOT_HOME}
-# smartdns adblock script https://github.com/egc112/ddwrt/tree/main/adblock/smartdns
+### smartdns adblock script https://github.com/egc112/ddwrt/tree/main/adblock/smartdns ###
 cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
 ${JFFS_HOME}/ddwrt-adblock-s.sh &
-# create login shell init script, sync dotfiles repo first
+### create login shell init script, sync dotfiles repo first ###
 cat <<'EOF' >"/tmp/root/.ashrc"
+export ROOT_HOME="/opt/root"
+export JFFS_HOME="/jffs"
+export DOTFILES_HOME="${ROOT_HOME}"
 source ${DOTFILES_HOME}/dotfiles/home/.profile.ddwrt
 EOF
-# Trigger Avahi/mDNS to restart, due to a bug
-service mdns start
+### Trigger Avahi/mDNS to restart, due to a bug ###
 service mdns start
 ```
 
@@ -34,7 +35,7 @@ service mdns start
 * Add commands under admin > commands > USB Script
 
 ```
-# syslogd logs to entware USB drive and creates symlink for webui access
+### syslogd logs to entware USB drive and creates symlink for webui access ###
 mkdir -p /opt/logs
 killall syslogd
 syslogd -Z -L -s 1024 -O /opt/logs/system
@@ -47,9 +48,9 @@ ln -sf /opt/logs/system /jffs/messages
 * Enables only HomeAssistant/UptimeKuma hosts, on main network br0, one-way access to Guest network bridge br1
 
 ```
-# allow HASS and UptimeKuma one-way access to guest network
-iptables -I FORWARD -i br0 -s <HASSIP> -o br1 -m state --state NEW -j ACCEPT
-iptables -I FORWARD -i br0 -s <KIMAIP> -o br1 -m state --state NEW -j ACCEPT
+### allow HASS and Kuma one-way access to guest network ###
+iptables -I FORWARD -i br0 -s 10.100.10.64 -o br1 -m state --state NEW -j ACCEPT
+iptables -I FORWARD -i br0 -s 10.100.10.67 -o br1 -m state --state NEW -j ACCEPT
 ```
 
 ## Cron commands
