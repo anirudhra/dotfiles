@@ -35,6 +35,8 @@ dockerupdateall() {
       docker system prune --volumes -f
       cd - || return
     fi
+  else
+    info "dockerupdateall() not support on this machine type: ${MACHINE_TYPE}"
   fi
 }
 
@@ -175,8 +177,14 @@ if command -v fwupdmgr >/dev/null 2>&1; then
   alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
   alias checkfw='sudo fwupdmgr get-devices'
 else
-  alias fwupdate="echo fwupdmgr not found, skipping fwupdate"
-  alias checkfw="echo fwupdmgr not found, skipping checkfw"
+  alias fwupdate="echo fwupdmgr not found/supported"
+  alias checkfw="echo fwupdmgr not found/supported"
+fi
+
+if command -v flatpak >/dev/null 2>&1; then
+  alias flatpakupdate='sudo flatpak upgrade -y'
+else
+  alias flatpakupdate='echo flatpak not found, skipping update'
 fi
 
 # other linux-only aliases
@@ -213,7 +221,6 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
   export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
-  alias upgrade='fullupdate && fullclean && fwupdate'
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
   # LXC/VM and SBC shortcuts
   if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
@@ -223,18 +230,17 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     export DOCKERDIR="/opt/dockerapps"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
-    alias dockerbackup='sudo tar -zcvf ${DATA_DIR}/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
+    alias dockerbackup='sudo tar -zcvf ${DATADIR}/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
     # script to copy compiled kernel modules from PVE LXC to SBC
     alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
-    alias update='fullupdate && fullclean' # alias without dockerupdate
-  else                                     
+  else
     # LXC/VM debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
     export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
     export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
-    
+
     alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}_$(date -I).tar.gz ${DOCKERDIR}'
     # yocto kernel compile macros
     alias bbmenu="bitbake -c menuconfig virtual/kernel"
@@ -245,7 +251,6 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
   fi
 
   #  Other common non-PVE server aliases
-  alias upgrade="fullupdate && fullclean && dockerupdateall" #no firmware update
   # dockerupdateall is defined in .aliases_dev, which is sourced by .aliases before this file
   alias dockerup='docker compose up -d'
   alias dockerdown='docker compose down'
@@ -255,16 +260,16 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
 
 # for client machines
 elif [[ "${MACHINE_TYPE}" == "client" ]]; then
-# set the right nfs directories
+  # set the right nfs directories
   export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
   export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
   export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
   export DOCKERDIR="${DATADIR}/dockerapps"
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
-
-  # Client only aliases, usually for laptops
-  alias upgrade='fullupdate && fullclean && fwupdate'
 fi
+
+# each step below is expanded in it's own section based on OS and machine type
+alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
 
 # generic  aliases
 alias gomedia='cd ${MEDIADIR}'

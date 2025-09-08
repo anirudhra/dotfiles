@@ -23,8 +23,7 @@ export pkgmgr="apt"
 export pkgmgrdpkg="dpkg"
 
 alias fullclean='sudo ${pkgmgr} clean -y && sudo ${pkgmgr} autoclean -y && sudo ${pkgmgr} --purge autoremove -y'
-alias fullupdate='sudo ${pkgmgr} update -y && sudo ${pkgmgr} dist-upgrade -y && fwupdate'
+alias fullupdate='sudo ${pkgmgr} update -y && sudo ${pkgmgr} dist-upgrade -y'
 
 alias showinstalled="sudo ${pkgmgr} list --installed | less ${lesscolors}"
 alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && ${pkgmgrdpkg} --list | grep -i -e kernel- -e linux-image"
-
