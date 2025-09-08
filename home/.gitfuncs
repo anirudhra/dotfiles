@@ -13,7 +13,7 @@ fi
 # Set the guard variable
 SOURCED_GITFUNCS=1
 
-source "${HOME}/.helperfuncs"
+source "${ALIASES_HOME}/.helperfuncs"
 
 debuglog "Git functions sourced"
 
