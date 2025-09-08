@@ -13,97 +13,16 @@
 # gh auth login: for browser based git login instead of token
 
 source "../home/.helperfuncs"
+source "../home/.filefuncs"
+source "../home/.gitfuncs"
+
 OS_TYPE=$(detect_os_type)
 MACHINE_TYPE=$(detect_machine_type)
 
 ####################################################################################
 # Functions
 ####################################################################################
-
-# Function to safely backup and install files
-install_file() {
-  local source_file="$1"
-  local dest_file="$2"
-  local description="$3"
-
-  # Check if source file exists
-  if [[ ! -f "$source_file" ]]; then
-    erroror "Warning: Source file $source_file does not exist, skipping $description"
-    return 1
-  fi
-
-  # Backup existing file if it exists
-  if [[ -e "$dest_file" ]]; then
-    info "Backing up existing $description: $dest_file"
-    sudo cp -f "$dest_file" "${dest_file}.bak" || {
-      error "Error: Failed to backup $dest_file"
-      return 1
-    }
-  fi
-
-  info "Installing $description: $source_file -> $dest_file"
-  sudo cp -f "$source_file" "$dest_file" || {
-    error "Error: Failed to install $description"
-    return 1
-  }
-
-  info "Successfully installed $description"
-  return 0
-}
-
-# Function to add entry to file if not present
-append_entry_to_file() {
-  local entry="$1"
-  local file="$2"
-  local description="$3"
-
-  if grep -Fq "$entry" "$file" 2>/dev/null; then
-    warn "$description already exists in $file"
-  else
-    info "Adding $description to $file"
-    echo "# Adding $description" | sudo tee -a "$file"
-    echo "$entry" | sudo tee -a "$file"
-  fi
-}
-
-# Generic function to create repository file
-create_repo_file() {
-  local repo_file="$1"
-  local repo_content="$2"
-  local os_type="$3"
-
-  if [[ ! -e "$repo_file" ]]; then
-    info "Creating repository file: $repo_file"
-    if [[ "$os_type" == "debian" ]]; then
-      # For Debian/Ubuntu, use add-apt-repository
-      echo "$repo_content" | sudo add-apt-repository -y
-    else
-      # For Fedora/RHEL, create repo file
-      echo -e "$repo_content" | sudo tee "$repo_file" >/dev/null
-    fi
-  else
-    info "Repository file already exists: $repo_file"
-  fi
-}
-
-# Generic function to backup existing files or directories
-backup_system_items() {
-  local type="$1"
-  local items_array=("${!2}")
-
-  info "Backing up existing $type items..."
-
-  for item in "${items_array[@]}"; do
-    if [[ "$type" == "file" && -e "$item" ]]; then
-      sudo cp -rf "$item" "${item}.bak"
-      info "Backed up file: $item"
-    elif [[ "$type" == "dir" && -d "$item" ]]; then
-      sudo mv "$item" "${item}.bak"
-      info "Backed up directory: $item"
-    fi
-  done
-}
-
+# functions used in this file can be found in ~/dotfiles/home/.filefuncs file
 ####################################################################################
 
 echo
@@ -191,8 +110,8 @@ if [[ "${INSTALL_OS}" == "fedora" ]]; then
   VSCODE_REPO_CONTENT="[visualstudio-code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc"
 
   # Call the function for both repositories
-  create_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT"
-  create_repo_file "$VSCODE_REPO_FILE" "$VSCODE_REPO_CONTENT"
+  create_linux_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT"
+  create_linux_repo_file "$VSCODE_REPO_FILE" "$VSCODE_REPO_CONTENT"
 
   sudo ${INSTALLER} group upgrade core -y
   sudo ${INSTALLER} update --refresh
@@ -229,8 +148,8 @@ elif [[ "${INSTALL_OS}" == "debian" ]]; then
   MSEDGE_REPO_CONTENT="deb [arch=amd64] https://packages.microsoft.com/repos/edge stable main"
 
   # Call the function for both repositories (debian type)
-  create_repo_file "$VSCODE_REPO_FILE" "$VSCODE_REPO_CONTENT" "$INSTALL_OS"
-  create_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT" "$INSTALL_OS"
+  create_linux_repo_file "$VSCODE_REPO_FILE" "$VSCODE_REPO_CONTENT" "$INSTALL_OS"
+  create_linux_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT" "$INSTALL_OS"
 
   # Configure console font and size, esp. usefull for hidpi displays (select Combined Latin, Terminus, 16x32 for legibility
   # disabled for now, enable this manually if needed
@@ -532,10 +451,12 @@ backup_system_items "file" system_files_to_backup[@]
 
 # Create NFS mount point with proper permissions
 echo "Creating NFS mount point: $NFS_MOUNT_POINT"
+
 sudo mkdir -p "$NFS_MOUNT_POINT" || {
   error "Error: Failed to create NFS mount point"
   exit 1
 }
+
 sudo chmod 755 "$NFS_MOUNT_POINT" || {
   error "Error: Failed to set NFS mount point permissions"
   exit 1
@@ -573,7 +494,7 @@ cd "${PKG_INSTALL_DIR}" || exit 1
 
 # for debian and derivatives, also sync throttled repo for manual install
 if [[ ! -d "${PKG_INSTALL_DIR}/throttled" ]] && [[ "${INSTALL_OS}" == "debian" ]]; then
-  git clone https://github.com/erpalma/throttled.git
+  git clone --depth=1 https://github.com/erpalma/throttled.git
   sudo /bin/bash "${PKG_INSTALL_DIR}/throttled/install.sh"
 fi
 

@@ -13,6 +13,9 @@ SOURCED_ALIASES_LINUX_FEDORA=1
 
 debuglog "Fedora aliases sourced"
 
+export pkgmgr="dnf"
+export pkgmgrrpm="rpm"
+
 ######## functions ######################
 
 # remove old kernels in fedora
@@ -27,11 +30,7 @@ cleankernels() {
 }
 ##########################################
 
-# add condition for fedora specific command here
-
-export pkgmgr="dnf"
-export pkgmgrrpm="rpm"
-
+# add condition for fedora specific commands here
 alias fullclean='sudo ${pkgmgr} clean all -y && sudo ${pkgmgr} autoremove -y && sudo flatpak uninstall --unused -y'
 alias fullupdate='sudo ${pkgmgr} update --refresh && sudo ${pkgmgr} upgrade -y && sudo flatpak upgrade -y'
 alias fullupgrade='sudo ${pkgmgr} update --refresh && sudo flatpak upgrade -y && sudo ${pkgmgr} distro-sync'

@@ -22,21 +22,6 @@ MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine ru
 
 ######## functions ######################
 
-# this function will remove all history until current commit and rebase the repo with current
-# commit as the initial/base commit. use this if a repo has become too huge/unmanageable to start over
-gitrebasemain() {
-  # this function must be called from within the repo directory
-  # CAUTION: make a manual backup before doing this!
-  # hardcoded to rebase 'main' branch
-  git checkout --orphan newBranch
-  git add -A # Add all files and commit them
-  git commit -m "Clear history, refresh repo"
-  git branch -D main              # Deletes the master branch
-  git branch -m main              # Rename the current branch to master
-  git push -f origin main         # Force push master branch to github
-  git gc --aggressive --prune=all # remove the old files
-}
-
 #create timelapse from set of images in a directory
 timelapse() {
   if command -v mencoder >/dev/null 2>&1; then

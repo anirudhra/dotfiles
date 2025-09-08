@@ -31,10 +31,14 @@ log() {
   echo -e "${GREEN}[LOG:$(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
 }
 
+errorexit() {
+  echo -e "${RED}[ERROR: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1" >&2
+  # exit immediately
+  exit 1
+}
+
 error() {
   echo -e "${RED}[ERROR: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1" >&2
-  # don't exit here, give control to calling script
-  # exit 1
 }
 
 warn() {

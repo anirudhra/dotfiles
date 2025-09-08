@@ -14,6 +14,9 @@ desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 #Xsessiontype=${XDG_SESSION_TYPE} #X11, wayland
 
 source "../home/.helperfuncs"
+source "../home/.filefuncs"
+source "../home/.gitfuncs"
+
 OS_TYPE=$(detect_os_type)
 MACHINE_TYPE=$(detect_machine_type)
 
@@ -21,55 +24,19 @@ MACHINE_TYPE=$(detect_machine_type)
 # Functions
 ####################################################################################
 
+# functions used in this file can be found in ~/dotfiles/home/.filefuncs file
+
 # Function to install zsh/oh-my-zsh plugins
 install_zsh_plugins() {
   info "Installing powerlevel10k and oh-my-zsh plugins..."
+  echo
   git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 
   #install oh-my-zsh plugins
-  git clone https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
-  git clone https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
-  git clone https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
-  git clone --depth 1 -- https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autocomplete"
-}
-
-# Function to install git repository
-install_git_repo() {
-  local repo_url="$1"
-  local dest_dir="$2"
-  local description="$3"
-  local git_options="${4:-}"
-
-  if [[ -d "$dest_dir" ]]; then
-    info "$description already exists: $dest_dir"
-    return 0
-  fi
-
-  info "Installing $description..."
-  if git clone "$git_options" "$repo_url" "$dest_dir"; then
-    info "Successfully installed $description"
-  else
-    error "Error: Failed to install $description"
-    return 1
-  fi
-}
-
-# Generic function to backup existing files or directories
-backup_local_items() {
-  local type="$1"
-  local items_array=("${!2}")
-
-  info "Backing up existing $type items..."
-
-  for item in "${items_array[@]}"; do
-    if [[ "$type" == "file" && -e "$item" ]]; then
-      cp -rf "$item" "${item}.bak"
-      info "Backed up file: $item"
-    elif [[ "$type" == "dir" && -d "$item" ]]; then
-      mv "$item" "${item}.bak"
-      info "Backed up directory: $item"
-    fi
-  done
+  git clone --depth=1 https://github.com/zsh-users/zsh-autosuggestions.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autosuggestions"
+  git clone --depth=1 https://github.com/zsh-users/zsh-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting"
+  git clone --depth=1 https://github.com/zdharma-continuum/fast-syntax-highlighting.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/fast-syntax-highlighting"
+  git clone --depth=1 https://github.com/marlonrichert/zsh-autocomplete.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/zsh-autocomplete"
 }
 
 ####################################################################################
@@ -89,7 +56,7 @@ if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
   error "Script invoked from incorrect directory!"
   error "The current directory is: ${INSTALL_DIR}"
   error "Please run this script from .../dotfiles/linux directory"
-  error
+  echo
   exit 1
 fi
 
@@ -108,7 +75,7 @@ fi
 if [ ! -d "${HOME}/.oh-my-zsh" ]; then
   error "oh-my-zsh installation not detected!"
   error "Install oh-my-zsh from : https://ohmyz.sh/ before running this script!"
-  error
+  echo
   exit 1
 fi
 
@@ -133,6 +100,7 @@ echo
 info "Do you want to configure git-cli (GitHub authentication and basic settings)?"
 read -p "This will run 'gh auth login' and set git editor to nano. Continue? (y/N): " -n 1 -r
 echo
+
 if [[ $REPLY =~ ^[Yy]$ ]]; then
   GIT_LOGIN=$(gh auth status 2>&1 | grep -i "not logged into")
   NOLOGINTEXT="You are not logged into any GitHub hosts. To log in, run: gh auth login"
@@ -219,10 +187,13 @@ fi
 echo
 info "==========================================================================================="
 info "All done, logout and log back in for changes to take effect."
-if [ ! -e "/usr/bin/fastfetch" ]; then
+
+if command -v fastfetch >/dev/null 2>&1; then
   echo
-  info "Fastfetch not detected. Install fastfetch from https://github.com/fastfetch-cli/fastfetch"
+  info "Fastfetch not detected. Install fastfetch from package manager"
+  info "or https://github.com/fastfetch-cli/fastfetch"
 fi
+
 info "==========================================================================================="
 
 ####################################################################################

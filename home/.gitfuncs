@@ -17,12 +17,25 @@ source "${HOME}/.helperfuncs"
 
 debuglog "Git functions sourced"
 
+#######################################################################
+# Functions
+#######################################################################
+
+# Print help for theme update scripts
+print_git_theme_update_help() {
+  echo "Usage: $0 [--force] [--help]"
+  echo "  --force   Run install/update even if repo sync fails. (optional, default is false)"
+  echo "  --help    Show this help message."
+}
+
 # Clone a repo if it doesn't exist
 clonerepo_latestcommit() {
   local giturl="$1"
   local gitdir="$2"
+  local git_options="${3:-}"
+
   if [ ! -d "$gitdir/.git" ]; then
-    if git clone "$giturl" "$gitdir" --depth=1; then
+    if git clone --depth=1 "$giturl" "$gitdir"; then
       return 0
     else
       warn "Clone failed!"
@@ -38,6 +51,8 @@ clonerepo_latestcommit() {
 clonerepo_allcommits() {
   local giturl="$1"
   local gitdir="$2"
+  local git_options="${3:-}"
+
   if [ ! -d "$gitdir/.git" ]; then
     if git clone "$giturl" "$gitdir"; then
       return 0
@@ -160,9 +175,17 @@ run_git_update_and_install() {
   fi
 }
 
-# Print help for theme update scripts
-print_git_theme_update_help() {
-  echo "Usage: $0 [--force] [--help]"
-  echo "  --force   Run install/update even if repo sync fails. (optional, default is false)"
-  echo "  --help    Show this help message."
+# this function will remove all history until current commit and rebase the repo with current
+# commit as the initial/base commit. use this if a repo has become too huge/unmanageable to start over
+gitrebasemain() {
+  # this function must be called from within the repo directory
+  # CAUTION: make a manual backup before doing this!
+  # hardcoded to rebase 'main' branch
+  git checkout --orphan newBranch
+  git add -A # Add all files and commit them
+  git commit -m "Clear history, refresh repo"
+  git branch -D main              # Deletes the master branch
+  git branch -m main              # Rename the current branch to master
+  git push -f origin main         # Force push master branch to github
+  git gc --aggressive --prune=all # remove the old files
 }

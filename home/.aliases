@@ -17,7 +17,9 @@ if [[ -z "${ALIASES_HOME}" ]]; then
 fi
 
 # source helpers
+source "${ALIASES_HOME}/.gitfuncs"
 source "${ALIASES_HOME}/.helperfuncs"
+source "${ALIASES_HOME}/.filefuncs"
 
 OS_TYPE=$(detect_os_type)
 SHELL_TYPE=$(detect_shell_type)
