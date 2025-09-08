@@ -10,7 +10,7 @@ fi
 # Set the guard variable
 SOURCED_FILEFUNCS=1
 
-source "${HOME}/.helperfuncs"
+source "${ALIASES_HOME}/.helperfuncs"
 
 debuglog "File functions sourced"
 
@@ -79,7 +79,6 @@ backup_system_items() {
   done
 }
 
-
 # Generic function to backup existing files or directories that don't need sudo
 backup_local_items() {
   local type="$1"
@@ -97,7 +96,6 @@ backup_local_items() {
     fi
   done
 }
-
 
 # Generic function to create repository file
 create_linux_repo_file() {
@@ -118,3 +116,4 @@ create_linux_repo_file() {
     info "Repository file already exists: $repo_file"
   fi
 }
+
