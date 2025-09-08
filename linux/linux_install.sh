@@ -18,6 +18,7 @@ source "../home/.gitfuncs"
 
 OS_TYPE=$(detect_os_type)
 MACHINE_TYPE=$(detect_machine_type)
+SHELL_TYPE=$(detect_shell_type)
 
 ####################################################################################
 # Functions
@@ -49,6 +50,14 @@ else
   error "Please do not run this script from macOS/FreeBSD/Windows etc."
   error "For macOS, run macOS-specific installer script."
   echo
+  exit 1
+fi
+
+# this script uses arrays, only supported on certain shells
+if [[ "${SHELL_TYPE}" == "bash" ]] || [[ "${SHELL_TYPE}" == "zsh" ]] || [[ "${SHELL_TYPE}" == "fish" ]]; then
+  info "Detected supported shell type: ${SHELL_TYPE}"
+else
+  error "Unsupported shell type, must be one of bash/zsh/fish. Detected: ${SHELL_TYPE}"
   exit 1
 fi
 
