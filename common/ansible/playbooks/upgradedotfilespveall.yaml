@@ -1,0 +1,8 @@
+- name: Update dotfiles on all PVE servers and VMs/LXCs
+  hosts: upgradepveall
+  tasks:
+    - name: Run upgradedotfiles.sh script on remote services hosts
+      ansible.builtin.shell: cd "${HOME}/dotfiles/common/ansible/clientscripts" && ./upgradedotfiles.sh
+      register: out
+
+    - debug: var=out.stdout_lines
