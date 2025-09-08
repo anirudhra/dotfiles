@@ -168,11 +168,6 @@ else
 fi
 
 ####################################################################################
-# EasyEffects pipewire audio enhancer plugins
-####################################################################################
-# easyeffects presets are now part of github repo and will be stowed
-
-####################################################################################
 # Install dotfiles with stow under /dotfiles/home directory - should be last in this file
 ####################################################################################
 
@@ -201,8 +196,9 @@ info "Stowing dotfiles..."
 cd "${INSTALL_DIR}/../home" || exit 1
 stow --verbose=1 --target="${HOME}" --stow --adopt .
 # above will overwrite git repo if files already exist in $HOME,
-# git restore . will restore with the correct versions, this is a trick to overwrite with repo files
+# git restore . will restore with the correct versions, this is a trick to overwrite with repo files, then stow again
 git restore .
+stow --verbose=1 --target="${HOME}" --stow .
 cd "${INSTALL_DIR}" || exit 1
 
 ####################################################################################

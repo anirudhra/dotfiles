@@ -462,13 +462,20 @@ backup_system_items() {
 ####################################################################################
 # Configuration file paths
 SOURCE_AUTOFS_SHARE_FILE="./config/etc/auto.pveshare"
-SYS_AUTOFS_SHARE_FILE="/etc/auto.pveshare"
 SOURCE_TLP_FILE="./config/etc/tlp.conf"
 SYS_TLP_FILE="/etc/tlp.conf"
 SOURCE_THROTTLED_FILE="./config/etc/throttled.conf"
 SYS_THROTTLED_FILE="/etc/throttled.conf"
 NFS_MOUNT_POINT="/mnt/nfs"
-AUTOFS_MASTER="/etc/auto.master"
+
+# arch installs autofs config files in /etc/autofs, while debian/fedora have them in /etc/
+if [[ "${INSTALL_OS}" == "arch" ]]; then
+  SYS_AUTOFS_SHARE_FILE="/etc/autofs/auto.pveshare"
+  AUTOFS_MASTER="/etc/autofs/auto.master"
+else
+  SYS_AUTOFS_SHARE_FILE="/etc/auto.pveshare"
+  AUTOFS_MASTER="/etc/auto.master"
+fi
 
 # Define arrays for backup
 system_files_to_backup=(
@@ -555,7 +562,7 @@ fc-cache -fv
 info "Installing GTK themes..."
 # change back to original installation directory
 cd "${INSTALL_DIR}" || exit 1
-/bin/bash ./gtk/gtkthemes.sh
+/bin/bash ./linux/gtk/gtkthemes.sh
 
 if [[ "${desktopEnv}" == "GNOME" ]]; then
   # set GTK and icon themes
@@ -635,16 +642,13 @@ info "==========================================================================
 echo
 if [[ "${desktopEnv}" == "GNOME" ]]; then
   info "Install the following GNOME Extensions manually from: https://extensions.gnome.org/"
-  info "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Just Perfection,"
-  info "Removable Drive Menu, OpenBar, Transparent Window Moving, User Themes, Vitals, Weather O Clock, Easy Effects Preset Selector"
+  info "AppIndiator and KStatusNotifierItem Support, ArcMenu, Caffine, Dash to Dock, Forge Tiling, Linux Update Notifier, Grand Theft Focus, Just Perfection,"
+  info "Removable Drive Menu, OpenBar, Space Bar, Transparent Window Moving, User Themes, Vitals, Weather O Clock"
   echo
   info "Manually set GNOME Shell theme and Hum alert sound in settings"
   echo
 fi
-# no need to install easyeffects presets, now part of repo and stowed
-#echo "EasyEffects presets: bash -c \"$(curl -fsSL https://raw.githubusercontent.com/JackHack96/PulseEffects-Presets/master/install.sh)\""
-#echo "and https://github.com/shuhaowu/linux-thinkpad-speaker-improvements"
-#echo
+
 info "Manually set Nerd Font in: Terminal, Gnome Tweaks (if GNOME DE) and VSCode etc."
 echo
 info "UI customizations have been cloned in ${PKG_INSTALL_DIR}, for future git pulls and "
@@ -670,7 +674,7 @@ if [[ "${INSTALL_OS}" == "debian" ]]; then
 fi
 info "==========================================================================================="
 
-# installing oh-my-zsh will exit this script, needs to debugged
+# FIXME: installing oh-my-zsh will exit this script, needs to debugged
 #ohmyzshinstallurl="https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 #sh -c "$(curl -fsSL ${ohmyzshinstallurl})"
 
