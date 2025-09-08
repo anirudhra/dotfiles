@@ -62,50 +62,6 @@ append_entry_to_file() {
   fi
 }
 
-# Generic function to backup existing files or directories
-# that are system level and need sudo
-backup_system_items() {
-  # arrays are only supported on bash, zsh and fish, no other shell types
-  if [[ "${SHELL_TYPE}" == "bash" ]] || [[ "${SHELL_TYPE}" == "zsh" ]] || [[ "${SHELL_TYPE}" == "fish" ]]; then
-    local type="$1"
-    local items_array=("${!2}")
-
-    info "Backing up existing $type items..."
-
-    for item in "${items_array[@]}"; do
-      if [[ "$type" == "file" && -e "$item" ]]; then
-        sudo cp -rf "$item" "${item}.bak"
-        info "Backed up file: $item"
-      elif [[ "$type" == "dir" && -d "$item" ]]; then
-        sudo mv "$item" "${item}.bak"
-        info "Backed up directory: $item"
-      fi
-    done
-  fi
-}
-
-# Generic function to backup existing files or directories that don't need sudo
-backup_local_items() {
-
-  # arrays are only supported on bash, zsh and fish, no other shell types
-  if [[ "${SHELL_TYPE}" == "bash" ]] || [[ "${SHELL_TYPE}" == "zsh" ]] || [[ "${SHELL_TYPE}" == "fish" ]]; then
-    local type="$1"
-    local items_array=("${!2}")
-
-    info "Backing up existing $type items..."
-
-    for item in "${items_array[@]}"; do
-      if [[ "$type" == "file" && -e "$item" ]]; then
-        cp -rf "$item" "${item}.bak"
-        info "Backed up file: $item"
-      elif [[ "$type" == "dir" && -d "$item" ]]; then
-        mv "$item" "${item}.bak"
-        info "Backed up directory: $item"
-      fi
-    done
-  fi
-}
-
 # Generic function to create repository file
 create_linux_repo_file() {
   local repo_file="$1"

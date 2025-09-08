@@ -26,6 +26,27 @@ SHELL_TYPE=$(detect_shell_type)
 ####################################################################################
 
 # functions used in this file can be found in ~/dotfiles/home/.filefuncs file
+# Generic function to backup existing files or directories that don't need sudo
+backup_local_items() {
+
+  # arrays are only supported on bash, zsh and fish, no other shell types
+  if [[ "${SHELL_TYPE}" == "bash" ]] || [[ "${SHELL_TYPE}" == "zsh" ]] || [[ "${SHELL_TYPE}" == "fish" ]]; then
+    local type="$1"
+    local items_array=("${!2}")
+
+    info "Backing up existing $type items..."
+
+    for item in "${items_array[@]}"; do
+      if [[ "$type" == "file" && -e "$item" ]]; then
+        cp -rf "$item" "${item}.bak"
+        info "Backed up file: $item"
+      elif [[ "$type" == "dir" && -d "$item" ]]; then
+        mv "$item" "${item}.bak"
+        info "Backed up directory: $item"
+      fi
+    done
+  fi
+}
 
 # Function to install zsh/oh-my-zsh plugins
 install_zsh_plugins() {

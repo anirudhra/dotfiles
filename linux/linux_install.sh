@@ -435,6 +435,28 @@ fi
 ####################################################################################
 # dotfiles installation with stow is now done in the post installer script
 
+# Generic function to backup existing files or directories
+# that are system level and need sudo
+backup_system_items() {
+  # arrays are only supported on bash, zsh and fish, no other shell types
+  if [[ "${SHELL_TYPE}" == "bash" ]] || [[ "${SHELL_TYPE}" == "zsh" ]] || [[ "${SHELL_TYPE}" == "fish" ]]; then
+    local type="$1"
+    local items_array=("${!2}")
+
+    info "Backing up existing $type items..."
+
+    for item in "${items_array[@]}"; do
+      if [[ "$type" == "file" && -e "$item" ]]; then
+        sudo cp -rf "$item" "${item}.bak"
+        info "Backed up file: $item"
+      elif [[ "$type" == "dir" && -d "$item" ]]; then
+        sudo mv "$item" "${item}.bak"
+        info "Backed up directory: $item"
+      fi
+    done
+  fi
+}
+
 ####################################################################################
 # Install /etc config files
 ####################################################################################
