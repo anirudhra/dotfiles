@@ -15,9 +15,12 @@ export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
 export ROOT_HOME="/opt/root"      #this is persistent on USB
 export JFFS_HOME="/jffs"          #this is persistent on USB
 
-# choose between /jffs (emmc) and /opt/root (USB) home directories
-export DOTFILES_HOME="${ROOT_HOME}"
-#export DOTFILES_HOME="${JFFS_HOME}" # new dotfiles home, instead of /opt/root to handle bad USB cases, however the router randomly wipes /jffs, so revert to /opt/root on USB
+# if router startup script doesn't define DOTFILES_HOME (/jffs vs /opt/root), then choose USB as fallback
+if [ -n "${DOTFILES_HOME}" ]; then
+  export DOTFILES_HOME="${ROOT_HOME}"
+fi
+
+# always fixed relative to DOTFILES_HOME
 export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
 
 # create symlink on reboot for persistent link to home and dotfiles under temp root folder
