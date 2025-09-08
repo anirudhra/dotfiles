@@ -6,23 +6,26 @@ Following details the manual commands for each type. Put them under Administrati
 
 * Add commands under admin > commands > startup
 
-* mount --bind should be skipped typically as it is not a good idea to have /jffs on external USB (mounted at /opt). Any failure will take down the router with it
+* mount --bind should be skipped typically as it is not a good idea to have /jffs on external USB (mounted at /opt)
 * Below assumes dotfiles is on /jffs (persistent emmc internal storage)
 
 ```
 # entware initialization
 sleep 10
 /opt/etc/init.d/rc.unslung start
-#
-# smartdns adblock script: https://github.com/egc112/ddwrt/tree/main/adblock/smartdns
-cp /opt/root/ddwrt-adblock-s.sh /jffs/ddwrt-adblock-s.sh
-/jffs/ddwrt-adblock-s.sh &
+# export dir variables for use
+export ROOT_HOME="/opt/root"
+export JFFS_HOME="/jffs"
+export DOTFILES_HOME=${ROOT_HOME}
+# smartdns adblock script https://github.com/egc112/ddwrt/tree/main/adblock/smartdns
+cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
+${JFFS_HOME}/ddwrt-adblock-s.sh &
 # create login shell init script, sync dotfiles repo first
 cat <<'EOF' >"/tmp/root/.ashrc"
-#source /jffs/dotfiles/home/.profile.ddwrt
-source /opt/root/dotfiles/home/.profile.ddwrt
+source ${DOTFILES_HOME}/dotfiles/home/.profile.ddwrt
 EOF
 # Trigger Avahi/mDNS to restart, due to a bug
+service mdns start
 service mdns start
 ```
 
