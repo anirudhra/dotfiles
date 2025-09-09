@@ -22,6 +22,7 @@ source "${ALIASES_HOME}/.helperfuncs"
 source "${ALIASES_HOME}/.filefuncs"
 
 OS_TYPE=$(detect_os_type)
+ARCH_TYPE=$(detect_arch_type)
 SHELL_TYPE=$(detect_shell_type)
 
 ################################################################################################
@@ -298,10 +299,10 @@ alias ports='netstat -tulanp'
 alias wget='wget -c'
 
 #quick access to zshrc and bashrc files
-if [[ "${SHELL}" == "/bin/bash" ]]; then
+if [[ "${SHELL_TYPE}" == "bash" ]]; then
   alias bashrc='${EDITOR} ${HOME}/.bashrc'
   alias bashrc.='${EDITOR} ${HOME}/.bashrc.local'
-elif [[ "${SHELL}" == "/bin/zsh" ]]; then
+elif [[ "${SHELL_TYPE}" == "zsh" ]]; then
   alias zshrc='${EDITOR} ${HOME}/.zshrc'
   alias zshrc.='${EDITOR} ${HOME}/.zshrc.local'
 fi
@@ -335,7 +336,9 @@ fi
 #   OS specific aliases
 ################################################################################################
 
+debuglog "Architecture Detected: ${ARCH_TYPE}"
 debuglog "OS Detected: ${OS_TYPE}"
+debuglog "Shell Detected: ${SHELL_TYPE}"
 
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
   source "${ALIASES_HOME}/.aliases_linux"

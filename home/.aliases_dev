@@ -2,7 +2,7 @@
 ## (c) Anirudh Acharya 2024, 2025
 ## useful aliases for Dev/Homelab, common for macOS and Linux; will be sourced by parent aliases
 # This file is sourced by .aliases before .aliases_linux/* or .aliases_macos
-# This file should not contain any OS-specific aliases, as it will be sourced 
+# This file should not contain any OS-specific aliases, as it will be sourced
 # by both macOS and Linux based on machine type
 
 # Guard variable to ensure sourcing only once
@@ -13,12 +13,12 @@ fi
 # Set the guard variable
 SOURCED_ALIASES_DEV=1
 
-debuglog "Dev/Homelab aliases sourced"
-
 source "${ALIASES_HOME}/.aliases_hosts"
 source "${ALIASES_HOME}/.helperfuncs"
 
 MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+
+debuglog "Dev/Homelab aliases sourced"
 
 ######## functions ######################
 
