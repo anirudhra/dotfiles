@@ -24,6 +24,7 @@ source "${ALIASES_HOME}/.filefuncs"
 OS_TYPE=$(detect_os_type)
 ARCH_TYPE=$(detect_arch_type)
 SHELL_TYPE=$(detect_shell_type)
+MACHINE_TYPE=$(detect_machine_type)
 
 ################################################################################################
 #   OS agnostic aliases
@@ -50,10 +51,14 @@ mkcd() {
 
 # for machines without gnu stow
 manualstow() {
-  # manually copy all dot files and directories
-  SOURCE_DIR="${HOME}/dotfiles/home"
-  DEST_DIR="${HOME}"
-  cp -a "${SOURCE_DIR}/." "${DEST_DIR}/"
+  if [[ "${MACHINE_TYPE}" == "router" ]]; then
+    echo "Manual stow not available on ${MACHINE_TYPE}"
+  else
+    # manually copy all dot files and directories
+    SOURCE_DIR="${HOME}/dotfiles/home"
+    DEST_DIR="${HOME}"
+    cp -a "${SOURCE_DIR}/." "${DEST_DIR}/"
+  fi
 }
 #########################################
 
@@ -307,14 +312,19 @@ elif [[ "${SHELL_TYPE}" == "zsh" ]]; then
   alias zshrc.='${EDITOR} ${HOME}/.zshrc.local'
 fi
 
-#stow aliases
-if [ -x "$(command -v stow)" ]; then
-  alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
-  alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
+# not available for routers
+if [[ "${MACHINE_TYPE}" == "router" ]]; then
+  alias stow="echo Stow not available on type: \"${MACHINE_TYPE}"\"
 else
-  # call the manual stow function
-  alias restow=manualstow
-  alias dotstow='cp -f "${HOME}/dotfiles/home"/.* "${HOME}"'
+  #stow aliases
+  if [ -x "$(command -v stow)" ]; then
+    alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
+    alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
+  else
+    # call the manual stow function
+    alias restow=manualstow
+    alias dotstow='cp -f "${HOME}/dotfiles/home"/.* "${HOME}"'
+  fi
 fi
 
 # if bat utility (batcat on debian distros) is installed
