@@ -30,5 +30,8 @@ ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
 
+# copy adblock, in case file has been wiped for some reason
+[ ! -f "${JFFS_HOME}/ddwrt-adblock-s.sh" ] && cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
+
 # source .profile, that will source .aliases
 . "${ALIASES_HOME}/.profile"
