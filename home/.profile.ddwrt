@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 # This file is to be used only on DD-WRT/OpenWRT routers that have temp root home directory
 # This file must be called by the startup script to set the correct directories for proper alias/script sourcing
 
@@ -8,16 +8,17 @@
 # source entware profile, if file exists
 [ -f /opt/etc/profile ] && . /opt/etc/profile
 
-# overwrite for color terminal, may not always work
-#export TERM=xterm-256color
-
+# always fixed on ddwrt
 export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
 export ROOT_HOME="/opt/root"      #this is persistent on USB
 export JFFS_HOME="/jffs"          #this is persistent on USB
 
-# if router startup script doesn't define DOTFILES_HOME (/jffs vs /opt/root), then choose USB as fallback
+# if router startup script doesn't define DOTFILES_HOME (/jffs vs /opt/root), then choose current file's directory as home
 if [ -n "${DOTFILES_HOME}" ]; then
-  export DOTFILES_HOME="${ROOT_HOME}"
+  profileddwrt_path="$0"
+  profileddwrt_dir=$(dirname "$profileddwrt_path")
+  export DOTFILES_HOME="${profileddwrt_dir}"
+  #export DOTFILES_HOME="${ROOT_HOME}"
 fi
 
 # always fixed relative to DOTFILES_HOME
