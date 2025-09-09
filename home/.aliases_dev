@@ -16,8 +16,6 @@ SOURCED_ALIASES_DEV=1
 source "${ALIASES_HOME}/.aliases_hosts"
 source "${ALIASES_HOME}/.helperfuncs"
 
-MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
-
 debuglog "Dev/Homelab aliases sourced"
 
 ######## functions ######################

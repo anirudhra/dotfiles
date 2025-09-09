@@ -266,6 +266,11 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
   export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
   export DOCKERDIR="${DATADIR}/dockerapps"
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+# DD-WRT / Router aliases
+elif [[ "${MACHINE_TYPE}" == "router" ]]; then
+  alias fullupdate="opkg update && opkg upgrade"
+  alias fullclean="fullclean not supported on router"
 fi
 
 # each step below is expanded in it's own section based on OS and machine type
