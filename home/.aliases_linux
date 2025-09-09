@@ -270,7 +270,7 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
 # DD-WRT / Router aliases
 elif [[ "${MACHINE_TYPE}" == "router" ]]; then
   alias fullupdate="opkg update && opkg upgrade"
-  alias fullclean="fullclean not supported on router"
+  alias fullclean="echo fullclean not supported on router"
 fi
 
 # each step below is expanded in it's own section based on OS and machine type
