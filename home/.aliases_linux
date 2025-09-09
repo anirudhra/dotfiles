@@ -177,14 +177,14 @@ if command -v fwupdmgr >/dev/null 2>&1; then
   alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
   alias checkfw='sudo fwupdmgr get-devices'
 else
-  alias fwupdate="warn fwupdmgr not supported on this platform"
-  alias checkfw="warn fwupdmgr not supported on this platform"
+  alias fwupdate='warn \"fwupdmgr not supported on this platform\"'
+  alias checkfw='warn \"fwupdmgr not supported on this platform\"'
 fi
 
 if command -v flatpak >/dev/null 2>&1; then
   alias flatpakupdate='sudo flatpak upgrade -y'
 else
-  alias flatpakupdate='warn flatpak not supported on this platform'
+  alias flatpakupdate='warn \"flatpak not supported on this platform\"'
 fi
 
 # other linux-only aliases
@@ -270,7 +270,7 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
 # DD-WRT / Router aliases
 elif [[ "${MACHINE_TYPE}" == "router" ]]; then
   alias fullupdate="opkg update && opkg upgrade"
-  alias fullclean="warn fullclean not supported on this platform"
+  alias fullclean='warn \"fullclean not supported on this platform\"'
 fi
 
 # each step below is expanded in it's own section based on OS and machine type
