@@ -101,42 +101,42 @@ alias more='${pages}'
 
 # if eza is installed, replace ls with eza
 if command -v eza >/dev/null 2>&1; then
+  export EZA_CONFIG_DIR="${HOME}/.config/eza"
   unalias ls >/dev/null 2>&1
-  alias ls='eza'
   ## ls aliases
-  alias ls='eza --color=${lscolors} -F -G'
+  alias ls='eza --icons --color=${lscolors} -F -G'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='eza -la --color=${lscolors} --header --icons --git | ${pages}'
+  alias ll='eza -la --icons --color=${lscolors} --header --git | ${pages}'
   ## Show hidden files ##
-  alias ll.='eza -l -d -F -G --color=${lscolors} .* | ${pages}'
-  alias ls.='eza -d -F -G --color=${lscolors} .*'
-  alias l='eza -lah'                  #size,show type,human readable
-  alias la='eza -laAh -F'             #long list,show almost all,show type,human readable
-  alias lr='eza -F -R -h -t modified' #sorted by date,recursive,show type,human readable
-  alias lt='eza -lh -F -t modified'   #long list,sorted by date,show type,human readable
-  alias ldot='eza -ld .*'
-  alias lS='eza -F -1S -s name'
-  alias lart='eza -1artm -F'
-  alias lrt='eza -1rtm -F'
-  alias lsr='eza -lARh -F' #Recursive list of files and directories
-  alias lsn='eza -1'       #A column contains name of files and directories
+  alias ll.='eza -l -d -F -G --icons --color=${lscolors} .* | ${pages}'
+  alias ls.='eza -d -F -G --icons --color=${lscolors} .*'
+  alias l='eza -lah --icons '                 #size,show type,human readable
+  alias la='eza -laAh -F --icons'             #long list,show almost all,show type,human readable
+  alias lr='eza --icons -F -R -h -t modified' #sorted by date,recursive,show type,human readable
+  alias lt='eza --icons -lh -F -t modified'   #long list,sorted by date,show type,human readable
+  alias ldot='eza --icons -ld .*'
+  alias lS='eza --icons -F -1S -s name'
+  alias lart='eza --icons -1artm -F'
+  alias lrt='eza --icons -1rtm -F'
+  alias lsr='eza --icons -lARh -F' #Recursive list of files and directories
+  alias lsn='eza --icons -1'       #A column contains name of files and directories
   # Detailed listings with icons and Git status
   alias lsd='eza -l --icons --git'
   alias lsa='eza -la --icons --git'
   # Tree view
   # alias tree='eza --tree --level=2' # Adjust --level for desired depth
   # Show hidden files and directories
-  alias lh='eza -la --header --icons --git'
+  alias lh='eza -la --icons --header --icons --git'
   # Sort by modification time, newest first
-  alias lsnew='eza -l --sort newest'
+  alias lsnew='eza --icons -l --sort newest'
   # Sort by size, largest first
-  alias lss='eza -l --sort size'
+  alias lss='eza --icons -l --sort size'
   # Show file permissions in octal
-  alias lso='eza -l --octal-permissions'
+  alias lso='eza --icons -l --octal-permissions'
   # List directories only
-  alias lsdir='eza -D'
+  alias lsdir='eza -D --icons'
   # List files only
-  alias lsfiles='eza -F'
+  alias lsfiles='eza -F --icons'
 else
   ## ls aliases
   ## Colorize the ls output ##
@@ -329,17 +329,20 @@ else
   fi
 fi
 
+BAT_UTIL="false"
 # if bat utility (batcat on debian distros) is installed
 if command -v batcat >/dev/null 2>&1; then
-  alias bat="batcat --color=always"
+  BAT_UTIL="true"
+  alias bat="batcat --color=${lscolors}"
+elif command -v bat >/dev/null 2>&1; then
+  BAT_UTIL="true"
+  alias bat="bat --color=${lscolors}"
+fi
+
+# other bat aliases
+if [[ "${BAT_UTIL}" == "true" ]]; then
   eval "$(batpipe)"
   alias cat="bat"
-# if bat utility (batcat on debian distros) is installed
-elif command -v bat >/dev/null 2>&1; then
-  # alias cat to bat with syntax highlighting
-  alias bat="bat --color=${lscolors}"
-  eval "$(batpipe)
-  " alias cat="bat"
 fi
 
 ################################################################################################
