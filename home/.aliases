@@ -113,39 +113,39 @@ if command -v eza >/dev/null 2>&1; then
   fi
 
   ## ls aliases
-  alias ls='eza "${icons_enabled}" --color=${lscolors} -F -G'
+  alias ls='eza ${icons_enabled} --color=${lscolors} -F -G'
   #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
-  alias ll='eza -la "${icons_enabled}" --color=${lscolors} --header --git | ${pages}'
+  alias ll='eza -la ${icons_enabled} --color=${lscolors} --header --git | ${pages}'
   ## Show hidden files ##
-  alias ll.='eza -l -d -F -G "${icons_enabled}" --color=${lscolors} .* | ${pages}'
-  alias ls.='eza -d -F -G "${icons_enabled}" --color=${lscolors} .*'
-  alias l='eza -lah "${icons_enabled}" '                 #size,show type,human readable
-  alias la='eza -laAh -F "${icons_enabled}"'             #long list,show almost all,show type,human readable
-  alias lr='eza "${icons_enabled}" -F -R -h -t modified' #sorted by date,recursive,show type,human readable
-  alias lt='eza "${icons_enabled}" -lh -F -t modified'   #long list,sorted by date,show type,human readable
-  alias ldot='eza "${icons_enabled}" -ld .*'
-  alias lS='eza "${icons_enabled}" -F -1S -s name'
-  alias lart='eza "${icons_enabled}" -1artm -F'
-  alias lrt='eza "${icons_enabled}" -1rtm -F'
-  alias lsr='eza "${icons_enabled}" -lARh -F' #Recursive list of files and directories
-  alias lsn='eza "${icons_enabled}" -1'       #A column contains name of files and directories
+  alias ll.='eza -l -d -F -G ${icons_enabled} --color=${lscolors} .* | ${pages}'
+  alias ls.='eza -d -F -G ${icons_enabled} --color=${lscolors} .*'
+  alias l='eza -lah ${icons_enabled}'                  #size,show type,human readable
+  alias la='eza -laAh -F ${icons_enabled}'             #long list,show almost all,show type,human readable
+  alias lr='eza ${icons_enabled} -F -R -h -t modified' #sorted by date,recursive,show type,human readable
+  alias lt='eza ${icons_enabled} -lh -F -t modified'   #long list,sorted by date,show type,human readable
+  alias ldot='eza ${icons_enabled} -ld .*'
+  alias lS='eza ${icons_enabled} -F -1S -s name'
+  alias lart='eza ${icons_enabled} -1artm -F'
+  alias lrt='eza ${icons_enabled} -1rtm -F'
+  alias lsr='eza ${icons_enabled} -lARh -F' #Recursive list of files and directories
+  alias lsn='eza ${icons_enabled} -1'       #A column contains name of files and directories
   # Detailed listings with icons and Git status
-  alias lsd='eza -l "${icons_enabled}" --git'
-  alias lsa='eza -la "${icons_enabled}" --git'
+  alias lsd='eza -l ${icons_enabled} --git'
+  alias lsa='eza -la ${icons_enabled} --git'
   # Tree view
   # alias tree='eza --tree --level=2' # Adjust --level for desired depth
   # Show hidden files and directories
-  alias lh='eza -la "${icons_enabled}" --header --icons --git'
+  alias lh='eza -la ${icons_enabled} --header --icons --git'
   # Sort by modification time, newest first
-  alias lsnew='eza "${icons_enabled}" -l --sort newest'
+  alias lsnew='eza ${icons_enabled} -l --sort newest'
   # Sort by size, largest first
-  alias lss='eza "${icons_enabled}" -l --sort size'
+  alias lss='eza ${icons_enabled} -l --sort size'
   # Show file permissions in octal
-  alias lso='eza "${icons_enabled}" -l --octal-permissions'
+  alias lso='eza ${icons_enabled} -l --octal-permissions'
   # List directories only
-  alias lsdir='eza -D "${icons_enabled}"'
+  alias lsdir='eza -D ${icons_enabled}'
   # List files only
-  alias lsfiles='eza -F "${icons_enabled}"'
+  alias lsfiles='eza -F ${icons_enabled}'
 else
   ## ls aliases
   ## Colorize the ls output ##
