@@ -144,9 +144,55 @@ config.keys = {
 
 -- plugins application to config
 bar.apply_to_config(config, {
+	--	padding = {
+	--	left = 1,
+	--	right = 1,
+	--	tabs = {
+	--		left = 0,
+	--		right = 2,
+	--	},
+	--},
 	modules = {
 		spotify = {
 			enabled = false,
+		},
+		tabs = {
+			active_tab_fg = 4,
+			inactive_tab_fg = 6,
+			new_tab_fg = 2,
+		},
+		workspace = {
+			enabled = false,
+			color = 8,
+		},
+		leader = {
+			enabled = true,
+			color = 2,
+		},
+		zoom = {
+			enabled = false,
+			color = 4,
+		},
+		pane = {
+			enabled = true,
+			color = 7,
+		},
+		username = {
+			enabled = true,
+			color = 6,
+		},
+		hostname = {
+			enabled = false,
+			color = 8,
+		},
+		clock = {
+			enabled = true,
+			format = "%H:%M",
+			color = 5,
+		},
+		cwd = {
+			enabled = false,
+			color = 7,
 		},
 	},
 })

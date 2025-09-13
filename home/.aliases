@@ -176,6 +176,8 @@ alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
 alias hgrep="fc -El 0 | grep"
 alias greph='history | grep'
 
+alias tmuxnew="tmux attach || tmux new"
+
 #directory related aliases
 alias mkdir='mkdir -pv'
 alias md='mkdir -pv'
@@ -330,12 +332,14 @@ fi
 # if bat utility (batcat on debian distros) is installed
 if command -v batcat >/dev/null 2>&1; then
   alias bat="batcat --color=always"
+  eval "$(batpipe)"
   alias cat="bat"
 # if bat utility (batcat on debian distros) is installed
 elif command -v bat >/dev/null 2>&1; then
   # alias cat to bat with syntax highlighting
   alias bat="bat --color=${lscolors}"
-  alias cat="bat"
+  eval "$(batpipe)
+  " alias cat="bat"
 fi
 
 ################################################################################################
