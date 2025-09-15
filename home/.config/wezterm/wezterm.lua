@@ -15,7 +15,7 @@ local appearance = require("appearance")
 -- Use it!
 if appearance.is_dark() then
 	config.color_scheme = "Catppuccin Mocha"
-	-- config.color_scheme = "Tokyo Night"
+	--config.color_scheme = "Tokyo Night"
 else
 	config.color_scheme = "Catppuccin Latte"
 end
