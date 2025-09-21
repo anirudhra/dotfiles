@@ -47,6 +47,7 @@ corepackages=(
   'gnu-sed'
   'p7zip'
   'bat'
+  'bat-extras'
   'zoxide'
   'eza'
   'pv'
