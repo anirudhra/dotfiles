@@ -14,7 +14,7 @@ export ROOT_HOME="/opt/root"      #this is persistent on USB
 export JFFS_HOME="/jffs"          #this is persistent on USB
 
 # if router startup script doesn't define DOTFILES_HOME (/jffs vs /opt/root), then choose current file's directory as home
-if [ -n "${DOTFILES_HOME}" ]; then
+if [[ -z "${DOTFILES_HOME}" ]]; then
   profileddwrt_path="$0"
   profileddwrt_dir=$(dirname "$profileddwrt_path")
   export DOTFILES_HOME="${profileddwrt_dir}"
