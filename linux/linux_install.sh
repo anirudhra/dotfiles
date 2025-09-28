@@ -234,7 +234,7 @@ CORE_PACKAGES=(
   'p7zip'
   'unzip'
   'unrar'
-  'microsoft-edge-stable'
+  #'microsoft-edge-stable'
   'nmap'
   'expect'
   'mencoder'
