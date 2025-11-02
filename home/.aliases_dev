@@ -67,6 +67,7 @@ alias sshubuntu='ssh "${SSHROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
 alias sshubuntuuser='ssh "${SSHNONROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
 alias sshkuma='ssh "${SSHROOT}@${PVEKUMA}" -t "${SSHTMUX}"'
 alias sshlms='ssh "${SSHROOT}@${PVELMS}" -t "${SSHTMUX}"'
+alias sshts='ssh "${SSHROOT}@${PVETS}" -t "${SSHTMUX}"'
 
 # generic tmux ssh aliases
 alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
