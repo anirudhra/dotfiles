@@ -34,10 +34,9 @@ if [[ "$1" == "gen" || "$1" == "--generate" ]]; then
   ssh-keygen -t rsa
 
   # copy over keys to servers: pve, lxc, vm
-  #ssh-copy-id -p "${ROUTERPORT}" -i "${SSHKEY_FILE}.pub" "${ROUTERUSER}@${ROUTER}"
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${DDWRTROUTER}"
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVESERVER}"
-  #ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEVENTOY}"
+  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEVENTOY}"
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVWG}"
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEVEGA}"
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEBLANKA}"
@@ -48,9 +47,11 @@ if [[ "$1" == "gen" || "$1" == "--generate" ]]; then
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVELMS}"
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEIMM}"
   ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHNONROOT}@${PVEUBUNTU}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBC}"
+  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVETS}"
+  #ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBC}"
   #ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBCWIFI}"
   #ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBCETH}"
+  #ssh-copy-id -p "${ROUTERPORT}" -i "${SSHKEY_FILE}.pub" "${ROUTERUSER}@${ROUTER}"
 fi
 
 # run ssh-agent and add keys
