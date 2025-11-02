@@ -74,6 +74,12 @@ alias sshrasus='ssh "${SSHROOT}@${R_ASUS_ROUTER}" -t "${SSHTMUX}"'
 alias sshrpve='ssh "${SSHROOT}@${R_PVE}" -t "${SSHTMUX}"'
 alias sshrdocker='ssh "${SSHROOT}@${R_PVEDOCKER}" -t "${SSHTMUX}"'
 alias sshrdockerlxc='ssh "${SSHROOT}@${R_PVEDOCKERLXC}" -t "${SSHTMUX}"'
+alias sshrnavi='ssh "${SSHROOT}@${R_PVENAVI}" -t "${SSHTMUX}"'
+alias sshrlms='ssh "${SSHROOT}@${R_PVELMS}" -t "${SSHTMUX}"'
+alias sshrjf='ssh "${SSHROOT}@${R_PVEJF}" -t "${SSHTMUX}"'
+alias sshrst='ssh "${SSHROOT}@${R_PVEST}" -t "${SSHTMUX}"'
+alias sshrmemos='ssh "${SSHROOT}@${R_PVEMEMOS}" -t "${SSHTMUX}"'
+alias sshrot='ssh "${SSHROOT}@${R_PVEOT}" -t "${SSHTMUX}"'
 
 # generic tmux ssh aliases
 alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'

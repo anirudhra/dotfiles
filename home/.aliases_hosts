@@ -44,7 +44,13 @@ export DDWRTROUTER="${NET1}.1"
 export R_ASUSROUTER="${NET3}.1"
 export R_PVE="${NET3}.10"
 export R_PVEDOCKER="${NET3}.20"
+export R_PVENAVI="${NET3}.21"
+export R_PVELMS="${NET3}.22"
+export R_PVEJF="${NET3}.23"
 export R_PVEDOCKERLXC="${NET3}.24"
+export R_PVEST="${NET3}.25"
+export R_PVEMEMOS="${NET3}.26"
+export R_PVEOT="${NET3}.27"
 
 # Clients
 export GUILE="${NET1}.20"
