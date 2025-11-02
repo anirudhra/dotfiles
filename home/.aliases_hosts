@@ -29,7 +29,7 @@ export NET1="10.100.10"
 # guest
 export NET2="192.168.123"
 # network#2
-#export NET3="10.100.100"
+export NET3="10.100.100"
 # network#2 guest
 #export NET4="192.168.4"
 # usg
@@ -39,6 +39,12 @@ export NET2="192.168.123"
 #export ROUTER="${NET3}.1"
 export DDWRTROUTER="${NET1}.1"
 #export USG="${NET5}.1"
+
+# Remote Machines
+export R_ASUSROUTER="${NET3}.1"
+export R_PVE="${NET3}.10"
+export R_PVEDOCKER="${NET3}.20"
+export R_PVEDOCKERLXC="${NET3}.24"
 
 # Clients
 export GUILE="${NET1}.20"
@@ -57,7 +63,7 @@ export CAM_BASE="${NET1}.40"
 export PVESERVER="${NET1}.50"
 export SBC="${NET1}.51"
 export SBCWIFI="${NET1}.52"
-#export SBC1="${NET3}.53"
+#export SBC1="${NET3}.53"
 #export SBCETH="${NET1}.54"
 
 # LXC/VMs
