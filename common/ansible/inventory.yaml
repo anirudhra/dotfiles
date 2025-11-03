@@ -56,6 +56,7 @@ router:
       ansible_host: 10.100.10.1
   vars:
     ansible_user: root
+    ansible_port: 6666
     ansible_python_interpreter: /opt/bin/python3
 
 sbc:
@@ -71,7 +72,7 @@ sbc:
 # Remote ASUS Router
 rrouter:
   hosts:
-    asus:
+    rasus:
       ansible_host: 10.100.100.1
   vars:
     ansible_user: admin
@@ -89,21 +90,21 @@ rserver:
 # Remote PVE LXC containers
 rlxc:
   hosts:
-    docker:
+    rdocker:
       ansible_host: 10.100.100.20
-    navidrome:
+    rnavidrome:
       ansible_host: 10.100.100.21
-    lms:
+    rlms:
       ansible_host: 10.100.100.22
-    jf:
+    rjf:
       ansible_host: 10.100.100.23
     rdockerlxc:
       ansible_host: 10.100.100.24
-    syncthing:
+    rsyncthing:
       ansible_host: 10.100.100.25
-    memos:
+    rmemos:
       ansible_host: 10.100.100.26
-    owntone:
+    rowntone:
       ansible_host: 10.100.100.27
   vars:
     ansible_user: root
@@ -129,12 +130,12 @@ activevm:
   children:
     servicevm:
 
-allservices:
+allpveguests:
   children:
     alllxc:
     allvm:
 
-activeservices:
+activepveguests:
   children:
     activelxc:
     activevm:
@@ -156,8 +157,14 @@ upgradepveall:
     alllxc:
     server:
 
+updatedfall:
+  children:
+    alllxc:
+    server:
+    router:
+
 # Remote Machines
-upgraderpveall:
+upgradepveall_r:
   children:
     rlxc:
     rserver:
