@@ -1,0 +1,9 @@
+- name: Update PVE Server at remote site
+  hosts: rpve
+  tasks:
+    - name: Run upgrade.sh script on PVE Server at remote site
+      #ansible.builtin.ping:
+      ansible.builtin.shell: cd "${HOME}/dotfiles/common/ansible/clientscripts" && ./upgrade.sh
+      register: out
+
+    - debug: var=out.stdout_lines
