@@ -2,7 +2,7 @@
 # Any customization should be done in ~/.gtkrc-2.0.mine instead.
 
 include "/home/anirudh/.gtkrc-2.0.mine"
-gtk-theme-name="adw-gtk3-dark"
+gtk-theme-name="Graphite-blue-Dark-nord"
 gtk-icon-theme-name="Tela-dark"
 gtk-font-name=""
 gtk-cursor-theme-name="elementary"

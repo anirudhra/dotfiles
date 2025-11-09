@@ -197,6 +197,7 @@ alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias reservice='sudo systemctl daemon-reload'
 alias serialnum='sudo dmidecode -t system'
 alias showlog='sudo tail -f /var/log/messages'
+alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
 
 #ssd/nvme/hdd benchmarking
 alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
@@ -209,7 +210,6 @@ if [[ "${desktopEnv}" == "GNOME" ]]; then
   alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
   alias dconf_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
   alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
-  alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
 fi
 
 #docker and other homelab specific aliases
