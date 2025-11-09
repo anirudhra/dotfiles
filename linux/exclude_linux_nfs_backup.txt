@@ -38,6 +38,11 @@
 *.log*
 *.swp*
 *.tmp*
+*BraveSoftware*
+*GIMP*
+*gimp*
+*firefox*
+*chrome*
 *backup*
 *git*
 *application_state*

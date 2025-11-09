@@ -40,7 +40,7 @@ if target_triple == "aarch64-apple-darwin" or target_triple == "x86_64-apple-dar
 elseif target_triple == "x86_64-unknown-linux-gnu" then
 	-- Linux specific configurations
 	config.font = wezterm.font("JetBrains Mono Nerd Font")
-	config.font_size = 13
+	config.font_size = 11
 
 	-- config.window_background_opacity = 0.95
 	-- config.text_min_contrast_ratio = 4.5
@@ -52,7 +52,7 @@ elseif target_triple == "x86_64-unknown-linux-gnu" then
 	-- config.initial_cols = 100
 else
 	-- Default configurations for other platforms
-	config.font_size = 12
+	config.font_size = 11
 end
 
 -- Configura leader key to be CTRL+F

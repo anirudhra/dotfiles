@@ -75,13 +75,13 @@ ETC_FILES=(
 # backup /etc/ directories
 for i in "${ETC_DIRS[@]}"; do
   #don't forget trailing '/' for destination!
-  sudo rsync -avHPAX --delete /etc/"${i}" ${BACKUP_DST_ETC_DIR}/
+  sudo rsync -avHPA --delete /etc/"${i}" ${BACKUP_DST_ETC_DIR}/
 done
 
 # backup /etc/ files
 for j in "${ETC_FILES[@]}"; do
   #don't forget trailing '/' for destination!
-  sudo rsync -avHPAX --delete /etc/"${j}" ${BACKUP_DST_ETC_DIR}/
+  sudo rsync -avHPA --delete /etc/"${j}" ${BACKUP_DST_ETC_DIR}/
 done
 
 # run home backup commands
