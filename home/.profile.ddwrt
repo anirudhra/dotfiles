@@ -26,7 +26,9 @@ export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
 
 # create symlink on reboot for persistent link to home and dotfiles under temp root folder
 ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
+# use entware-specific ddwrt vimrc file instead of standard one as not all options are supported
+#ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vimrc.entware" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
 ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
 
