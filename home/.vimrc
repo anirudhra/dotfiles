@@ -31,7 +31,7 @@ set writebackup
 "set guifont=Menlo\ Regular:h15
 "set guifont=Monospace\ Regular:h12
 "colorscheme lucario
-"colorscheme catppuccin_macchiato
+colorscheme catppuccin_macchiato
 set guioptions-=T
 
 "set diffexpr=MyDiff()
