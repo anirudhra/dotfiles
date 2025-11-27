@@ -39,7 +39,12 @@ if target_triple == "aarch64-apple-darwin" or target_triple == "x86_64-apple-dar
 	config.initial_cols = 120
 elseif target_triple == "x86_64-unknown-linux-gnu" then
 	-- Linux specific configurations
-	config.font = wezterm.font("JetBrains Mono Nerd Font")
+	-- config.font = wezterm.font("JetBrains Mono Nerd Font")
+	config.font = wezterm.font("MesloLGS Nerd Font")
+	-- config.font = wezterm.font("FiraCode Nerd Font")
+	-- config.font = wezterm.font("FiraCode Nerd Font")
+	-- config.font = wezterm.font("FiraCode Nerd Font")
+	--config.font = wezterm.font("FiraMono Nerd Font")
 	config.font_size = 11
 
 	-- config.window_background_opacity = 0.95
