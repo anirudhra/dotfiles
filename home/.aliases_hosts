@@ -27,13 +27,17 @@ export PVEHOST="pve"
 #subnets
 export NET1="10.100.10"
 # guest
-export NET2="192.168.123"
+export NET2="192.168.130"
 # network#2
 export NET3="10.100.100"
 # network#2 guest
 #export NET4="192.168.4"
 # usg
 #export NET4="192.168.1"
+
+#router bridges
+export MAINBR="br0"
+export GUESTBR="br1"
 
 # Routers
 #export ROUTER="${NET3}.1"

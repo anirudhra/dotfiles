@@ -271,6 +271,9 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
 elif [[ "${MACHINE_TYPE}" == "router" ]]; then
   alias fullupdate="opkg update && opkg upgrade"
   alias fullclean="warn \"fullclean not supported on this platform\""
+
+  alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT &7 iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
+
 fi
 
 # each step below is expanded in it's own section based on OS and machine type
