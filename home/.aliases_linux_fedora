@@ -33,7 +33,7 @@ cleankernels() {
 # add condition for fedora specific commands here
 alias fullclean='sudo ${pkgmgr} clean all -y && sudo ${pkgmgr} autoremove -y && sudo flatpak uninstall --unused -y'
 #alias fullupgrade='sudo ${pkgmgr} update --refresh && sudo ${pkgmgr} upgrade -y'
-alias fullupdate='sudo ${pkgmgr} update --refresh && sudo flatpak upgrade -y && sudo ${pkgmgr} distro-sync'
+alias fullupdate='sudo ${pkgmgr} update --refresh -y && sudo flatpak upgrade -y && sudo ${pkgmgr} distro-sync -y'
 
 alias showkernel='echo Active Kernel && sudo uname -a && echo && echo Installed Kernels && sudo ${pkgmgrrpm} -q kernel-core'
 alias showinstalled="${pkgmgrrpm} --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less ${lesscolors}"
