@@ -96,6 +96,12 @@ systemctl restart $(basename $(dirname $GETTY_OVERRIDE) | sed 's/\.d//')
 ```
 <br><br>
 
+## Intel Gigabit Ethernet Hang Issue
+
+https://forum.proxmox.com/threads/e1000-driver-hang.58284/
+
+Fix script: https://gist.github.com/thebream/a9ae1e54f92db58cfafd3c0bfb83dc3f
+
 ## PCIe Power Management on PVE host: ASPM
 
 Check which devices support ASPM but not enabled
