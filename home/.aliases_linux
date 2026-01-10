@@ -241,6 +241,8 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
+    alias guestupgrade="update && upgrade"
+
     alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}_$(date -I).tar.gz ${DOCKERDIR}'
     # yocto kernel compile macros
     alias bbmenu="bitbake -c menuconfig virtual/kernel"
