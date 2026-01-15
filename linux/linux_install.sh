@@ -112,14 +112,14 @@ if [[ "${INSTALL_OS}" == "fedora" ]]; then
   #microsoft repos
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
   VSCODE_REPO_FILE="/etc/yum.repos.d/vscode.repo"
-  MSEDGE_REPO_FILE="/etc/yum.repos.d/microsoft-edge.repo"
+  #MSEDGE_REPO_FILE="/etc/yum.repos.d/microsoft-edge.repo"
 
   # Define repository contents
-  MSEDGE_REPO_CONTENT="[microsoft-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc"
+  #MSEDGE_REPO_CONTENT="[microsoft-edge]\nname=Microsoft Edge Browser\nbaseurl=https://packages.microsoft.com/yumrepos/edge\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc"
   VSCODE_REPO_CONTENT="[visualstudio-code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc"
 
   # Call the function for both repositories
-  create_linux_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT"
+  #create_linux_repo_file "$MSEDGE_REPO_FILE" "$MSEDGE_REPO_CONTENT"
   create_linux_repo_file "$VSCODE_REPO_FILE" "$VSCODE_REPO_CONTENT"
 
   sudo ${INSTALLER} group upgrade core -y
@@ -562,15 +562,15 @@ fc-cache -fv
 info "Installing GTK themes..."
 # change back to original installation directory
 cd "${INSTALL_DIR}" || exit 1
-/bin/bash ./linux/gtk/gtkthemes.sh
+/bin/bash ./gtk/gtkthemes.sh
 
 if [[ "${desktopEnv}" == "GNOME" ]]; then
   # set GTK and icon themes
   info "Setting GTK and Icon themes..."
-  gsettings set org.gnome.desktop.interface gtk-theme "'Orchis-Dark-Compact'"
+  #gsettings set org.gnome.desktop.interface gtk-theme "'Orchis-Dark-Compact'"
   # following fails and needs to be manually enabled in GNOME Tweaks
-  gsettings set org.gnome.shell.extensions user-theme "'Orchis-Dark-Compact'"
-  gsettings set org.gnome.desktop.interface icon-theme "'Tela-dark'"
+  #gsettings set org.gnome.shell.extensions user-theme "'Orchis-Dark-Compact'"
+  #gsettings set org.gnome.desktop.interface icon-theme "'Tela-dark'"
   gsettings set org.gnome.desktop.interface color-scheme "'prefer-dark'"
 
   # enable minimize and maximize buttons and center windows
@@ -584,10 +584,10 @@ if [[ "${desktopEnv}" == "GNOME" ]]; then
   gsettings set org.gnome.desktop.interface clock-show-weekday true
 
   #set fonts
-  gsettings set org.gnome.desktop.interface document-font-name 'Cantarell 11'
-  gsettings set org.gnome.desktop.interface font-name 'Cantarell 10'
-  gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 10'
-  gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Cantarell 10'
+  #gsettings set org.gnome.desktop.interface document-font-name 'Cantarell 11'
+  #gsettings set org.gnome.desktop.interface font-name 'Cantarell 10'
+  #gsettings set org.gnome.desktop.interface monospace-font-name 'FiraCode Nerd Font Mono 10'
+  #gsettings set org.gnome.desktop.wm.preferences titlebar-font 'Cantarell 10'
 fi
 
 # change back to original installation directory
