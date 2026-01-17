@@ -70,7 +70,7 @@ alias sshlms='ssh "${SSHROOT}@${PVELMS}" -t "${SSHTMUX}"'
 alias sshts='ssh "${SSHROOT}@${PVETS}" -t "${SSHTMUX}"'
 
 # remote machine aliases
-alias sshrasus='ssh "${SSHROOT}@${R_ASUS_ROUTER}" -t "${SSHTMUX}"'
+alias sshrasus='ssh "${SSHADMIN}@${R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
 alias sshrpve='ssh "${SSHROOT}@${R_PVE}" -t "${SSHTMUX}"'
 alias sshrdocker='ssh "${SSHROOT}@${R_PVEDOCKER}" -t "${SSHTMUX}"'
 alias sshrdockerlxc='ssh "${SSHROOT}@${R_PVEDOCKERLXC}" -t "${SSHTMUX}"'
@@ -80,6 +80,18 @@ alias sshrjf='ssh "${SSHROOT}@${R_PVEJF}" -t "${SSHTMUX}"'
 alias sshrst='ssh "${SSHROOT}@${R_PVEST}" -t "${SSHTMUX}"'
 alias sshrmemos='ssh "${SSHROOT}@${R_PVEMEMOS}" -t "${SSHTMUX}"'
 alias sshrot='ssh "${SSHROOT}@${R_PVEOT}" -t "${SSHTMUX}"'
+# easy way to remember above machines
+# remote machine aliases
+alias sshr1='sshrasus'
+alias sshr10='sshrpve'
+alias sshr20='sshrdocker'
+alias sshr24='sshrdockerlxc'
+alias sshr21='sshrnavi'
+alias sshr22='sshrlms'
+alias sshr23='sshrjf'
+alias sshr25='sshrst'
+alias sshr26='sshrmemos'
+alias sshr27='sshrot'
 
 # generic tmux ssh aliases
 alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'

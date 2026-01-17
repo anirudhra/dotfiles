@@ -13,9 +13,8 @@ SOURCED_ALIASES_HOSTS=1
 debuglog "Hosts aliases sourced"
 
 # constants
-export ROUTERPORT="6666"
-export ROUTERUSER="admin"
-
+export ROUTERSSHPORT="6666"
+export SSHADMIN="admin"
 export SSHROOT="root"
 export SSHNONROOT="nonroot"
 
