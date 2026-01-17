@@ -32,7 +32,7 @@ fi
 
 SSHKEY_FILE="${HOME}/.ssh/id_rsa"
 FORCE_FLAG=""
-LOCAL_FLAG=true
+LOCAL_FLAG=false
 REMOTE_FLAG=false
 
 # Parse arguments for force flag and server type flags
