@@ -164,7 +164,11 @@ updatedfall:
     router:
 
 # Remote Machines
-upgradepveall_r:
+upgradelxcall_r:
+  children:
+    rlxc:
+
+upgradepvelxcall_r:
   children:
     rlxc:
     rserver:
