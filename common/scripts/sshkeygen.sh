@@ -15,11 +15,14 @@ source "${ALIASES_HOME}/.helperfuncs"
 source "${HOME}/.aliases_hosts"
 
 show_help() {
-  echo "Usage: $0 [gen|--generate]"
-  echo "  gen, --generate   Generate new SSH key and copy to servers."
+  echo "Usage: $0 [gen|--generate] [-f|--force] [--local|--remote]"
+  echo "  -gen, --generate  Generate new SSH key and copy to servers."
+  echo "  -f, --force       Force overwrite keys on the server."
+  echo "  --local           Copy keys to local servers only."
+  echo "  --remote          Copy keys to remote servers only."
   echo "  -h, --help        Show this help message."
   echo
-  echo "By default, only the ssh-agent/ssh-add section runs."
+  echo "By default, keys are copied to local servers if key generation option is chosen."
 }
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then
@@ -28,30 +31,74 @@ if [[ "$1" == "-h" || "$1" == "--help" ]]; then
 fi
 
 SSHKEY_FILE="${HOME}/.ssh/id_rsa"
+FORCE_FLAG=""
+LOCAL_FLAG=true
+REMOTE_FLAG=false
 
-if [[ "$1" == "gen" || "$1" == "--generate" ]]; then
+# Parse arguments for force flag and server type flags
+for arg in "$@"; do
+  if [[ "$arg" == "-f" || "$arg" == "--force" ]]; then
+    FORCE_FLAG="-f"
+  elif [[ "$arg" == "--local" ]]; then
+    LOCAL_FLAG=true
+  elif [[ "$arg" == "--remote" ]]; then
+    REMOTE_FLAG=true
+  fi
+done
+
+if [[ "$1" == "-gen" || "$1" == "--generate" ]]; then
   # interactive, choose options within
   ssh-keygen -t rsa
 
-  # copy over keys to servers: pve, lxc, vm
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${DDWRTROUTER}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVESERVER}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEVENTOY}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVWG}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEVEGA}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEBLANKA}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEHA}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVESAGAT}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEJF}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEKUMA}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVELMS}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVEIMM}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHNONROOT}@${PVEUBUNTU}"
-  ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${PVETS}"
-  #ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBC}"
-  #ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBCWIFI}"
-  #ssh-copy-id -i "${SSHKEY_FILE}.pub" "${SSHROOT}@${SBCETH}"
-  #ssh-copy-id -p "${ROUTERPORT}" -i "${SSHKEY_FILE}.pub" "${ROUTERUSER}@${ROUTER}"
+  # Array of local servers to copy keys to
+  servers=(
+    "${SSHROOT}@${DDWRTROUTER}"
+    "${SSHROOT}@${PVESERVER}"
+    "${SSHROOT}@${PVEVENTOY}"
+    "${SSHROOT}@${PVWG}"
+    "${SSHROOT}@${PVEVEGA}"
+    "${SSHROOT}@${PVEBLANKA}"
+    "${SSHROOT}@${PVEHA}"
+    "${SSHROOT}@${PVESAGAT}"
+    "${SSHROOT}@${PVEJF}"
+    "${SSHROOT}@${PVEKUMA}"
+    "${SSHROOT}@${PVELMS}"
+    "${SSHROOT}@${PVEIMM}"
+    "${SSHNONROOT}@${PVEUBUNTU}"
+    "${SSHROOT}@${PVETS}"
+    # "${SSHROOT}@${SBC}"
+    # "${SSHROOT}@${SBCWIFI}"
+    # "${SSHROOT}@${SBCETH}"
+  )
+
+  # Array of remote servers to copy keys to
+    remote_servers=(
+    "${SSHROOT}@${R_ASUSROUTER}"
+    "${SSHROOT}@${R_PVE}"
+    "${SSHROOT}@${R_PVEDOCKER}"
+    "${SSHROOT}@${R_PVEDOCKERLXC}"
+    "${SSHROOT}@${R_PVENAVI}"
+    "${SSHROOT}@${R_PVELMS}"
+    "${SSHROOT}@${R_PVEJF}"
+    "${SSHROOT}@${R_PVEST}"
+    "${SSHROOT}@${R_PVEMEMOS}"
+    "${SSHROOT}@${R_PVEOT}"
+  )
+
+  # copy over keys to local servers: pve, lxc, vm
+  if [[ "$LOCAL_FLAG" == true ]]; then
+    for server in "${servers[@]}"; do
+      ssh-copy-id $FORCE_FLAG -i "${SSHKEY_FILE}.pub" "$server"
+    done
+  fi
+
+  # copy over keys to remote servers
+  if [[ "$REMOTE_FLAG" == true ]]; then
+    for server in "${remote_servers[@]}"; do
+      ssh-copy-id $FORCE_FLAG -i "${SSHKEY_FILE}.pub" "$server"
+    done
+  fi
+  # ssh-copy-id -p "${ROUTERPORT}" -i "${SSHKEY_FILE}.pub" "${ROUTERUSER}@${ROUTER}"
 fi
 
 # run ssh-agent and add keys
