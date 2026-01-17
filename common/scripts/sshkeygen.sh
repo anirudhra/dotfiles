@@ -52,7 +52,7 @@ if [[ "$1" == "-gen" || "$1" == "--generate" ]]; then
 
   # Array of local servers to copy keys to
   servers=(
-    "${SSHROOT}@${DDWRTROUTER}"
+    "-p ${ROUTERSSHPORT} ${SSHROOT}@${DDWRTROUTER}"
     "${SSHROOT}@${PVESERVER}"
     "${SSHROOT}@${PVEVENTOY}"
     "${SSHROOT}@${PVWG}"
@@ -65,6 +65,7 @@ if [[ "$1" == "-gen" || "$1" == "--generate" ]]; then
     "${SSHROOT}@${PVELMS}"
     "${SSHROOT}@${PVEIMM}"
     "${SSHNONROOT}@${PVEUBUNTU}"
+    "${SSHROOT}@${PVEUBUNTU}"
     "${SSHROOT}@${PVETS}"
     # "${SSHROOT}@${SBC}"
     # "${SSHROOT}@${SBCWIFI}"
@@ -72,8 +73,8 @@ if [[ "$1" == "-gen" || "$1" == "--generate" ]]; then
   )
 
   # Array of remote servers to copy keys to
-    remote_servers=(
-    "${SSHROOT}@${R_ASUSROUTER}"
+  remote_servers=(
+    "-p ${ROUTERSSHPORT} ${SSHADMIN}@${R_ASUSROUTER}"
     "${SSHROOT}@${R_PVE}"
     "${SSHROOT}@${R_PVEDOCKER}"
     "${SSHROOT}@${R_PVEDOCKERLXC}"

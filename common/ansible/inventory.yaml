@@ -20,8 +20,8 @@ nondockerlxc:
       ansible_host: 10.100.10.67
     lms:
       ansible_host: 10.100.10.68
-    ts:
-      ansible_host: 10.100.10.70
+#    ts:
+#      ansible_host: 10.100.10.70
     jf:
       ansible_host: 10.100.10.60
   vars:
