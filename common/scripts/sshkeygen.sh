@@ -49,58 +49,58 @@ done
 if [[ "$1" == "-gen" || "$1" == "--generate" ]]; then
   # interactive, choose options within
   ssh-keygen -t rsa
-
-  # Array of local servers to copy keys to
-  servers=(
-    "-p ${ROUTERSSHPORT} ${SSHROOT}@${DDWRTROUTER}"
-    "${SSHROOT}@${PVESERVER}"
-    "${SSHROOT}@${PVEVENTOY}"
-    "${SSHROOT}@${PVWG}"
-    "${SSHROOT}@${PVEVEGA}"
-    "${SSHROOT}@${PVEBLANKA}"
-    "${SSHROOT}@${PVEHA}"
-    "${SSHROOT}@${PVESAGAT}"
-    "${SSHROOT}@${PVEJF}"
-    "${SSHROOT}@${PVEKUMA}"
-    "${SSHROOT}@${PVELMS}"
-    "${SSHROOT}@${PVEIMM}"
-    "${SSHNONROOT}@${PVEUBUNTU}"
-    "${SSHROOT}@${PVEUBUNTU}"
-    "${SSHROOT}@${PVETS}"
-    # "${SSHROOT}@${SBC}"
-    # "${SSHROOT}@${SBCWIFI}"
-    # "${SSHROOT}@${SBCETH}"
-  )
-
-  # Array of remote servers to copy keys to
-  remote_servers=(
-    "-p ${ROUTERSSHPORT} ${SSHADMIN}@${R_ASUSROUTER}"
-    "${SSHROOT}@${R_PVE}"
-    "${SSHROOT}@${R_PVEDOCKER}"
-    "${SSHROOT}@${R_PVEDOCKERLXC}"
-    "${SSHROOT}@${R_PVENAVI}"
-    "${SSHROOT}@${R_PVELMS}"
-    "${SSHROOT}@${R_PVEJF}"
-    "${SSHROOT}@${R_PVEST}"
-    "${SSHROOT}@${R_PVEMEMOS}"
-    "${SSHROOT}@${R_PVEOT}"
-  )
-
-  # copy over keys to local servers: pve, lxc, vm
-  if [[ "$LOCAL_FLAG" == true ]]; then
-    for server in "${servers[@]}"; do
-      ssh-copy-id $FORCE_FLAG -i "${SSHKEY_FILE}.pub" "$server"
-    done
-  fi
-
-  # copy over keys to remote servers
-  if [[ "$REMOTE_FLAG" == true ]]; then
-    for server in "${remote_servers[@]}"; do
-      ssh-copy-id $FORCE_FLAG -i "${SSHKEY_FILE}.pub" "$server"
-    done
-  fi
-  # ssh-copy-id -p "${ROUTERPORT}" -i "${SSHKEY_FILE}.pub" "${ROUTERUSER}@${ROUTER}"
 fi
+
+# Array of local servers to copy keys to
+servers=(
+  "-p ${ROUTERSSHPORT} ${SSHROOT}@${DDWRTROUTER}"
+  "${SSHROOT}@${PVESERVER}"
+  "${SSHROOT}@${PVEVENTOY}"
+  "${SSHROOT}@${PVWG}"
+  "${SSHROOT}@${PVEVEGA}"
+  "${SSHROOT}@${PVEBLANKA}"
+  "${SSHROOT}@${PVEHA}"
+  "${SSHROOT}@${PVESAGAT}"
+  "${SSHROOT}@${PVEJF}"
+  "${SSHROOT}@${PVEKUMA}"
+  "${SSHROOT}@${PVELMS}"
+  "${SSHROOT}@${PVEIMM}"
+  "${SSHNONROOT}@${PVEUBUNTU}"
+  "${SSHROOT}@${PVEUBUNTU}"
+  "${SSHROOT}@${PVETS}"
+  # "${SSHROOT}@${SBC}"
+  # "${SSHROOT}@${SBCWIFI}"
+  # "${SSHROOT}@${SBCETH}"
+)
+
+# Array of remote servers to copy keys to
+remote_servers=(
+  "-p ${ROUTERSSHPORT} ${SSHADMIN}@${R_ASUSROUTER}"
+  "${SSHROOT}@${R_PVE}"
+  "${SSHROOT}@${R_PVEDOCKER}"
+  "${SSHROOT}@${R_PVEDOCKERLXC}"
+  "${SSHROOT}@${R_PVENAVI}"
+  "${SSHROOT}@${R_PVELMS}"
+  "${SSHROOT}@${R_PVEJF}"
+  "${SSHROOT}@${R_PVEST}"
+  "${SSHROOT}@${R_PVEMEMOS}"
+  "${SSHROOT}@${R_PVEOT}"
+)
+
+# copy over keys to local servers: pve, lxc, vm
+if [[ "$LOCAL_FLAG" == true ]]; then
+  for server in "${servers[@]}"; do
+    ssh-copy-id $FORCE_FLAG -i "${SSHKEY_FILE}.pub" "$server"
+  done
+fi
+
+# copy over keys to remote servers
+if [[ "$REMOTE_FLAG" == true ]]; then
+  for server in "${remote_servers[@]}"; do
+    ssh-copy-id $FORCE_FLAG -i "${SSHKEY_FILE}.pub" "$server"
+  done
+fi
+# ssh-copy-id -p "${ROUTERPORT}" -i "${SSHKEY_FILE}.pub" "${ROUTERUSER}@${ROUTER}"
 
 # run ssh-agent and add keys
 if [[ "$(uname)" == "Darwin" ]]; then
