@@ -1,7 +1,7 @@
-- name: Update all active pve services
-  hosts: upgradepveactive
+- name: Update all remote site PVE server and LXCs
+  hosts: remotepvelxc
   tasks:
-    - name: Run upgrade.sh script on remote services hosts
+    - name: Run upgrade.sh script on services hosts at remote site
       #ansible.builtin.ping:
       ansible.builtin.shell: cd "${HOME}/dotfiles/common/ansible/clientscripts" && ./upgrade.sh
       register: out

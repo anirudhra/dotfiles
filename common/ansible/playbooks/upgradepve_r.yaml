@@ -1,5 +1,5 @@
 - name: Update PVE Server at remote site
-  hosts: rpve
+  hosts: remotepve
   tasks:
     - name: Run upgrade.sh script on PVE Server at remote site
       #ansible.builtin.ping:

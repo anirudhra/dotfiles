@@ -1,5 +1,5 @@
 - name: Update all remote site PVE server and LXCs
-  hosts: upgraderpveall
+  hosts: remotelxc
   tasks:
     - name: Run upgrade.sh script on services hosts at remote site
       #ansible.builtin.ping:
