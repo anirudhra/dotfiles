@@ -199,6 +199,10 @@ alias serialnum='sudo dmidecode -t system'
 alias showlog='sudo tail -f /var/log/messages'
 alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
 
+#tailscale
+alias tsup="sudo tailscale up --accept-routes && tailscale status"
+alias tsdown="sudo tailscale down && tailscale status"
+
 #ssd/nvme/hdd benchmarking
 alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
 alias sdaperf='sudo hdparm -Tt /dev/sda'
