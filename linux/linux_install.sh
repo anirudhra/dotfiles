@@ -414,6 +414,10 @@ if [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "debian" ]]; then
   sudo ${INSTALLER} install "${CORE_PACKAGES[@]}" "${INSTALL_OPTIONS}"
   sudo ${INSTALLER} install "${OS_PACKAGES[@]}" "${INSTALL_OPTIONS}"
 
+  # switch to full versions of ffmpeg and vulkan
+  sudo ${INSTALLER} install mesa-vulkan-drivers-freeworld.x86_64 --allowerasing -y
+  sudo ${INSTALLER} swap 'ffmpeg-free' 'ffmpeg' --allowerasing -y
+
   # on gnome, install gnome-only packages
   if [ "${desktopEnv}" == "GNOME" ]; then
     sudo ${INSTALLER} install "${CORE_GNOME_PKGS[@]}" "${INSTALL_OPTIONS}"
