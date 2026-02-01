@@ -91,8 +91,10 @@ alias sshr25='sshrst'
 alias sshr26='sshrmemos'
 alias sshr27='sshrot'
 # tailscale dynamic IPs
-alias sshtsasus='tailscale ssh "${SSHADMIN}@${TS_R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
-alias sshtspve='tailscale ssh "${SSHROOT}@${TS_R_PVE}" -t "${SSHTMUX}"'
+if command -v tailscale >/dev/null 2>&1; then
+  alias sshtsasus='tailscale ssh "${SSHADMIN}@${TS_R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
+  alias sshtspve='tailscale ssh "${SSHROOT}@${TS_R_PVE}" -t "${SSHTMUX}"'
+fi
 
 # generic tmux ssh aliases
 alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
