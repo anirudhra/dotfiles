@@ -55,6 +55,10 @@ export R_PVEST="${NET3}.25"
 export R_PVEMEMOS="${NET3}.26"
 export R_PVEOT="${NET3}.27"
 
+# Remote Machines via tailscale
+export TS_R_PVE="$(tailscale status | awk '$2 == "acharya-pve-server" {print $1}')"
+export TS_R_ASUSROUTER="$(tailscale status | awk '$2 == "router-rt-ax82u" {print $1}')"
+
 # Clients
 export GUILE="${NET1}.20"
 export GUILELAN="${NET1}.21"

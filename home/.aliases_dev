@@ -68,7 +68,7 @@ alias sshkuma='ssh "${SSHROOT}@${PVEKUMA}" -t "${SSHTMUX}"'
 alias sshlms='ssh "${SSHROOT}@${PVELMS}" -t "${SSHTMUX}"'
 alias sshts='ssh "${SSHROOT}@${PVETS}" -t "${SSHTMUX}"'
 
-# remote machine aliases
+# Remote machine aliases
 alias sshrasus='ssh "${SSHADMIN}@${R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
 alias sshrpve='ssh "${SSHROOT}@${R_PVE}" -t "${SSHTMUX}"'
 alias sshrdocker='ssh "${SSHROOT}@${R_PVEDOCKER}" -t "${SSHTMUX}"'
@@ -80,7 +80,6 @@ alias sshrst='ssh "${SSHROOT}@${R_PVEST}" -t "${SSHTMUX}"'
 alias sshrmemos='ssh "${SSHROOT}@${R_PVEMEMOS}" -t "${SSHTMUX}"'
 alias sshrot='ssh "${SSHROOT}@${R_PVEOT}" -t "${SSHTMUX}"'
 # easy way to remember above machines
-# remote machine aliases
 alias sshr1='sshrasus'
 alias sshr10='sshrpve'
 alias sshr20='sshrdocker'
@@ -91,6 +90,9 @@ alias sshr23='sshrjf'
 alias sshr25='sshrst'
 alias sshr26='sshrmemos'
 alias sshr27='sshrot'
+# tailscale dynamic IPs
+alias sshtsasus='tailscale ssh "${SSHADMIN}@${TS_R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
+alias sshtspve='tailscale ssh "${SSHROOT}@${TS_R_PVE}" -t "${SSHTMUX}"'
 
 # generic tmux ssh aliases
 alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
