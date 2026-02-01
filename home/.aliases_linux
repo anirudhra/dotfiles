@@ -61,35 +61,51 @@ cleanlocales() {
   sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
 }
 
-copyrockboxtheme() {
+copyrockboxthemes() {
+  # Usage:
+  #   copyrockboxthemes            # copy from current dir's backdrops/fonts/icons/themes/wps
+  #   copyrockboxthemes <srcdir>   # for each subdir of <srcdir>, cd into .rockbox and copy contents
   if [[ "${MACHINE_TYPE}" == "client" ]]; then
     local mountbasedir="/run/media/anirudh"
-    local ipoddir="${mountbasedir}/IPOD7G/.rockbox"
-    #ipoddir="${mountbasedir}/IPOD5G/.rockbox"
-    # change to locally extracted .rockbox directory
-    cp -r backdrops/* ${ipoddir}/backdrops/
-    cp -r fonts/* ${ipoddir}/fonts/
-    cp -r icons/* ${ipoddir}/icons/
-    cp -r themes/* ${ipoddir}/themes/
-    cp -r wps/* ${ipoddir}/wps/
-  fi
-}
+    local ipod_base=""
 
-# use this when you have multiple themes extracted to a root folder with the dir structure
-# ./theme1/.rockbox, ./theme2/.rockbox etc.
-copyallrockboxthemes() {
-  if [[ "${MACHINE_TYPE}" == "client" ]]; then
-    local mountbasedir="/run/media/anirudh"
-    local ipoddir="${mountbasedir}/IPOD7G/.rockbox"
-    #ipoddir="${mountbasedir}/IPOD5G/.rockbox"
-    # change to locally extracted .rockbox directory
-    find . -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && cd .rockbox && pwd ; \
-        cp -r backdrops/* ${ipoddir}/backdrops/ ; \
-        cp -r fonts/* ${ipoddir}/fonts/ ; \
-        cp -r icons/* ${ipoddir}/icons/ ; \
-        cp -r themes/* ${ipoddir}/themes/ ; \
-        cp -r wps/* ${ipoddir}/wps/ \
-        " \;
+    if [ -d "${mountbasedir}/IPOD7G" ]; then
+      ipod_base="${mountbasedir}/IPOD7G"
+    elif [ -d "${mountbasedir}/IPOD5G" ]; then
+      ipod_base="${mountbasedir}/IPOD5G"
+    else
+      warn "Neither ${mountbasedir}/IPOD7G nor ${mountbasedir}/IPOD5G found"
+      return 1
+    fi
+
+    local ipoddir="${ipod_base}/.rockbox"
+    if [ ! -d "${ipoddir}" ]; then
+      warn ".rockbox directory not found in ${ipod_base}"
+      return 1
+    fi
+
+    mkdir -p "${ipoddir}/backdrops" "${ipoddir}/fonts" "${ipoddir}/icons" "${ipoddir}/themes" "${ipoddir}/wps"
+
+    if [ -n "$1" ]; then
+      local srcdir="$1"
+      if [ ! -d "${srcdir}" ]; then
+        warn "Source directory ${srcdir} not found"
+        return 1
+      fi
+
+      find "${srcdir}" -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && if [ -d .rockbox ]; then cd .rockbox && pwd ; \
+        cp -r backdrops/* \"${ipoddir}/backdrops/\" 2>/dev/null || true ; \
+        cp -r fonts/* \"${ipoddir}/fonts/\" 2>/dev/null || true ; \
+        cp -r icons/* \"${ipoddir}/icons/\" 2>/dev/null || true ; \
+        cp -r themes/* \"${ipoddir}/themes/\" 2>/dev/null || true ; \
+        cp -r wps/* \"${ipoddir}/wps/\" 2>/dev/null || true ; fi" \;
+    else
+      cp -r backdrops/* "${ipoddir}/backdrops/" 2>/dev/null || true
+      cp -r fonts/* "${ipoddir}/fonts/" 2>/dev/null || true
+      cp -r icons/* "${ipoddir}/icons/" 2>/dev/null || true
+      cp -r themes/* "${ipoddir}/themes/" 2>/dev/null || true
+      cp -r wps/* "${ipoddir}/wps/" 2>/dev/null || true
+    fi
   fi
 }
 
