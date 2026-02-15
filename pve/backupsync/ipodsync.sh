@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 # (c) Anirudh Acharya 2024
 # iPod Music and Playlists Sync script
 # Run this script from PVE Server (not one of the LXCs or VMs)
@@ -24,74 +24,74 @@ IPOD_PLAYLISTS_DIR="${IPOD_MOUNT_DIR}/playlists"
 # Check if iPod is attached
 # iPod device IDs for detection
 IPOD7G_DEVID="05ac:1261"
-IPOD5G_DEVID="05ac:1209"  # "05ac:1262"?
+IPOD5G_DEVID="05ac:1209" # "05ac:1262"?
 
 # Function to detect iPod type
 detect_ipod() {
-    local ipod7g_found=false
-    local ipod5g_found=false
-    local ipod_count=0
-    
-    # Check for iPod 7G
-    if lsusb | grep -q "$IPOD7G_DEVID"; then
-        ipod7g_found=true
-        ipod_count=$((ipod_count + 1))
-        echo "Found iPod 7G (Device ID: $IPOD7G_DEVID)"
-    fi
-    
-    # Check for iPod 5G
-    if lsusb | grep -q "$IPOD5G_DEVID"; then
-        ipod5g_found=true
-        ipod_count=$((ipod_count + 1))
-        echo "Found iPod 5G (Device ID: $IPOD5G_DEVID)"
-    fi
-    
-    # Validate detection results
-    if [ $ipod_count -eq 0 ]; then
-        echo "No iPod found! Please connect an iPod and try again."
-        echo "Supported devices:"
-        echo "  - iPod 5G (Device ID: $IPOD5G_DEVID)"
-        echo "  - iPod 7G (Device ID: $IPOD7G_DEVID)"
-        exit 1
-    elif [ $ipod_count -gt 1 ]; then
-        echo "Multiple iPods detected! Only one iPod can be connected when this script is invoked."
-        echo "Please disconnect one iPod and re-run the script."
-        exit 1
-    fi
-    
-    # Return detected type
-    if [ "$ipod7g_found" = true ]; then
-        echo "IPOD_TYPE=7G"
-    elif [ "$ipod5g_found" = true ]; then
-        echo "IPOD_TYPE=5G"
-    fi
+  local ipod7g_found=false
+  local ipod5g_found=false
+  local ipod_count=0
+
+  # Check for iPod 7G
+  if lsusb | grep -q "$IPOD7G_DEVID"; then
+    ipod7g_found=true
+    ipod_count=$((ipod_count + 1))
+    echo "Found iPod 7G (Device ID: $IPOD7G_DEVID)"
+  fi
+
+  # Check for iPod 5G
+  if lsusb | grep -q "$IPOD5G_DEVID"; then
+    ipod5g_found=true
+    ipod_count=$((ipod_count + 1))
+    echo "Found iPod 5G (Device ID: $IPOD5G_DEVID)"
+  fi
+
+  # Validate detection results
+  if [ $ipod_count -eq 0 ]; then
+    echo "No iPod found! Please connect an iPod and try again."
+    echo "Supported devices:"
+    echo "  - iPod 5G (Device ID: $IPOD5G_DEVID)"
+    echo "  - iPod 7G (Device ID: $IPOD7G_DEVID)"
+    exit 1
+  elif [ $ipod_count -gt 1 ]; then
+    echo "Multiple iPods detected! Only one iPod can be connected when this script is invoked."
+    echo "Please disconnect one iPod and re-run the script."
+    exit 1
+  fi
+
+  # Return detected type
+  if [ "$ipod7g_found" = true ]; then
+    echo "IPOD_TYPE=7G"
+  elif [ "$ipod5g_found" = true ]; then
+    echo "IPOD_TYPE=5G"
+  fi
 }
 
 # Function to suggest mount command based on iPod type
 suggest_mount_command() {
-    local ipod_type="$1"
-    
-    echo "Suggested mount commands for iPod $ipod_type:"
-    echo
-    
-    # Find USB storage devices
-    echo "Available USB storage devices:"
-    lsblk -o NAME,SIZE,TYPE,MOUNTPOINT | grep -E "(sd[a-z]|usb)" || echo "No USB storage devices found"
-    echo
-    
-    if [ "$ipod_type" = "7G" ]; then
-        echo "For iPod 7G, typically use: mount /dev/sdX1 ${IPOD_MOUNT_DIR}"
-        echo "  (where sdX is your iPod device, partition 1)"
-    elif [ "$ipod_type" = "5G" ]; then
-        echo "For iPod 5G, typically use: mount /dev/sdX2 ${IPOD_MOUNT_DIR}"
-        echo "  (where sdX is your iPod device, partition 2)"
-    fi
-    
-    echo
-    echo "To find the correct device, you can use:"
-    echo "  dmesg | tail -20  # Shows recent USB device connections"
-    echo "  lsblk             # Shows all block devices"
-    echo "  fdisk -l          # Shows detailed partition information"
+  local ipod_type="$1"
+
+  echo "Suggested mount commands for iPod $ipod_type:"
+  echo
+
+  # Find USB storage devices
+  echo "Available USB storage devices:"
+  lsblk -o NAME,SIZE,TYPE,MOUNTPOINT | grep -E "(sd[a-z]|usb)" || echo "No USB storage devices found"
+  echo
+
+  if [ "$ipod_type" = "7G" ]; then
+    echo "For iPod 7G, typically use: mount /dev/sdX1 ${IPOD_MOUNT_DIR}"
+    echo "  (where sdX is your iPod device, partition 1)"
+  elif [ "$ipod_type" = "5G" ]; then
+    echo "For iPod 5G, typically use: mount /dev/sdX2 ${IPOD_MOUNT_DIR}"
+    echo "  (where sdX is your iPod device, partition 2)"
+  fi
+
+  echo
+  echo "To find the correct device, you can use:"
+  echo "  dmesg | tail -20  # Shows recent USB device connections"
+  echo "  lsblk             # Shows all block devices"
+  echo "  fdisk -l          # Shows detailed partition information"
 }
 
 # Detect iPod and set type
@@ -100,8 +100,8 @@ IPOD_INFO=$(detect_ipod)
 IPOD_TYPE=$(echo "$IPOD_INFO" | grep "IPOD_TYPE=" | cut -d'=' -f2)
 
 if [ -z "$IPOD_TYPE" ]; then
-    echo "Failed to determine iPod type. Exiting."
-    exit 1
+  echo "Failed to determine iPod type. Exiting."
+  exit 1
 fi
 
 ######################################################################3
@@ -153,16 +153,36 @@ mkdir -p "${IPOD_MUSIC_DIR}"
 # sync playlists and music with progress shown
 echo "Syncing playlists..."
 echo
+
 # --size-only is for quick check, -c can be added for complete checksum instead (slower)
-# Don't forget the leading "/" in front of source directories to specify copying the 
+RSYNC_OPTS=(
+  -rltv
+  #  --hvr
+  #  --size-only
+  --info=progress2
+  --delete
+  --inplace
+  --no-owner
+  --no-group
+  --no-perms
+  --no-acls
+  --no-xattrs
+  --chmod=ugo=rwX
+  #  --modify-window=1
+  --modify-window=2
+)
+
+# Don't forget the leading "/" in front of source directories to specify copying the
 # contents of that dir and not the dir itself!
-rsync -hvr --size-only --modify-window=2 --delete "${SOURCE_PLAYLISTS_DIR}/" "${IPOD_PLAYLISTS_DIR}"
+#rsync -hvr --size-only --modify-window=2 --delete "${SOURCE_PLAYLISTS_DIR}/" "${IPOD_PLAYLISTS_DIR}"
+rsync -"${RSYNC_OPTS[@]}" "${SOURCE_PLAYLISTS_DIR}/" "${IPOD_PLAYLISTS_DIR}"
 
 echo
 echo "Syncing music..."
 echo
 # sync music files
-rsync -hvr --size-only --modify-window=2 --delete "${SOURCE_MUSIC_DIR}/" "${IPOD_MUSIC_DIR}"
+#rsync -hvr --size-only --modify-window=2 --delete "${SOURCE_MUSIC_DIR}/" "${IPOD_MUSIC_DIR}"
+rsync "${RSYNC_OPTS[@]}" "${SOURCE_MUSIC_DIR}/" "${IPOD_MUSIC_DIR}"
 
 ######################################################################3
 # done
