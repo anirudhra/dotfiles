@@ -37,6 +37,27 @@ source "${ALIASES_HOME}/.aliases_dev"
 
 ######## functions ######################
 
+flac2alac() {
+  # 1. Check if ffmpeg is installed
+  if ! command -v ffmpeg &>/dev/null; then
+    echo "Error: 'ffmpeg' is not installed. Please install it and try again."
+    return 1
+  fi
+
+  # 2. Check if an input file was provided
+  if [ -z "$1" ]; then
+    echo "Usage: flac2alac input.flac"
+    return 1
+  fi
+
+  # 3. Define the output filename by swapping extension
+  local input_file="$1"
+  local output_file="${input_file%.flac}.m4a"
+
+  # 4. Run the conversion
+  ffmpeg -i "$input_file" -c:a alac -c:v copy "$output_file"
+}
+
 mkcd() {
   case $# in
   1)
