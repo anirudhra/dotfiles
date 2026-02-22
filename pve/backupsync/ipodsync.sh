@@ -156,6 +156,14 @@ echo
 
 # --size-only is for quick check, -c can be added for complete checksum instead (slower)
 RSYNC_OPTS=(
+  -hvr
+  --size-only
+  --modify-window=2
+  --delete
+)
+
+# enhanced list of options, should work for fat32 systems, but untested at this time
+RSYNC_OPTS_EXTRA=(
   -rltv
   #  --hvr
   #  --size-only
