@@ -165,7 +165,7 @@ RSYNC_OPTS=(
 # enhanced list of options, should work for fat32 systems, but untested at this time
 RSYNC_OPTS_EXTRA=(
   -rltv
-  #  --hvr
+  #  -hvr
   #  --size-only
   --info=progress2
   --delete
@@ -183,7 +183,7 @@ RSYNC_OPTS_EXTRA=(
 # Don't forget the leading "/" in front of source directories to specify copying the
 # contents of that dir and not the dir itself!
 #rsync -hvr --size-only --modify-window=2 --delete "${SOURCE_PLAYLISTS_DIR}/" "${IPOD_PLAYLISTS_DIR}"
-rsync -"${RSYNC_OPTS[@]}" "${SOURCE_PLAYLISTS_DIR}/" "${IPOD_PLAYLISTS_DIR}"
+rsync "${RSYNC_OPTS[@]}" "${SOURCE_PLAYLISTS_DIR}/" "${IPOD_PLAYLISTS_DIR}"
 
 echo
 echo "Syncing music..."
