@@ -215,6 +215,10 @@ alias serialnum='sudo dmidecode -t system'
 alias showlog='sudo tail -f /var/log/messages'
 alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
 
+# pkgmgr is defined in aliases_linux_<distro>
+alias pkgadd="sudo ${pkgmgr} install -y"
+alias pkgrm="sudo ${pkgmgr} remove -y"
+
 #tailscale
 alias tsup="sudo tailscale up --accept-routes && tailscale status"
 alias tsdown="sudo tailscale down && tailscale status"
