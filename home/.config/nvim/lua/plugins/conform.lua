@@ -6,9 +6,14 @@ return {
       formatters_by_ft = {
         python = { "isort", "black" },
         quarto = { "injected" },
-        markdown = { "markdownlint-cli2", "injected" },
+        markdown = { "markdownlint-cli2", "injected", "prettier" },
+        lua = { "stylua" },
         r = { "air" },
         ["*"] = { "injected" },
+      },
+      format_on_save = {
+        timeout_ms = 500,
+        lsp_format = "fallback",
       },
       formatters = {
         ["markdownlint-cli2"] = {
