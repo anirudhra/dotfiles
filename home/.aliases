@@ -358,7 +358,9 @@ fi
 
 # other bat aliases
 if [[ "${BAT_UTIL}" == "true" ]]; then
-  eval "$(batpipe)"
+  if command -v batpipe >/dev/null 2>&1; then
+    eval "$(batpipe)"
+  fi
   alias cat="bat"
 fi
 
