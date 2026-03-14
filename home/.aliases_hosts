@@ -41,6 +41,7 @@ export GUESTBR="br1"
 # Routers
 #export ROUTER="${NET3}.1"
 export DDWRTROUTER="${NET1}.1"
+export OPENWRTROUTER="${NET1}.5"
 #export USG="${NET5}.1"
 
 # Remote Machines
