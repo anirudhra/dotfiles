@@ -37,6 +37,35 @@ source "${ALIASES_HOME}/.aliases_dev"
 
 ######## functions ######################
 
+# sets up tmux plugins
+setuptmux() {
+  local tpm_path="${HOME}/.tmux/plugins/tpm"
+  local config_src="${DOTFILES_HOME}/dotfiles/home/.config/tmux/tmux.conf"
+  local config_dest="${HOME}/.tmux.conf"
+
+  # 1 & 2: Handle TPM directory and repo
+  if [ ! -d "$tpm_path/.git" ]; then
+    echo "Installing TPM..."
+    mkdir -p "$(dirname "$tpm_path")"
+    git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm_path"
+    echo "Done... now exit and re-run tmux and press <Prefix> + I (caps) to install plugins"
+  else
+    echo "TPM already installed."
+  fi
+
+  # 3: Handle tmux.conf symlink
+  if [ -f "$config_src" ]; then
+    if [ "$(readlink "$config_dest")" != "$config_src" ]; then
+      echo "Creating symlink for tmux.conf..."
+      ln -sf "$config_src" "$config_dest"
+    else
+      echo "Symlink already correct."
+    fi
+  else
+    echo "Warning: Source config $config_src not found."
+  fi
+}
+
 flac2alac() {
   # 1. Check if ffmpeg is installed
   if ! command -v ffmpeg &>/dev/null; then
