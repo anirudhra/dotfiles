@@ -17,9 +17,8 @@ sleep 10
 export ROOT_HOME="/opt/root"
 export JFFS_HOME="/jffs"
 ### smartdns adblock script https://github.com/egc112/ddwrt/tree/main/adblock/smartdns ###
-### comment if not using smartdns ###
-cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
-${JFFS_HOME}/ddwrt-adblock-s.sh &
+##cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
+##${JFFS_HOME}/ddwrt-adblock-s.sh &
 ### create login shell init script, sync dotfiles repo first ###
 cat <<'EOF' >"/tmp/root/.ashrc"
 export ROOT_HOME="/opt/root"
@@ -47,31 +46,38 @@ ln -sf /opt/logs/system /jffs/messages
 
 * Add commands under admin > commands > firewall
 * Enables only HomeAssistant/UptimeKuma hosts, on main network br0, one-way access to Guest network bridge br1
+* Disables router config access from guest network
+* Enables guest devices to access DNS on router
+* Replace <*_IP> with the correct host IPs
 
 ```
-# 1. Allow the specific HA/Kuma hosts (10.100.10.64/67) to initiate connections to the Guest Network
-iptables -I FORWARD -i br0 -s 10.100.10.64 -o br1 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
-iptables -I FORWARD -i br0 -s 10.100.10.67 -o br1 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+# 1. Allow the specific HA/Kuma hosts to initiate connections to the Guest Network (br0)
+iptables -I FORWARD -i br0 -s <HASS_IP> -o br1 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -I FORWARD -i br0 -s <KUMA_IP> -o br1 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
 
 # 2. Allow Guest devices (br1) to respond to established/related connections from HA/Kuma hosts
-iptables -I FORWARD -i br1 -o br0 -d 10.100.10.64 -m state --state ESTABLISHED,RELATED -j ACCEPT
-iptables -I FORWARD -i br1 -o br0 -d 10.100.10.67 -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -I FORWARD -i br1 -o br0 -d <HASS_IP> -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -I FORWARD -i br1 -o br0 -d <KUMA_IP> -m state --state ESTABLISHED,RELATED -j ACCEPT
 
 # 3. Drop all other traffic initiated by the Guest Network (br1) toward the Main Network (br0)
 iptables -I FORWARD -i br1 -o br0 -m state --state NEW -j DROP
 
-# 4. (Optional but recommended) Restrict Guests from accessing the Router's Web UI/SSH (port 6666) on br1
-iptables -I INPUT -i br1 -p tcp --dport 6666 -j REJECT
-iptables -I INPUT -i br1 -p tcp --dport 80 -j REJECT
-iptables -I INPUT -i br1 -p tcp --dport 443 -j REJECT
+# 3a. For Debugging, allow br0 and br1 to talk, disable after debug
+#iptables -I FORWARD -i br1 -o br0 -m state --state NEW -j ACCEPT
+#iptables -I FORWARD -i br0 -o br1 -m state --state NEW -j ACCEPT
 
-# Allow Guest Network (br1) to send DNS queries (UDP/TCP 53) to the router IP
-iptables -I INPUT -i br1 -p udp -d 10.100.10.1 --dport 53 -j ACCEPT
-iptables -I INPUT -i br1 -p tcp -d 10.100.10.1 --dport 53 -j ACCEPT
+# 4. Restrict Guests on br1 from accessing the Router's Web UI/SSH (10.100.10.1, port 6666)
+iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport 6666 -j REJECT
+iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport 80 -j REJECT
+iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport 443 -j REJECT
 
-# Ensure the router can respond to those DNS queries back to the Guest Network
-iptables -I OUTPUT -o br1 -p udp -s 10.100.10.1 --sport 53 -j ACCEPT
-iptables -I OUTPUT -o br1 -p tcp -s 10.100.10.1 --sport 53 -j ACCEPT
+# 5. Allow Guest Network (br1) to send DNS queries (UDP/TCP 53) to the router IP
+iptables -I INPUT -i br1 -d <DDWRT_IP> -p udp --dport 53 -j ACCEPT
+iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport 53 -j ACCEPT
+
+# 6. Ensure the router can respond to those DNS queries back to the Guest Network
+iptables -I OUTPUT -o br1 -p udp -s <DDWRT_IP> --sport 53 -j ACCEPT
+iptables -I OUTPUT -o br1 -p tcp -s <DDWRT_IP> --sport 53 -j ACCEPT
 ```
 
 ## Cron commands
@@ -83,6 +89,7 @@ iptables -I OUTPUT -o br1 -p tcp -s 10.100.10.1 --sport 53 -j ACCEPT
 
 ```
 0 0 * * 0 root rm /opt/logs/system
-0 4 * * * root /jffs/ddwrt-adblock-s.sh
+# enable below for smartDNS
+# 0 4 * * * root /jffs/ddwrt-adblock-s.sh
 0 3 1,16 * * root reboot
 ```
