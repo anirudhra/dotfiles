@@ -1,6 +1,7 @@
 -- Pull in the wezterm API
 local wezterm = require("wezterm")
 local target_triple = wezterm.target_triple
+local mux = wezterm.mux
 
 -- This will hold the configuration.
 local config = wezterm.config_builder()
@@ -55,12 +56,18 @@ elseif target_triple == "x86_64-unknown-linux-gnu" then
 
 	-- config.initial_rows = 28
 	-- config.initial_cols = 100
+
+	-- Maximize only on Linux
+	wezterm.on("gui-startup", function(cmd)
+		local tab, pane, window = mux.spawn_window(cmd or {})
+		window:gui_window():maximize()
+	end)
 else
 	-- Default configurations for other platforms
 	config.font_size = 11
 end
 
--- Configura leader key to be CTRL+F
+-- Configure leader key to be CTRL+F
 config.leader = { key = "f", mods = "CTRL", timeout_milliseconds = 1000 }
 
 -- shortcut function for pane movement in config.keys
