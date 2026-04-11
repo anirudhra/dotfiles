@@ -17,6 +17,7 @@ sleep 10
 export ROOT_HOME="/opt/root"
 export JFFS_HOME="/jffs"
 ### smartdns adblock script https://github.com/egc112/ddwrt/tree/main/adblock/smartdns ###
+### comment if not using smartdns ###
 cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
 ${JFFS_HOME}/ddwrt-adblock-s.sh &
 ### create login shell init script, sync dotfiles repo first ###
@@ -48,9 +49,29 @@ ln -sf /opt/logs/system /jffs/messages
 * Enables only HomeAssistant/UptimeKuma hosts, on main network br0, one-way access to Guest network bridge br1
 
 ```
-### allow HASS and Kuma one-way access to guest network ###
-iptables -I FORWARD -i br0 -s 10.100.10.64 -o br1 -m state --state NEW -j ACCEPT
-iptables -I FORWARD -i br0 -s 10.100.10.67 -o br1 -m state --state NEW -j ACCEPT
+# 1. Allow the specific HA/Kuma hosts (10.100.10.64/67) to initiate connections to the Guest Network
+iptables -I FORWARD -i br0 -s 10.100.10.64 -o br1 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+iptables -I FORWARD -i br0 -s 10.100.10.67 -o br1 -m state --state NEW,ESTABLISHED,RELATED -j ACCEPT
+
+# 2. Allow Guest devices (br1) to respond to established/related connections from HA/Kuma hosts
+iptables -I FORWARD -i br1 -o br0 -d 10.100.10.64 -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -I FORWARD -i br1 -o br0 -d 10.100.10.67 -m state --state ESTABLISHED,RELATED -j ACCEPT
+
+# 3. Drop all other traffic initiated by the Guest Network (br1) toward the Main Network (br0)
+iptables -I FORWARD -i br1 -o br0 -m state --state NEW -j DROP
+
+# 4. (Optional but recommended) Restrict Guests from accessing the Router's Web UI/SSH (port 6666) on br1
+iptables -I INPUT -i br1 -p tcp --dport 6666 -j REJECT
+iptables -I INPUT -i br1 -p tcp --dport 80 -j REJECT
+iptables -I INPUT -i br1 -p tcp --dport 443 -j REJECT
+
+# Allow Guest Network (br1) to send DNS queries (UDP/TCP 53) to the router IP
+iptables -I INPUT -i br1 -p udp -d 10.100.10.1 --dport 53 -j ACCEPT
+iptables -I INPUT -i br1 -p tcp -d 10.100.10.1 --dport 53 -j ACCEPT
+
+# Ensure the router can respond to those DNS queries back to the Guest Network
+iptables -I OUTPUT -o br1 -p udp -s 10.100.10.1 --sport 53 -j ACCEPT
+iptables -I OUTPUT -o br1 -p tcp -s 10.100.10.1 --sport 53 -j ACCEPT
 ```
 
 ## Cron commands
