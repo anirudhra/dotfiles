@@ -66,25 +66,37 @@ setuptmux() {
   fi
 }
 
+# more flexible flac2alac, can take a single file, wildcard or directory as input
 flac2alac() {
-  # 1. Check if ffmpeg is installed
+  # 1. Check for ffmpeg
   if ! command -v ffmpeg &>/dev/null; then
-    echo "Error: 'ffmpeg' is not installed. Please install it and try again."
+    echo "Error: 'ffmpeg' is not installed."
     return 1
   fi
 
-  # 2. Check if an input file was provided
-  if [ -z "$1" ]; then
-    echo "Usage: flac2alac input.flac"
+  # 2. Usage check
+  if [ "$#" -eq 0 ]; then
+    echo "Usage: flac2alac <file.flac | *.flac | directory>"
     return 1
   fi
 
-  # 3. Define the output filename by swapping extension
-  local input_file="$1"
-  local output_file="${input_file%.flac}.m4a"
+  # 3. Process each argument
+  for arg in "$@"; do
+    # -L follows symlinks; -type f finds files
+    # -maxdepth 1 keeps it in the specified dir
+    find "$arg" -maxdepth 1 -type f -name "*.flac" -print0 | while IFS= read -r -d '' input_file; do
 
-  # 4. Run the conversion
-  ffmpeg -i "$input_file" -c:a alac -c:v copy "$output_file"
+      # Correctly strip .flac and add .m4a
+      local output_file="${input_file%.flac}.m4a"
+
+      echo "Converting: $(basename "$input_file")"
+
+      # 4. The -nostdin fix
+      # This prevents ffmpeg from eating the next filename in your loop!
+      ffmpeg -hide_banner -loglevel error -stats -nostdin -n -i "$input_file" -c:a alac -c:v copy "$output_file"
+
+    done
+  done
 }
 
 mkcd() {
