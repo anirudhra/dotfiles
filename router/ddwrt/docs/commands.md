@@ -66,8 +66,8 @@ iptables -I FORWARD -i br1 -o br0 -m state --state NEW -j DROP
 #iptables -I FORWARD -i br1 -o br0 -m state --state NEW -j ACCEPT
 #iptables -I FORWARD -i br0 -o br1 -m state --state NEW -j ACCEPT
 
-# 4. Restrict Guests on br1 from accessing the Router's Web UI/SSH (10.100.10.1, port 6666)
-iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport 6666 -j REJECT
+# 4. Restrict Guests on br1 from accessing the Router's Web UI/SSH (ssh/http/https ports)
+iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport <SSH_PORT> -j REJECT
 iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport 80 -j REJECT
 iptables -I INPUT -i br1 -d <DDWRT_IP> -p tcp --dport 443 -j REJECT
 
