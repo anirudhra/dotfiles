@@ -100,8 +100,8 @@ export PVEVENTOY="${NET1}.71"
 export FRIDGE="${NET2}.15"
 
 # iRobot
-export ROOMBA="${NET2}.16"
-export BRAVAJET="${NET2}.17"
+#export ROOMBA="${NET2}.16"
+#export BRAVAJET="${NET2}.17"
 
 export MYQGARAGE="${NET2}.18"
 

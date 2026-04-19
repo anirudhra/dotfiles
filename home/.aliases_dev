@@ -52,7 +52,7 @@ alias sshserver='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}"' #non-tmux ve
 alias sshsbc='ssh "${SSHROOT}@${SBC}" -t "${SSHTMUX}"'
 alias sshsbcwifi='ssh "${SSHROOT}@${SBCWIFI}" -t "${SSHTMUX}"'
 #alias sshowrt='ssh "${SSHROOT}@${OPENWRT}" -t "${SSHTMUX}"'
-alias sshowrt='ssh "${SSHROOT}@${OPENWRTROUTER}"'
+alias sshowrt='ssh "${SSHROOT}@${OPENWRTROUTER}" -p "${ROUTERSSHPORT}"'
 
 alias sshwg='ssh "${SSHROOT}@${PVWG}" -t "${SSHTMUX}"'
 alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
