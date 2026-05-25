@@ -6,7 +6,7 @@ inputDevice=alsa_input.pci-0000_00_1f.3.analog-stereo
 
 [StreamOutputs]
 mostUsedPresets=Advanced Auto Gain,Thinkpad-Enhance
-outputDevice=raop_sink.Q990DSoundBar.local.10.0.10.20.45625
+outputDevice=alsa_output.pci-0000_00_1f.3.analog-stereo
 plugins=equalizer#0,exciter#0,autogain#0,limiter#0
 usedPresets=Thinkpad-Enhance:3,Advanced Auto Gain:5
 
