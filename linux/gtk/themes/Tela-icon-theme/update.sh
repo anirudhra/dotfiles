@@ -5,7 +5,8 @@ giturl="https://github.com/vinceliuice/Tela-icon-theme"
 gitdir="Tela-icon-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/icons
+  #sudo ./install.sh -d /usr/share/icons
+  ./install.sh
 }
 
 ##---------------------common part-----------------------------------------#

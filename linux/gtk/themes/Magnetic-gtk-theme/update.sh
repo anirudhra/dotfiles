@@ -5,7 +5,8 @@ giturl="https://github.com/vinceliuice/Magnetic-gtk-theme"
 gitdir="Magnetic-gtk-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/themes
+  #sudo ./install.sh -d /usr/share/themes
+  ./install.sh
 }
 
 ##---------------------common part-----------------------------------------#

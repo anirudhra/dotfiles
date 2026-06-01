@@ -5,7 +5,8 @@ giturl="https://github.com/vinceliuice/Jasper-gtk-theme"
 gitdir="Jasper-gtk-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/themes -t blue
+  #sudo ./install.sh -d /usr/share/themes -t blue
+  ./install.sh -t blue
 }
 
 ##---------------------common part-----------------------------------------#
@@ -14,5 +15,3 @@ installupdate() {
 source "${HOME}/.gitfuncs"
 
 run_git_update_and_install "$giturl" "$gitdir" installupdate "$@"
-
-

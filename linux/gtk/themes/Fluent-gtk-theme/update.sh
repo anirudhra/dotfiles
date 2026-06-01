@@ -5,7 +5,8 @@ giturl=https://github.com/vinceliuice/Fluent-gtk-theme
 gitdir="Fluent-gtk-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/themes -s standard -i fedora
+  #sudo ./install.sh -d /usr/share/themes -s standard -i fedora
+  ./install.sh -s standard -i fedora
 }
 
 ##---------------------common part-----------------------------------------#
@@ -14,3 +15,4 @@ installupdate() {
 source "${HOME}/.gitfuncs"
 
 run_git_update_and_install "$giturl" "$gitdir" installupdate "$@"
+

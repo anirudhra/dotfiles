@@ -5,7 +5,8 @@ giturl="https://github.com/vinceliuice/Orchis-theme"
 gitdir="Orchis-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/themes -s standard -f --tweaks dock primary
+  #sudo ./install.sh -d /usr/share/themes -s standard -f --tweaks dock primary
+  ./install.sh -s standard -f --tweaks dock primary
 }
 
 ##---------------------common part-----------------------------------------#

@@ -6,10 +6,12 @@ gitdir="elementary-sounds"
 
 installupdate() {
   # update/install per dir commands
-  meson build --prefix=/usr
+  #meson build --prefix=/usr
+  meson build
   cd build || exit
   ninja
-  sudo ninja install
+  #sudo ninja install
+  ninja install
 }
 
 ##---------------------common part-----------------------------------------#

@@ -5,7 +5,8 @@ giturl="https://github.com/vinceliuice/Qogir-theme"
 gitdir="Qogir-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/themes -i fedora --tweaks round
+  #sudo ./install.sh -d /usr/share/themes -i fedora --tweaks round
+  ./install.sh -i fedora --tweaks round
 }
 
 ##---------------------common part-----------------------------------------#
@@ -14,3 +15,4 @@ installupdate() {
 source "${HOME}/.gitfuncs"
 
 run_git_update_and_install "$giturl" "$gitdir" installupdate "$@"
+

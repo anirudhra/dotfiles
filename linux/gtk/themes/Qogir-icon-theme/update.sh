@@ -5,7 +5,8 @@ giturl="https://github.com/vinceliuice/Qogir-icon-theme"
 gitdir="Qogir-icon-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/icons -t default
+  #sudo ./install.sh -d /usr/share/icons -t default
+  ./install.sh -t default
 }
 
 ##---------------------common part-----------------------------------------#

@@ -5,7 +5,8 @@ giturl="https://github.com/vinceliuice/Fluent-icon-theme"
 gitdir="Fluent-icon-theme"
 
 installupdate() {
-  sudo ./install.sh -d /usr/share/icons
+  ./install.sh
+  #sudo ./install.sh -d /usr/share/icons
   #sudo ./install.sh -d /usr/share/themes -s standard -i fedora
 }
 

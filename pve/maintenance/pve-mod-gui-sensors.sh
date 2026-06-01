@@ -123,7 +123,6 @@ function configure {
 	local sanitisedSensorsOutput
 	local upsOutput
 	local modelName
-	local upsConnection
 
 	install_packages
 
@@ -379,6 +378,7 @@ function configure {
 
 # Function to install the modification
 function install_mod {
+	local upsConnection
     msgb "\n=== Preparing mod installation ==="
     check_root_privileges
     check_mod_installation
@@ -454,7 +454,7 @@ sanitize_sensors_output() {
         # Replace NaN values with null
         s/\bNaN\b/null/g;
 
-        # Fix duplicate SODIMM keys - handle both pretty and one-line JSON  
+        # Fix duplicate SODIMM keys - handle both pretty and one-line JSON
         s/"SODIMM"\s*:\s*\{\s*"temp(\d+)_input"/"SODIMM $1": {\n  "temp$1_input"/g;
 
         # Fix duplicate fan keys - handle both pretty and one-line JSON
@@ -490,7 +490,7 @@ collect_sensors_output() {
         sensorsCmd="sensors -j 2>/dev/null"
     fi
 
-	# Remember to reflect this in sanitize_sensors_output() 
+	# Remember to reflect this in sanitize_sensors_output()
 	#region sensors heredoc
 	sed -i '/my \$dinfo = df('\''\/'\'', 1);/i\
 		# Collect sensor data from lm-sensors\
@@ -536,7 +536,6 @@ collect_ups_output() {
 
     # region ups heredoc
     sed -i "/my \$dinfo = df('\/', 1);/i\\
-\\
 		# Collect UPS status information\\
 		sub get_upsc {\\
 			my \$cmd = '$ups_cmd';\\
@@ -563,7 +562,10 @@ collect_system_info() {
         | paste -sd " " - \
         | sed 's/ |$//')
 	#region system info heredoc
-	sed -i "/my \$dinfo = df('\/', 1);/i\\\t\t\$res->{systemInfo} = \"$(echo "$systemInfoCmd")\";\n" "$NODES_PM_FILE"
+	sed -i "/my \$dinfo = df('\/', 1);/i\\
+		# Add system information to response\\
+		\$res->{systemInfo} = \"$(echo "$systemInfoCmd")\";\\
+" "$NODES_PM_FILE"
 	#endregion system info heredoc
     info "System information retriever added to \"$output_file\"."
 }
@@ -587,7 +589,7 @@ generate_and_insert_widget() {
 	local enable_flag="$1"
 	local generator_func="$2"
 	local widget_name="$3"
-	
+
 	if [ "$enable_flag" = true ]; then
 		local temp_js_file="/tmp/${widget_name}_widget.js"
 		"$generator_func" "$temp_js_file"
@@ -600,7 +602,7 @@ generate_and_insert_widget() {
 # Function to generate drive header
 generate_drive_header() {
 	if [ "$ENABLE_NVME_TEMP" = true ] || [ "$ENABLE_HDD_TEMP" = true ]; then
-        local temp_js_file="/tmp/drive_header.js"	
+        local temp_js_file="/tmp/drive_header.js"
 		#region drive header heredoc
 		cat > "$temp_js_file" <<'EOF'
 		{
@@ -609,12 +611,12 @@ generate_drive_header() {
 			html: gettext('Drive(s)'),
 		},
 EOF
-#endregion drive header heredoc  
+#endregion drive header heredoc
         if [[ $? -ne 0 ]]; then
             echo "Error: Failed to generate drive header code" >&2
             exit 1
         fi
-        
+
         insert_widget_after_thermal "$temp_js_file"
         rm "$temp_js_file"
     fi
@@ -635,7 +637,7 @@ expand_statusview_space() {
         echo "Error: Failed to expand StatusView space" >&2
         exit 1
     fi
-    
+
     info "Expanded space in \"$PVE_MANAGER_LIB_JS_FILE\"."
 }
 
@@ -660,21 +662,21 @@ setup_node_summary_container() {
 	]
 },
 EOF
-#endregion summary container heredoc    
+#endregion summary container heredoc
     if [[ $? -ne 0 ]]; then
         echo "Error: Failed to generate summary container code" >&2
         exit 1
     fi
-    
+
     # Insert the new container after finding the nodeStatus and items pattern
     sed -i "/^\s*nodeStatus: nodeStatus,/ {
         :a
         /items: \[/ !{N;ba;}
         r $temp_js_file
     }" "$PVE_MANAGER_LIB_JS_FILE"
-    
+
     rm "$temp_js_file"
-    
+
     # Deactivate the original box instance
     sed -i "/^\s*nodeStatus: nodeStatus,/ {
         :a
@@ -684,7 +686,7 @@ EOF
         /nodeStatus,/ !{N;bb;}
         s/nodeStatus/\/\/nodeStatus/
     }" "$PVE_MANAGER_LIB_JS_FILE"
-    
+
     if [[ $? -ne 0 ]]; then
         echo "Error: Failed to deactivate original nodeStatus instance" >&2
         exit 1
@@ -695,7 +697,7 @@ EOF
 add_visual_separator() {
     # Check for the presence of items in the reverse order of display
     local lastItemId=""
-    
+
     if [ "$ENABLE_UPS" = true ]; then
         lastItemId="upsc"
     elif [ "$ENABLE_HDD_TEMP" = true ]; then
@@ -710,7 +712,7 @@ add_visual_separator() {
 
     if [ -n "$lastItemId" ]; then
         local temp_js_file="/tmp/visual_separator.js"
-        
+
 		#region visual spacing heredoc
         cat > "$temp_js_file" <<'EOF'
 		{
@@ -719,19 +721,19 @@ add_visual_separator() {
 			padding: '0 0 20 0',
 		},
 EOF
-#endregion visual spacing heredoc        
+#endregion visual spacing heredoc
         if [[ $? -ne 0 ]]; then
             echo "Error: Failed to generate visual separator code" >&2
             exit 1
         fi
-        
+
         # Insert after the specific lastItemId (different pattern than thermal)
         sed -i "/^Ext.define('PVE.node.StatusView',/ {
             :a;
             /^.*{.*'$lastItemId'.*},/!{N;ba;}
             r $temp_js_file
         }" "$PVE_MANAGER_LIB_JS_FILE"
-        
+
         rm "$temp_js_file"
     fi
 }
@@ -873,7 +875,7 @@ generate_cpu_widget() {
 		export CPU_ITEMS_PER_ROW
 		export CPU_TEMP_TARGET
 		export HELPERCTORPARAMS
-		
+
 		cat <<'EOF' | envsubst '$CPU_ITEMS_PER_ROW $CPU_TEMP_TARGET $HELPERCTORPARAMS' > "$1"
 		{
 			itemId: 'thermalCpu',
@@ -901,7 +903,7 @@ generate_cpu_widget() {
 				const INTELPackageCaption = '$CPU_TEMP_TARGET' == 'Core' ? 'Core' : 'Package';
 				let AMDPackagePrefix = 'Tccd';
 				let AMDPackageCaption = 'CCD';
-				
+
 				if (cpuKeysA.length > 0) {
 					let bTccd = false;
 					let bTctl = false;
@@ -931,18 +933,18 @@ generate_cpu_widget() {
 						AMDPackageCaption = 'Temp';
 					}
 				}
-				
+
 				const cpuKeys = bINTEL ? cpuKeysI : cpuKeysA;
 				const cpuItemPrefix = bINTEL ? INTELPackagePrefix : AMDPackagePrefix;
 				const cpuTempCaption = bINTEL ? INTELPackageCaption : AMDPackageCaption;
 				const formatTemp = bINTEL ? '0' : '0.0';
 				const cpuCount = cpuKeys.length;
 				let temps = [];
-				
+
 				cpuKeys.forEach((cpuKey, cpuIndex) => {
 					let cpuTemps = [];
 					const items = objValue[cpuKey];
-					const itemKeys = Object.keys(items).filter(item => { 
+					const itemKeys = Object.keys(items).filter(item => {
 						if ('$CPU_TEMP_TARGET' == 'Core') {
 							// In Core mode: only show individual cores/CCDs, exclude overall CPU temp
 							return String(item).includes(cpuItemPrefix) || String(item).startsWith('Tccd');
@@ -951,7 +953,7 @@ generate_cpu_widget() {
 							return String(item).includes(cpuItemPrefix) || String(item) === 'CPU Core Temp';
 						}
 					});
-					
+
 					itemKeys.forEach((coreKey) => {
 						try {
 							let tempVal = NaN, tempMax = NaN, tempCrit = NaN;
@@ -964,7 +966,7 @@ generate_cpu_widget() {
 									tempCrit = cpuTempHelper.getTemp(parseFloat(items[coreKey][secondLevelKey]));
 								}
 							});
-							
+
 							if (!isNaN(tempVal)) {
 								let tempStyle = '';
 								if (!isNaN(tempMax) && tempVal >= tempMax) {
@@ -973,9 +975,9 @@ generate_cpu_widget() {
 								if (!isNaN(tempCrit) && tempVal >= tempCrit) {
 									tempStyle = 'color: red; font-weight: bold;';
 								}
-								
+
 								let tempStr = '';
-								
+
 								// Enhanced parsing for AMD temperatures
 								if (coreKey.startsWith('Tccd')) {
 									let tempIndex = coreKey.match(/Tccd(\d+)/);
@@ -1007,27 +1009,27 @@ generate_cpu_widget() {
 										tempStr = `${coreType}:&nbsp;<span style="${tempStyle}">${Ext.util.Format.number(tempVal, formatTemp)}${cpuTempHelper.getUnit()}</span>`;
 									}
 								}
-								
+
 								cpuTemps.push(tempStr);
 							}
 						} catch (e) { /*_*/ }
 					});
-					
+
 					if(cpuTemps.length > 0) {
 						temps.push(cpuTemps);
 					}
 				});
-				
+
 				let result = '';
 				temps.forEach((cpuTemps, cpuIndex) => {
-					const strCoreTemps = cpuTemps.map((strTemp, index, arr) => { 
-						return strTemp + (index + 1 < arr.length ? (itemsPerRow > 0 && (index + 1) % itemsPerRow === 0 ? '<br>' : '&nbsp;| ') : ''); 
+					const strCoreTemps = cpuTemps.map((strTemp, index, arr) => {
+						return strTemp + (index + 1 < arr.length ? (itemsPerRow > 0 && (index + 1) % itemsPerRow === 0 ? '<br>' : '&nbsp;| ') : '');
 					})
 					if(strCoreTemps.length > 0) {
 						result += (cpuCount > 1 ? `CPU ${cpuIndex+1}: ` : '') + strCoreTemps.join('') + (cpuIndex < cpuCount ? '<br>' : '');
 					}
 				});
-				
+
 				return '<div style="text-align: left; margin-left: 28px;">' + (result.length > 0 ? result : 'N/A') + '</div>';
 			}
 		},
@@ -1216,7 +1218,7 @@ generate_hdd_widget() {
 				} catch(e) {
 					objValue = {};
 				}
-				const drvKeys = Object.keys(objValue).filter(item => String(item).startsWith(addressPrefix)).sort();
+				const drvKeys = Object.keys(objValue).filter(item => String(item).startsWith(addressPrefix)).sort((a, b) => a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' }));
 				let temps = [];
 				drvKeys.forEach((drvKey, index) => {
 					try {
@@ -1261,7 +1263,7 @@ generate_ram_widget() {
 	#region ram widget heredoc
 	# use subshell to allow variable expansion
 	(
-		export HELPERCTORPARAMS	
+		export HELPERCTORPARAMS
 		cat <<'EOF' | envsubst '$HELPERCTORPARAMS' > "$1"
 		{
 			xtype: 'box',
@@ -1370,32 +1372,34 @@ generate_ups_widget() {
 
 				// If objValue is null or empty, return N/A
 				if (!objValue || Object.keys(objValue).length === 0) {
-					return '<div style="text-align: right;"><span style="color: white;">N/A</span></div>';
+					return '<div style="text-align: right;"><span>N/A</span></div>';
 				}
 
 				// Helper function to get status color
+				// Returns a CSS color string for non-default states, or null for default (no inline color)
 				function getStatusColor(status) {
 					if (!status) return '#999';
 					const statusUpper = status.toUpperCase();
-					if (statusUpper.includes('OL')) return 'white'; // White for online
+					if (statusUpper.includes('OL')) return null; // default (no explicit color)
 					if (statusUpper.includes('OB')) return '#d9534f'; // Red for on battery
 					if (statusUpper.includes('LB')) return '#d9534f'; // Red for low battery
 					return '#f0ad4e'; // Orange for other states
 				}
 
 				// Helper function to get load/charge color
+				// Returns null for default/good values so no inline style is emitted
 				function getPercentageColor(value, isLoad = false) {
 					if (!value || isNaN(value)) return '#999';
 					const num = parseFloat(value);
 					if (isLoad) {
 						if (num >= 80) return '#d9534f'; // Red for high load
 						if (num >= 60) return '#f0ad4e'; // Orange for medium load
-						return 'white'; // White for low load
+						return null; // default (no explicit color)
 					} else {
 						// For battery charge
 						if (num <= 20) return '#d9534f'; // Red for low charge
 						if (num <= 50) return '#f0ad4e'; // Orange for medium charge
-						return 'white'; // White for good charge
+						return null; // default (no explicit color)
 					}
 				}
 
@@ -1423,12 +1427,12 @@ generate_ups_widget() {
 				// Build the status display
 				let displayItems = [];
 
-				// First line: Model info
+				// First line: Model info (no explicit color for default)
 				let modelLine = '';
 				if (upsModel) {
-					modelLine = `<span style="color: white;">${upsModel}</span>`;
+					modelLine = `<span>${upsModel}</span>`;
 				} else {
-					modelLine = `<span style="color: white;">N/A</span>`;
+					modelLine = `<span>N/A</span>`;
 				}
 				displayItems.push(modelLine);
 
@@ -1443,7 +1447,7 @@ generate_ups_widget() {
 
 					if (statusUpper.includes('OL')) {
 						statusText = 'Online';
-						statusColor = 'white'; // White for good status
+						statusColor = null; // default (no explicit color)
 					} else if (statusUpper.includes('OB')) {
 						statusText = 'On Battery';
 						statusColor = '#d9534f'; // Red for on battery
@@ -1455,27 +1459,30 @@ generate_ups_widget() {
 						statusColor = '#f0ad4e'; // Orange for unknown status
 					}
 
-					statusLine += `Status: <span style="color: ${statusColor};">${statusText}</span>`;
+					let statusStyle = statusColor ? ('color: ' + statusColor + ';') : '';
+					statusLine += 'Status: <span style="' + statusStyle + '">' + statusText + '</span>';
 				} else {
-					statusLine += `Status: <span style="color: white;">N/A</span>`;
+					statusLine += 'Status: <span>N/A</span>';
 				}
 
 				// Battery charge
 				if (statusLine) statusLine += ' | ';
 				if (batteryCharge) {
 					const chargeColor = getPercentageColor(batteryCharge, false);
-					statusLine += `Battery: <span style="color: ${chargeColor};">${batteryCharge}%</span>`;
+					let chargeStyle = chargeColor ? ('color: ' + chargeColor + ';') : '';
+					statusLine += 'Battery: <span style="' + chargeStyle + '">' + batteryCharge + '%</span>';
 				} else {
-					statusLine += `Battery: <span style="color: white;">N/A</span>`;
+					statusLine += 'Battery: <span>N/A</span>';
 				}
 
 				// Load percentage
 				if (statusLine) statusLine += ' | ';
 				if (upsLoad) {
 					const loadColor = getPercentageColor(upsLoad, true);
-					statusLine += `Load: <span style="color: ${loadColor};">${upsLoad}%</span>`;
+					let loadStyle = loadColor ? ('color: ' + loadColor + ';') : '';
+					statusLine += 'Load: <span style="' + loadStyle + '">' + upsLoad + '%</span>';
 				} else {
-					statusLine += `Load: <span style="color: white;">N/A</span>`;
+					statusLine += 'Load: <span>N/A</span>';
 				}
 
 				// Runtime
@@ -1483,21 +1490,21 @@ generate_ups_widget() {
 				if (batteryRuntime) {
 					const runtime = parseInt(batteryRuntime);
 					const runtimeLowThreshold = batteryRuntimeLow ? parseInt(batteryRuntimeLow) : 600;
-					let runtimeColor = 'white';
+					let runtimeColor = null;
 					if (runtime <= runtimeLowThreshold / 2) runtimeColor = '#d9534f'; // Red if less than half of low threshold
 					else if (runtime <= runtimeLowThreshold) runtimeColor = '#f0ad4e'; // Orange if at low threshold
-
-					statusLine += `Runtime: <span style="color: ${runtimeColor};">${formatRuntime(runtime)}</span>`;
+					let runtimeStyle = runtimeColor ? ('color: ' + runtimeColor + ';') : '';
+					statusLine += 'Runtime: <span style="' + runtimeStyle + '">' + formatRuntime(runtime) + '</span>';
 				} else {
-					statusLine += `Runtime: <span style="color: white;">N/A</span>`;
+					statusLine += 'Runtime: <span>N/A</span>';
 				}
 
 				// Input voltage
 				if (statusLine) statusLine += ' | ';
 				if (inputVoltage) {
-					statusLine += `Input: <span style="color: white;">${parseFloat(inputVoltage).toFixed(0)}V</span>`;
+					statusLine += 'Input: <span>' + parseFloat(inputVoltage).toFixed(0) + 'V</span>';
 				} else {
-					statusLine += `Input: <span style="color: white;">N/A</span>`;
+					statusLine += 'Input: <span>N/A</span>';
 				}
 
 				// Calculate actual watt usage
@@ -1513,9 +1520,9 @@ generate_ups_widget() {
 
 				// Real power (calculated watt usage)
 				if (actualWattage !== null) {
-					statusLine += `Output: <span style="color: white;">${actualWattage}W</span>`;
+					statusLine += 'Output: <span>' + actualWattage + 'W</span>';
 				} else {
-					statusLine += `Output: <span style="color: white;">N/A</span>`;
+					statusLine += 'Output: <span>N/A</span>';
 				}
 
 				displayItems.push(statusLine);
@@ -1523,16 +1530,17 @@ generate_ups_widget() {
 				// Combined battery and test line
 				let batteryTestLine = '';
 				if (batteryMfrDate) {
-					batteryTestLine += `<span style="color: white;">Battery MFD: ${batteryMfrDate}</span>`;
+					batteryTestLine += '<span>Battery MFD: ' + batteryMfrDate + '</span>';
 				} else {
-					batteryTestLine += `<span style="color: white;">Battery MFD: N/A</span>`;
+					batteryTestLine += '<span>Battery MFD: N/A</span>';
 				}
 
 				if (testResult && !testResult.toLowerCase().includes('no test')) {
-					const testColor = testResult.toLowerCase().includes('passed') ? 'white' : '#d9534f';
-					batteryTestLine += ` | <span style="color: ${testColor};">Test: ${testResult}</span>`;
+					const testColor = testResult.toLowerCase().includes('passed') ? null : '#d9534f';
+					let testStyle = testColor ? ('color: ' + testColor + ';') : '';
+					batteryTestLine += ' | <span style="' + testStyle + '">Test: ' + testResult + '</span>';
 				} else {
-					batteryTestLine += ` | <span style="color: white;">Test: N/A</span>`;
+					batteryTestLine += ' | <span>Test: N/A</span>';
 				}
 
 				displayItems.push(batteryTestLine);
@@ -1684,27 +1692,27 @@ function create_file_backup() {
     local source_file="$1"
     local timestamp="$2"
     local filename
-    
+
     filename=$(basename "$source_file")
     local backup_file="$BACKUP_DIR/${filename}.$timestamp"
-    
+
     [[ -f "$source_file" ]] || err "Source file does not exist: $source_file"
     [[ -r "$source_file" ]] || err "Cannot read source file: $source_file"
-       
+
     cp "$source_file" "$backup_file" || err "Failed to create backup: $backup_file"
-    
+
     # Verify backup integrity
     if ! cmp -s "$source_file" "$backup_file"; then
         err "Backup verification failed for: $backup_file"
     fi
-    
+
     info "Created backup: $backup_file"
 }
 
 function perform_backup {
     local timestamp
     timestamp=$(date +%Y%m%d_%H%M%S)
-    
+
 	msgb "\n=== Creating backups of modified files ==="
 
     create_backup_directory
