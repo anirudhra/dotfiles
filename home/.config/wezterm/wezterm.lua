@@ -31,14 +31,16 @@ end
 config.bold_brightens_ansi_colors = true
 
 -- PLATFORM SPECIFIC CONFIGS
-if target_triple:find("apple-darwin") then
+-- We pass true as the 4th argument to :find() to perform a raw text search.
+-- This safely catches both x86_64-apple-darwin and aarch64-apple-darwin.
+if target_triple:find("apple", 1, true) then
 	config.font = wezterm.font("JetBrainsMono Nerd Font")
 	config.font_size = 14
 	config.window_decorations = "MACOS_FORCE_ENABLE_SHADOW | RESIZE"
 	config.window_background_opacity = 0.95
 	config.macos_window_background_blur = 10
 	config.send_composed_key_when_right_alt_is_pressed = true
-elseif target_triple:find("linux") then
+elseif target_triple:find("linux", 1, true) then
 	config.font = wezterm.font("MesloLGS Nerd Font")
 	config.font_size = 11
 	wezterm.on("gui-startup", function(cmd)
