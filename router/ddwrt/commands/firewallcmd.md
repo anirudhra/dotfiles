@@ -1,9 +1,16 @@
 # =====================================================================
 # USER VARIABLE BLOCK (Modify here if your network topology changes)
 # =====================================================================
-MAIN_SUBNET="<<< ADD MAIN SUBNET HERE>>>.0/24"      # Your main LAN address space (Zion)
-ADGUARD_IP="<<< ADGUARDARD_IP_WITHOUTPORT >>>"         # The central AdGuard Home DNS instance
-HASS_IP="<<< HOMEASSISTANT IP HERE >>>"            # Your Home Assistant / Music Assistant server IP
+MAIN_SUBNET="<ROUTER_SUBNET_IP.0>/24"      # Your main LAN address space (Zion)
+ADGUARD_IP="<ADGUARD_IP>"         # The central AdGuard Home DNS instance without port
+
+# Dedicated Media Host IP Allocations
+HASS_IP="<HASS_IP>"            # Home Assistant / Music Assistant Server
+JELLYFIN_IP="<JELLYFIN_IP>"        # Standalone Jellyfin Server
+DOCKER_AUDIO_IP="<DOCKER_AUDIO_IP>"    # Dedicated Audio Stack Host (Navidrome, OwnTone, Lyrion)
+
+# Tightened Audio Ports (Added 3483 for Lyrion/AirPlay Discovery Engines)
+PORTS_AUDIO_STREAM="4533,3689,9000,3483"
 
 # =====================================================================
 # !!! SYSTEM CONSTANTS BARRIER - DO NOT MODIFY ANYTHING BELOW THIS !!!
@@ -81,8 +88,23 @@ iptables -A FORWARD -i "$NET_GUEST" -o "$NET_MEDIA" -m state --state NEW -j ACCE
 # =====================================================================
 # 5. SERVER SPECIAL RULES
 # =====================================================================
+# Stateful access rule for Home Assistant to control IoT devices securely
 iptables -A FORWARD -i "$NET_MAIN" -s "$HASS_IP" -o "$NET_IOT" -m state --state NEW -j ACCEPT
+
+# CHROMECAST / MUSIC ASSISTANT: Allow Media subnet to pull control and audio chunks from HASS
 iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$HASS_IP" -p tcp -m multiport --dports "$PORTS_MUSIC_ASSISTANT_WEB,$PORTS_MUSIC_ASSISTANT_STREAM" -m state --state NEW -j ACCEPT
+
+# JELLYFIN: Allow Media bridge devices (TVs) to open stateful connections to Jellyfin (Port 8096)
+iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$JELLYFIN_IP" -p tcp --dport 8096 -m state --state NEW -j ACCEPT
+
+# TIGHTENED AUDIO HOST EXCEPTION (TCP Control/Stream Handshakes)
+iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$DOCKER_AUDIO_IP" -p tcp -m multiport --dports "$PORTS_AUDIO_STREAM" -m state --state NEW -j ACCEPT
+
+# LYRION DYNAMIC STREAMING EXCEPTION: Exposes the dynamic UPnP bridge ephemeral port block for Chromecast streams
+iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$DOCKER_AUDIO_IP" -p tcp --dport 49152:65535 -m state --state NEW -j ACCEPT
+
+# LYS/AIRPLAY DISCOVERY EXCEPTION (UDP Core Engine Audio Pipelines)
+iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$DOCKER_AUDIO_IP" -p udp -m multiport --dports "3483,$PORTS_AIRPLAY_STREAM" -m state --state NEW -j ACCEPT
 
 # =====================================================================
 # 6. THE IRON CURTAIN
@@ -112,4 +134,3 @@ done
 for br in $ISOLATED_BRIDGES; do
     iptables -I INPUT -i "$br" -p tcp -m multiport --dports "$PORTS_MGMT_BLOCK" -j REJECT --reject-with tcp-reset
 done
-
