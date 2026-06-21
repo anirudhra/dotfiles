@@ -6,6 +6,8 @@ fi
 # Set the guard variable
 SOURCED_PROFILE_GUILE=1
 
+export QT_QPA_PLATFORMTHEME=qt5ct
+
 #clear
 echo
 fastfetch
