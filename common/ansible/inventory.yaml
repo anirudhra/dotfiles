@@ -18,9 +18,9 @@ nondockerlxc:
   hosts:
     uptimekuma:
       ansible_host: 10.100.10.67
-    lms:
-      ansible_host: 10.100.10.68
-#    ts:
+#    lms:
+#      ansible_host: 10.100.10.68
+#    unify:
 #      ansible_host: 10.100.10.70
     jf:
       ansible_host: 10.100.10.60
@@ -144,7 +144,7 @@ allactive:
   children:
     activelxc:
     activevm:
-    router:
+    #router:
     server:
 
 upgradepveactive:
