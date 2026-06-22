@@ -1,13 +1,13 @@
 # =====================================================================
 # USER VARIABLE BLOCK (Modify here if your network topology changes)
 # =====================================================================
-MAIN_SUBNET="<ROUTER_SUBNET_IP.0>/24"      # Your main LAN address space (Zion)
-ADGUARD_IP="<ADGUARD_IP>"         # The central AdGuard Home DNS instance without port
+MAIN_SUBNET="10.100.10.0/24"      # Main LAN address space (Zion)
+ADGUARD_IP="10.100.10.1"          # The central AdGuard Home DNS instance
 
 # Dedicated Media Host IP Allocations
-HASS_IP="<HASS_IP>"            # Home Assistant / Music Assistant Server
-JELLYFIN_IP="<JELLYFIN_IP>"        # Standalone Jellyfin Server
-DOCKER_AUDIO_IP="<DOCKER_AUDIO_IP>"    # Dedicated Audio Stack Host (Navidrome, OwnTone, Lyrion)
+HASS_IP="10.100.10.64"            # Home Assistant / Music Assistant Server
+JELLYFIN_IP="10.100.10.60"        # Standalone Jellyfin Server
+DOCKER_AUDIO_IP="10.100.10.61"    # Dedicated Audio Stack Host (Navidrome, OwnTone, Lyrion)
 
 # Tightened Audio Ports (Added 3483 for Lyrion/AirPlay Discovery Engines)
 PORTS_AUDIO_STREAM="4533,3689,9000,3483"
@@ -85,6 +85,9 @@ iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT
 iptables -A FORWARD -i "$NET_MAIN" -o "$NET_MEDIA" -m state --state NEW -j ACCEPT
 iptables -A FORWARD -i "$NET_GUEST" -o "$NET_MEDIA" -m state --state NEW -j ACCEPT
 
+# Force explicit WAN forwarding for the Main trusted network (prevents silent client drops)
+iptables -A FORWARD -i "$NET_MAIN" -o ! br+ -m state --state NEW -j ACCEPT
+
 # =====================================================================
 # 5. SERVER SPECIAL RULES
 # =====================================================================
@@ -122,10 +125,12 @@ iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_IOT" -j REJECT
 iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_GUEST" -j REJECT
 
 # =====================================================================
-# 7. INPUT CHAIN (Router Discovery Services)
+# 7. INPUT CHAIN (Router Discovery Services - Fixed Sequence)
 # =====================================================================
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+
 for br in $ALL_BRIDGES; do
-    iptables -I INPUT -i "$br" -p udp -m multiport --dports "$PORTS_ROUTER_DISC" -j ACCEPT
+    iptables -A INPUT -i "$br" -p udp -m multiport --dports "$PORTS_ROUTER_DISC" -j ACCEPT
 done
 
 # =====================================================================
@@ -134,3 +139,4 @@ done
 for br in $ISOLATED_BRIDGES; do
     iptables -I INPUT -i "$br" -p tcp -m multiport --dports "$PORTS_MGMT_BLOCK" -j REJECT --reject-with tcp-reset
 done
+
