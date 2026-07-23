@@ -43,6 +43,7 @@ timelapse() {
 
 # ssh aliases
 alias sshddwrt='ssh "${SSHROOT}@${DDWRTROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
+alias sshowrt='ssh "${SSHROOT}@${OPENWRTROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
 #alias sshusg='ssh "${SSHROOT}@${USG}" -t "${SSHTMUX}"'
 #alias sshusg='ssh "${SSHROOT}@${USG}"'
 
