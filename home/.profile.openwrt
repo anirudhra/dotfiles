@@ -1,0 +1,32 @@
+#!/bin/sh
+# This file is to be used only on DD-WRT/OpenWRT routers that have temp root home directory
+# This file must be called by the startup script to set the correct directories for proper alias/script sourcing
+
+#This file is called before the router specific .profile.<hostname> is called, in order to set the correct directories and symlinks.
+#This is necessary as ddwrt's ${HOME} is a ramdisk and gets wiped on reboot
+
+# source entware profile, if file exists; only for DDWRT, OpenWRT does it by default
+# [ -f /opt/etc/profile ] && . /opt/etc/profile
+
+# always fixed on ddwrt
+export TEMP_ROOT_HOME="/root" #this gets wiped on every reboot only in DDWRT (/tmp/root)
+export ROOT_HOME="/root"      #this is persistent on emmc
+export DOTFILES_HOME="${ROOT_HOME}"
+#export JFFS_HOME="/jffs"            #this is persistent on USB, only in DDWRT, not in OpenWRT
+
+# always fixed relative to DOTFILES_HOME
+export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
+
+# use entware-specific ddwrt vimrc file instead of standard one as not all options are supported
+#ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vimrc.entware" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
+
+# Fallback for OpenWrt missing the hostname binary
+if [ -f /etc/openwrt_release ] && ! command -v hostname >/dev/null 2>&1; then
+  alias hostname="uci -q get system.@system[0].hostname || echo 'OpenWrt'"
+fi
+
+# source .profile, that will source .aliases
+. "${ALIASES_HOME}/.profile"
