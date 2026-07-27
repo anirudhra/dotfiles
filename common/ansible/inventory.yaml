@@ -161,7 +161,6 @@ updatedfall:
   children:
     alllxc:
     server:
-    router:
 
 # Remote Machines
 remotelxc:
