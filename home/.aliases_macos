@@ -39,6 +39,9 @@ alias firefox="open -a firefox"
 alias chrome="open -a google\ chrome"
 alias textedit='open -a TextEdit'
 
+# iTunes playlist converter for NAS
+alias updatepl="cp ~/Music/MusicLibrary/library/Library.xml ~/Music/Playlists/library/Library.xml && cd ~/code/github/ipod_scripts/playlists_itunesxml_m3u && ./runme_itunesxml_m3u.sh && cp ~/Music/Playlists/playlists/* ~/Music/MusicLibrary/playlists/"
+
 # hotcorner settings
 #0: No Option
 #2: Mission Control
