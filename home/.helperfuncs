@@ -339,16 +339,10 @@ detect_machine_type() {
   #debuglog "Detecting machine type"
   host_name=$(hostname 2>/dev/null)
 
-  # 1. Router OS detection (OpenWrt / DD-WRT / Asuswrt & Asuswrt-Merlin)
+  # 1. Router OS check (OpenWrt, DD-WRT, Asuswrt/Merlin)
   if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] ||
-    [ -f /tmp/dd-wrt ] || [ -f /etc/dd-wrt ] ||
-    ([ -f /etc/banner ] && grep -qi 'dd-wrt' /etc/banner) ||
-    ([ -f /tmp/banner ] && grep -qi 'dd-wrt' /tmp/banner) ||
-    ([ -x "$(command -v nvram)" ] && [ "$(nvram get dist_type 2>/dev/null)" = "dd-wrt" ]) ||
-    ([ -x "$(command -v nvram)" ] && [ -n "$(nvram get dd_board 2>/dev/null)" ]) ||
-    [ -f /rom/etc/asus_build_info ] || [ -f /etc/asus_build_info ] ||
-    ([ -x "$(command -v nvram)" ] && [ -n "$(nvram get buildno 2>/dev/null)" ]) ||
-    ([ -f /etc/os-release ] && grep -qiE 'openwrt|dd-wrt|asuswrt|merlin' /etc/os-release); then
+    [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] ||
+    [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ]; then
     #debuglog "Detected Router"
     echo "router"
 
