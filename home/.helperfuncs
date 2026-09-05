@@ -337,31 +337,40 @@ detect_busybox_alias() {
 #   - "client" for Client
 detect_machine_type() {
   #debuglog "Detecting machine type"
-  # $HOSTNAME only works for bash shells, use more portable way
-  #if [[ "${HOSTNAME}" == "ifc6410" ]] || [[ "${HOSTNAME}" == "IFC6410" ]]; then
-  host_name=$(hostname)
-  if [[ "${host_name}" == "ifc6410" ]] || [[ "${host_name}" == "IFC6410" ]]; then
-    #debuglog "Detected SBC"
-    echo "sbc" # combination of echo and return used to return strings in functions
-  elif [[ "${host_name}" == "mx4300" ]] || [[ "${host_name}" == "MX4300" ]] || [[ "${host_name}" == "RT-AX82U" ]] || [[ "${host_name}" == "rt-ax82u" ]]; then
+  host_name=$(hostname 2>/dev/null)
+
+  # 1. Router OS detection (OpenWrt / DD-WRT / Asuswrt & Asuswrt-Merlin)
+  if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] ||
+    [ -f /tmp/dd-wrt ] || [ -f /etc/dd-wrt ] ||
+    [ -f /rom/etc/asus_build_info ] || [ -f /etc/asus_build_info ] ||
+    ([ -x "$(command -v nvram)" ] && [ -n "$(nvram get buildno 2>/dev/null)" ]) ||
+    ([ -x "$(command -v nvram)" ] && [ "$(nvram get os_name 2>/dev/null)" = "dd-wrt" ]) ||
+    ([ -f /etc/os-release ] && grep -qiE 'openwrt|dd-wrt|asuswrt|merlin' /etc/os-release); then
     #debuglog "Detected Router"
-    echo "router" # router linux
+    echo "router"
+
+  # 2. SBC detection (portable case conversion via tr)
+  elif [ "$(echo "$host_name" | tr '[:upper:]' '[:lower:]')" = "ifc6410" ]; then
+    #debuglog "Detected SBC"
+    echo "sbc"
+
+  # 3. Virtualization and server detection
   elif [ -f /proc/1/environ ]; then
     if [ -x "$(command -v pveversion)" ]; then
       #debuglog "Detected PVE server"
-      echo "pveserver" # combination of echo and return used to return strings in functions
+      echo "pveserver"
     elif [ -x "$(command -v systemd-detect-virt)" ]; then
       #debuglog "Detected PVE guest"
-      if [[ $(/usr/bin/systemd-detect-virt) == "none" ]]; then
-        echo "client" # combination of echo and return used to return strings in functions
+      if [[ "$(/usr/bin/systemd-detect-virt)" == "none" ]]; then
+        echo "client"
       else
-        echo "pveguest" # combination of echo and return used to return strings in functions
+        echo "pveguest"
       fi
     else
-      echo "unknown linux" # combination of echo and return used to return strings in functions
+      echo "unknown linux"
     fi
   else
     #debuglog "Detected client"
-    echo "unknown" # combination of echo and return used to return strings in functions
+    echo "unknown"
   fi
 }
