@@ -298,11 +298,22 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
 
 # DD-WRT / Router aliases
 elif [[ "${MACHINE_TYPE}" == "router" ]]; then
+  if [ -x "$(command -v apk)" ]; then
+    PKG_MGR="apk"
+  elif [ -x "$(command -v opkg)" ]; then
+    PKG_MGR="opkg"
+  fi
+
+  if [ -n "${PKG_MGR}" ]; then
+    alias fullupdate="${PKG_MGR} update && ${PKG_MGR} upgrade"
+  else
+    alias fullupdate="warn \"No supported package manager (apk/opkg) found\""
+  fi
+
   alias fullupdate="opkg update && opkg upgrade"
   alias fullclean="warn \"fullclean not supported on this platform\""
 
   alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT &7 iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
-
 fi
 
 # each step below is expanded in it's own section based on OS and machine type
