@@ -225,15 +225,6 @@ alias .....='cd ../../../..'
 alias .4='cd ../../../../'
 alias .5='cd ../../../../..'
 
-## Colorize the grep command output for ease of use (good for log files)##
-alias grep='grep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
-alias grepc='grep --color=always -n -H --exclude-dir={.git,.svn,CVS}'
-alias egrep='egrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
-alias fgrep='fgrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
-alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
-alias hgrep="fc -El 0 | grep"
-alias greph='history | grep'
-
 alias tmuxnew="tmux attach || tmux new"
 
 #directory related aliases
@@ -376,6 +367,16 @@ fi
 if [[ "${MACHINE_TYPE}" == "router" ]]; then
   alias stow="echo Stow not available on type: \"${MACHINE_TYPE}"\"
 else
+
+  ## Colorize the grep command output for ease of use (good for log files)##
+  alias grep='grep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+  alias grepc='grep --color=always -n -H --exclude-dir={.git,.svn,CVS}'
+  alias egrep='egrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+  alias fgrep='fgrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+  alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
+  alias hgrep="fc -El 0 | grep"
+  alias greph='history | grep'
+
   #stow aliases
   if [ -x "$(command -v stow)" ]; then
     alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
