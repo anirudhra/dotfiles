@@ -21,7 +21,7 @@ debuglog "Dev/Homelab aliases sourced"
 ######## functions ######################
 
 # SSHFS Auto-Mount Function
-sshmount() {
+sshfsmount() {
   # --- CONFIGURATION VARIABLES ---
   local SSH_USER="root"
   local DEFAULT_PORT="22"
