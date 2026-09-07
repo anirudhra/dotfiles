@@ -96,11 +96,12 @@ alias sshha='ssh "${SSHROOT}@${PVEHA}" -t "${SSHTMUX}"'
 alias sshjf='ssh "${SSHROOT}@${PVEJF}" -t "${SSHTMUX}"'
 alias sshsagat='ssh "${SSHROOT}@${PVESAGAT}" -t "${SSHTMUX}"'
 alias sshimm='ssh "${SSHROOT}@${PVEIMM}" -t "${SSHTMUX}"'
+alias sshbot='ssh "${SSHROOT}@${PVEBOT}" -t "${SSHTMUX}"'
+alias sshnn='ssh "${SSHROOT}@${PVEN8N}" -t "${SSHTMUX}"'
 alias sshubuntu='ssh "${SSHROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
 alias sshubuntuuser='ssh "${SSHNONROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
 alias sshkuma='ssh "${SSHROOT}@${PVEKUMA}" -t "${SSHTMUX}"'
 alias sshlms='ssh "${SSHROOT}@${PVELMS}" -t "${SSHTMUX}"'
-alias sshts='ssh "${SSHROOT}@${PVETS}" -t "${SSHTMUX}"'
 
 # Remote machine aliases
 alias sshrasus='ssh "${SSHADMIN}@${R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'

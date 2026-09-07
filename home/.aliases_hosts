@@ -92,9 +92,9 @@ export PVEHA="${NET1}.64"
 export PVEUBUNTU="${NET1}.65"
 export PVESAGAT="${NET1}.66"
 export PVEKUMA="${NET1}.67"
-export PVELMS="${NET1}.68"
+export PVEBOT="${NET1}.68"
 export PVEIMM="${NET1}.69"
-export PVETS="${NET1}.70"
+export PVEN8N="${NET1}.70"
 export PVEVENTOY="${NET1}.71"
 
 # Guest network hosts
