@@ -110,10 +110,13 @@ copyrockboxthemes() {
 }
 
 # this function copies the compiled kernel image and modules archives into "artifacts" directory
-# and creates 3 versions of the kernel image to boot from: sdcard, emmc and USB1/SATA
+# and creates 3 versions of the kernel image to boot from: sda1, emmc and sdcard
 # Run this on the host that builds the Linux kernel
 getsbckernels() {
   if [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
+    local TARGET_USER="${SBC_USER:-nonroot}"
+    local TARGET_GROUP="${SBC_GROUP:-${TARGET_USER}}"
+
     local DATE=$(date +%Y%m%d)
     local KERNEL_VER="6.6.9"
 
@@ -126,21 +129,17 @@ getsbckernels() {
     local KERNEL_IMG_SDCARD="${KERNEL_IMG_BASE}-sdcard.img"
     local KERNEL_IMG_EMMC="${KERNEL_IMG_BASE}-emmc.img"
 
-    local BOOTCFG_BASE="bootimg"
-    local BOOTCFG="${BOOTCFG_BASE}.cfg"
-    local BOOTCFG_SDA1="${BOOTCFG_BASE}-sda1.cfg"
-    local BOOTCFG_SDCARD="${BOOTCFG_BASE}-sdcard.cfg"
-    local BOOTCFG_EMMC="${BOOTCFG_BASE}-emmc.cfg"
-
-    # packaged kernel and initird
-    local ZIMAGE="zImage"
-    local INITRDIMAGE="initrd.img"
-
     local BUILD_DIR="./tmp/deploy/images/qcom-armv7a"
     local KERNEL_CONFIG="./tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
     local KERNEL_DEFCONFIG="defconfig"
     local WORKING_DIR="."
     local ARTIFACTS_DIR="${WORKING_DIR}/artifacts"
+
+    # Command lines
+    local CMDLINE_COMMON="rw rootwait console=ttyMSM0,115200n8 libata.force=1.5Gbps,noncq systemd.unit=multi-user.target systemd.unified_cgroup_hierarchy=1"
+    local CMDLINE_SDA1="root=/dev/sda1 ${CMDLINE_COMMON}"
+    local CMDLINE_EMMC="root=/dev/mmcblk2p13 ${CMDLINE_COMMON}"
+    local CMDLINE_SDCARD="root=/dev/mmcblk0p1 ${CMDLINE_COMMON}"
 
     # create a backup if directory already exists
     if [ -d "${ARTIFACTS_DIR}" ]; then
@@ -155,35 +154,21 @@ getsbckernels() {
     sudo cp -f "${KERNEL_CONFIG}" "${ARTIFACTS_DIR}/${KERNEL_DEFCONFIG}"
     info "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
 
-    # fix permisisons
-    #sudo chown -R nobody:nogroup *
-    cd "${ARTIFACTS_DIR}" || exit
-    sudo chown -R nonroot:nonroot *
+    cd "${ARTIFACTS_DIR}" || return 1
+    sudo chown -R "${TARGET_USER}:${TARGET_GROUP}" *
 
-    # rename build artifacts with kernel version and timestamp
+    # rename and replicate target images
     mv -f "${MODULES_TAR_BUILDNAME}" "${MODULES_TAR}"
     cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDA1}"
     cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDCARD}"
     mv -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_EMMC}"
 
-    # extract default built image and cleanup
-    abootimg -x "${KERNEL_IMG_SDA1}"
-    rm -rf "${ZIMAGE}"
-    rm -rf "${INITRDIMAGE}"
-    cp -f "${BOOTCFG}" "${BOOTCFG_SDA1}"
-    cp -f "${BOOTCFG}" "${BOOTCFG_SDCARD}"
-    mv -f "${BOOTCFG}" "${BOOTCFG_EMMC}"
+    # update cmdline inline without extracting or writing temporary configs
+    abootimg -u "${KERNEL_IMG_SDA1}" -c "cmdline=${CMDLINE_SDA1}"
+    abootimg -u "${KERNEL_IMG_SDCARD}" -c "cmdline=${CMDLINE_SDCARD}"
+    abootimg -u "${KERNEL_IMG_EMMC}" -c "cmdline=${CMDLINE_EMMC}"
 
-    # replace root partitions in cfg files
-    sed -i 's|root=/dev/sda1|root=/dev/mmcblk0p1|g' ${BOOTCFG_SDCARD}
-    sed -i 's|root=/dev/sda1|root=/dev/mmcblk2p13|g' ${BOOTCFG_EMMC}
-
-    # repackage kernel files with new kernel command line
-    abootimg -u "${KERNEL_IMG_SDCARD}" -f "${BOOTCFG_SDCARD}"
-    abootimg -u "${KERNEL_IMG_EMMC}" -f "${BOOTCFG_EMMC}"
-
-    # done
-    cd .. || exit
+    cd - >/dev/null || return 1
   fi
 }
 
