@@ -124,6 +124,7 @@ getsbckernels() {
     local MODULES_TAR_BUILDNAME="modules-qcom-armv7a.tgz"
     local KERNEL_IMG_BASE="boot-ifc6410-armv7a-${KERNEL_VER}-${DATE}"
     local MODULES_TAR="modules-ifc6410-armv7a-${KERNEL_VER}-${DATE}.tgz"
+    local KERNEL_DTB_BUILDNAME="qcom-apq8064-ifc6410.dtb"
 
     local KERNEL_IMG_SDA1="${KERNEL_IMG_BASE}-sda1.img"
     local KERNEL_IMG_SDCARD="${KERNEL_IMG_BASE}-sdcard.img"
@@ -149,8 +150,9 @@ getsbckernels() {
 
     # copy build artifacts
     mkdir -p "${ARTIFACTS_DIR}"
-    sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${ARTIFACTS_DIR}/"
     sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${BUILD_DIR}/${KERNEL_DTB_BUILDNAME}" "${ARTIFACTS_DIR}/"
     sudo cp -f "${KERNEL_CONFIG}" "${ARTIFACTS_DIR}/${KERNEL_DEFCONFIG}"
     info "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
 

@@ -10,7 +10,7 @@
     headset_per_zone_lighting, headset-signature-startup, headset-signature-shutdown, headset-signature-passive, logivoice-nr-state, logivoice-ng-state,
     logivoice-comp-state, logivoice-deesser-state, logivoice-depopper-state, logivoice-limiter-state, logivoice-hpf-state, speed-change]
   _battery: 4096
-  _config_cookie: [197, 239]
+  _config_cookie: [112, 203]
   _modelId: B015405E0000
   _sensitive: {hires-scroll-mode: false, hires-smooth-invert: false, hires-smooth-resolution: false, persistent-remappable-keys: false, reprogrammable-keys: false}
   _unitId: B626398F
@@ -66,3 +66,32 @@
     235: 0, 236: 0, 256: 0, 257: 0}
   fn-swap: true
   multiplatform: 1
+- _NAME: MX Master 4
+  _absent: [hi-res-scroll, lowres-scroll-mode, onboard_profiles, report_rate, report_rate_extended, pointer_speed, dpi_extended, speed-change, backlight,
+    backlight_level, backlight_duration_hands_out, backlight_duration_hands_in, backlight_duration_powered, backlight-timed, led_control, led_zone_, rgb_control,
+    rgb_zone_, per-key-lighting, brightness_control, rgb_idle_effect, rgb_idle_timeout, rgb_sleep_timeout, rgb_startup_animation, rgb_shutdown_animation,
+    fn-swap, persistent-remappable-keys, disable-keyboard-keys, crown-smooth, divert-crown, divert-gkeys, m-key-leds, mr-key-led, multiplatform, gesture2-gestures,
+    gesture2-divert, gesture2-params, analog-button-tuning, sidetone, equalizer, adc_power_management, headset-eco-mode, headset-do-not-disturb, headset-mic-mute,
+    headset-mic-snr, headset-ai-nr, headset-ai-nr-level, headset-sidetone, headset-mic-gain, headset-mix-balance, headset-auto-sleep, headset-onboard-eq,
+    headset-eq-active-preset, headset-advanced-eq, headset_led_control, headset-onboard-effect, headset_per_zone_lighting, headset-signature-startup, headset-signature-shutdown,
+    headset-signature-passive, logivoice-nr-state, logivoice-ng-state, logivoice-comp-state, logivoice-deesser-state, logivoice-depopper-state, logivoice-limiter-state,
+    logivoice-hpf-state]
+  _battery: 4100
+  _config_cookie: [38, 111]
+  _modelId: B04200000000
+  _sensitive: {hires-scroll-mode: ignore, hires-smooth-invert: ignore, hires-smooth-resolution: ignore}
+  _unitId: 882A9BA2
+  change-host: null
+  divert-keys: {82: 0, 83: 0, 86: 0, 195: 0, 196: 0, 416: 0}
+  dpi: 1000
+  force-sensing: {0: 4807}
+  haptic-level: 25
+  hires-scroll-mode: false
+  hires-smooth-invert: false
+  hires-smooth-resolution: true
+  reprogrammable-keys: {82: 82, 83: 83, 86: 86, 195: 195, 196: 196, 416: 416}
+  scroll-ratchet: 2
+  scroll-ratchet-torque: 75
+  smart-shift: 12
+  thumb-scroll-invert: false
+  thumb-scroll-mode: false
