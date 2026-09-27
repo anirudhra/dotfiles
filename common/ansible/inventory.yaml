@@ -11,6 +11,10 @@ dockerlxc:
       ansible_host: 10.100.10.66
     immich:
       ansible_host: 10.100.10.69
+    nanobot:
+      ansible_host: 10.100.10.68
+    n8n:
+      ansible_host: 10.100.10.70
   vars:
     ansible_user: root
 
