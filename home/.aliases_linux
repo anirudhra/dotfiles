@@ -195,6 +195,10 @@ if command -v inxi >/dev/null 2>&1; then
   alias sysinfo='sudo inxi -Fzx'
 fi
 
+if command -v picocom >/dev/null 2>&1; then
+  alias sbcuart="picocom -b 115200 --imap lfcrlf /dev/ttyUSB0"
+fi
+
 alias booterrors='sudo journalctl  -b 0 -p 3'
 alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias reservice='sudo systemctl daemon-reload'
