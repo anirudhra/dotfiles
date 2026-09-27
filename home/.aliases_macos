@@ -39,6 +39,11 @@ alias firefox="open -a firefox"
 alias chrome="open -a google\ chrome"
 alias textedit='open -a TextEdit'
 
+# uart connection with picocom
+if command -v picocom &>/dev/null; then
+  alias sbcuart="picocom -b 115200 --flow none /dev/cu.usbserial-AB0P5YZV"
+fi
+
 # iTunes playlist converter for NAS
 alias updatepl="cp ~/Music/MusicLibrary/library/Library.xml ~/Music/Playlists/library/Library.xml && cd ~/code/github/ipod_scripts/playlists_itunesxml_m3u && ./runme_itunesxml_m3u.sh && cp ~/Music/Playlists/playlists/* ~/Music/MusicLibrary/playlists/"
 
