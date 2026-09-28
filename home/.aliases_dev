@@ -143,6 +143,11 @@ alias pingserver='ping "${PVESERVER}"'
 alias iperfdown='iperf3 -Rc "${PVESERVER}"'
 alias iperfup='iperf3 -c "${PVESERVER}"'
 
+if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+  alias iperfupwifi="iperf3 -c ${PVESERVER} --bind-dev wlan0 -B ${SBCWIFI} -t 10 -i 1"
+  alias iperfdownwifi="iperf3 -c ${PVESERVER} --bind-dev wlan0 -B ${SBCWIFI} -R -t 10 -i 1"
+fi
+
 # goto aliases
 alias gocode='cd "${HOME}/code"'
 alias gogit='cd "${HOME}/code/github"'
