@@ -373,7 +373,9 @@ fi
 
 # not available for routers
 if [[ "${MACHINE_TYPE}" == "router" ]]; then
-  alias stow="echo Stow not available on type: \"${MACHINE_TYPE}"\"
+  #alias stow="echo Stow not available on type: \"${MACHINE_TYPE}"\"
+  alias stow='${DOTFILES_HOME}/dotfiles/common/scripts/dotsync.sh'
+  alias restow='stow'
 else
 
   ## Colorize the grep command output for ease of use (good for log files)##

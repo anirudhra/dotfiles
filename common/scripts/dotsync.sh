@@ -47,7 +47,7 @@ done
 
   # Create the symlink
   ln -s "$src_abs" "$dest"
-  echo "Linked: ~/${rel_path} -> ~/dotfiles/home/${rel_path}"
+  echo "Linked: ~/${rel_path} -> ${SRC_DIR}/${rel_path}"
 done
 
 echo "Dotfiles sync complete."
