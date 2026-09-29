@@ -126,7 +126,15 @@ manualstow() {
 
 alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
-alias getdot="cd ${DOTFILES_HOME} && wget http://github.com/anirudhra/dotfiles/archive/main.tar.gz && rm -rf ${DOTFILES_HOME}/dotfiles-bak && mv ${DOTFILES_HOME}/dotfiles ${DOTFILES_HOME}/dotfiles-bak && tar xvf main.tar.gz && mv ${DOTFILES_HOME}/dotfiles-main ${DOTFILES_HOME}/dotfiles && rm ${DOTFILES_HOME}/main.tar.gz"
+alias getdot='
+  cd "$DOTFILES_HOME" &&
+  wget -O main.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" &&
+  rm -rf "$DOTFILES_HOME/dotfiles-bak" &&
+  [ ! -d "$DOTFILES_HOME/dotfiles" ] || mv "$DOTFILES_HOME/dotfiles" "$DOTFILES_HOME/dotfiles-bak" &&
+  tar -xzf main.tar.gz &&
+  mv "$DOTFILES_HOME/dotfiles-main" "$DOTFILES_HOME/dotfiles" &&
+  rm -f main.tar.gz
+'
 
 export lscolors="auto"
 export lesscolors=""
