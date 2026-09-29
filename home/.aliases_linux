@@ -61,6 +61,56 @@ cleanlocales() {
   sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
 }
 
+# wifi reset for ifc6410 dev board
+wifi-reset() {
+  if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+
+    local target_ssid="${1:-Tank}"
+    local sdio_dev="mmc1:0001:1"
+    local sdio_driver="/sys/bus/sdio/drivers/ath6kl_sdio"
+
+    # Ensure root execution
+    if [[ $EUID -ne 0 ]]; then
+      echo "[!] wifi-reset requires root privileges. Escalating..." >&2
+      sudo -E zsh -c "$(typeset -f wifi-reset); wifi-reset '$target_ssid'"
+      return $?
+    fi
+
+    echo "==> Stopping network managers..."
+    systemctl stop NetworkManager wpa_supplicant 2>/dev/null
+
+    # Reset the physical SDIO target to trigger SRAM/firmware reload
+    if [[ -d "$sdio_driver" ]]; then
+      if [[ -e "$sdio_driver/$sdio_dev" ]]; then
+        echo "==> Detaching SDIO target ($sdio_dev)..."
+        echo "$sdio_dev" >"$sdio_driver/unbind"
+        sleep 1
+      fi
+
+      echo "==> Re-binding SDIO target ($sdio_dev)..."
+      echo "$sdio_dev" >"$sdio_driver/bind"
+      sleep 2
+    else
+      echo "[!] ath6kl_sdio driver path not found in sysfs!" >&2
+      return 1
+    fi
+
+    # Bring up the interface and turn off power management
+    echo "==> Bringing wlan0 UP and disabling 802.11 power saving..."
+    ip link set wlan0 up
+    iw dev wlan0 set power_save off
+
+    echo "==> Starting network services..."
+    systemctl start wpa_supplicant NetworkManager
+    sleep 3
+
+    echo "==> Associating with '$target_ssid'..."
+    nmcli connection up "$target_ssid"
+  else
+    echo "Only supported on IFC6410 SBC"
+  fi
+}
+
 copyrockboxthemes() {
   # Usage:
   #   copyrockboxthemes            # copy from current dir's backdrops/fonts/icons/themes/wps
