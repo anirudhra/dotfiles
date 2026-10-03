@@ -14,9 +14,13 @@ source "${ALIASES_HOME}/.helperfuncs"
 
 OS_TYPE=$(detect_os_type)           # this is the OS of the machine running the script
 MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+SERVER_TYPE=$(detect_server_type)
 desktopEnv=${XDG_CURRENT_DESKTOP}   #gnome, cinnamon, kde...
 
 debuglog "Machine Type: ${MACHINE_TYPE}"
+if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+  debuglog "Server Type: ${SERVER_TYPE}"
+fi
 debuglog "Linux aliases sourced"
 
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]]; then
@@ -27,17 +31,32 @@ fi
 
 #intended to be run on PVE guests/SBC only
 dockerupdateall() {
-  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
-    if command -v docker >/dev/null 2>&1; then #ensure docker is installed on host
-      cd "${DOCKERDIR}" || exit
-      find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
-      docker image prune -a -f
-      docker system prune --volumes -f
-      cd - || return
-    fi
-  else
-    warn "dockerupdateall not supported on this platform"
+  local docker_host=false
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] ||
+    { [[ "${MACHINE_TYPE}" == "pveserver" ]] && { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; }; then
+    docker_host=true
   fi
+
+  if [[ "${docker_host}" != "true" ]]; then
+    warn "dockerupdateall not supported on this platform"
+    return 1
+  fi
+
+  if ! command -v docker >/dev/null 2>&1; then
+    warn "docker is not installed on this platform"
+    return 1
+  fi
+  if [[ -z "${DOCKERDIR:-}" ]] || [[ ! -d "${DOCKERDIR}" ]]; then
+    warn "Set DOCKERDIR to an existing Docker Compose directory before running dockerupdateall"
+    return 1
+  fi
+
+  local original_dir="${PWD}"
+  cd "${DOCKERDIR}" || return 1
+  find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
+  docker image prune -a -f
+  docker system prune --volumes -f
+  cd "${original_dir}" || return 1
 }
 
 #intended to be run on PVE guests/SBC/Client only
@@ -282,12 +301,17 @@ fi
 
 #docker and other homelab specific aliases
 if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
-  # PVE go shortcuts
-  export MEDIADIR="/mnt/sata-ssd/ssd-media/media"
-  export DATADIR="/mnt/sata-ssd/ssd-data"
-  export NVMEDIR="/mnt/nvme-ssd/nvme-data"
-  export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
-  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+  if [[ "${SERVER_TYPE}" == "pve" ]]; then
+    # PVE go shortcuts
+    export MEDIADIR="/mnt/sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/nvme-ssd/nvme-data"
+    export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
+    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+  else
+    export DOCKERDIR="${DOCKERDIR:-}"
+    export DOCKERBACKUPDIR="${DOCKERBACKUPDIR:-${HOME}}"
+  fi
 
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
   # LXC/VM and SBC shortcuts
@@ -359,12 +383,38 @@ elif [[ "${MACHINE_TYPE}" == "router" ]]; then
   alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT &7 iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
 fi
 
+if [[ "${MACHINE_TYPE}" == "pveserver" ]] &&
+  { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; } &&
+  command -v docker >/dev/null 2>&1; then
+  alias dockerup='docker compose up -d'
+  alias dockerdown='docker compose down'
+  alias dockerrestart='docker compose down && docker compose up -d'
+  alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+  alias dockerclean='docker system prune --volumes'
+  dockerbackup() {
+    if [[ -z "${DOCKERDIR:-}" ]] || [[ ! -d "${DOCKERDIR}" ]]; then
+      warn "Set DOCKERDIR to an existing Docker Compose directory before running dockerbackup"
+      return 1
+    fi
+    if [[ ! -d "${DOCKERBACKUPDIR}" ]]; then
+      warn "Docker backup directory does not exist: ${DOCKERBACKUPDIR}"
+      return 1
+    fi
+    sudo tar -zcvf "${DOCKERBACKUPDIR}/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz" "${DOCKERDIR}"
+  }
+fi
+
 # each step below is expanded in it's own section based on OS and machine type
-alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
+if [[ "${MACHINE_TYPE}" == "pveserver" ]] &&
+  { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; then
+  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate'
+else
+  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
+fi
 
 # generic  aliases
-alias gomedia='cd ${MEDIADIR}'
-alias godata='cd ${DATADIR}'
-alias gonvme='cd ${NVMEDIR}'
-alias godocker='cd ${DOCKERDIR}'
-alias gopve='cd ${PVEDIR}'
+if [[ -n "${MEDIADIR:-}" ]]; then alias gomedia='cd "${MEDIADIR}"'; fi
+if [[ -n "${DATADIR:-}" ]]; then alias godata='cd "${DATADIR}"'; fi
+if [[ -n "${NVMEDIR:-}" ]]; then alias gonvme='cd "${NVMEDIR}"'; fi
+if [[ -n "${DOCKERDIR:-}" ]]; then alias godocker='cd "${DOCKERDIR}"'; fi
+if [[ -n "${PVEDIR:-}" ]]; then alias gopve='cd "${PVEDIR}"'; fi

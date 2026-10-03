@@ -328,9 +328,26 @@ detect_busybox_alias() {
   fi
 }
 
-# Detect the Machine type
+# Detect the server subtype
+# Returns "pve", "openmediavault", "truenas", or "unknown".
+detect_server_type() {
+  if command -v pveversion >/dev/null 2>&1; then
+    echo "pve"
+  elif command -v omv-salt >/dev/null 2>&1 ||
+       [ -d /usr/share/openmediavault ] ||
+       [ -f /etc/openmediavault/config.xml ]; then
+    echo "openmediavault"
+  elif command -v midclt >/dev/null 2>&1 ||
+       [ -f /etc/truenas.conf ]; then
+    echo "truenas"
+  else
+    echo "unknown"
+  fi
+}
+
+# Detect the machine type
 # Returns:
-#   - "pveserver" for PVE Server
+#   - "pveserver" for PVE Server, OpenMediaVault, or TrueNAS SCALE
 #   - "pveguest" for PVE Guest
 #   - "router" for ASUS/OpenWRT/DDWRT router
 #   - "sbc" for linux on SBC
@@ -351,32 +368,21 @@ detect_machine_type() {
     #debuglog "Detected SBC"
     echo "sbc"
 
-  # 3. Virtualization and server/NAS detection 
+  # 3. Virtualization and server/NAS detection
   elif [ -f /proc/1/environ ]; then
-    if command -v pveversion >/dev/null 2>&1; then
-        # Proxmox VE host
-        echo "pveserver"
-
-    elif command -v omv-salt >/dev/null 2>&1 ||
-         [ -d /usr/share/openmediavault ] ||
-         [ -f /etc/openmediavault/config.xml ]; then
-        # OpenMediaVault host
-        echo "pveserver"
-
-    elif command -v midclt >/dev/null 2>&1 || 
-         [ -f /etc/truenas.conf ]; then
-        # TrueNAS SCALE host
-        echo "pveserver"
-
+    local server_type
+    server_type=$(detect_server_type)
+    if [[ "${server_type}" != "unknown" ]]; then
+      echo "pveserver"
     elif command -v systemd-detect-virt >/dev/null 2>&1; then
-        # Virtualized Linux guest
-        if [ "$(systemd-detect-virt)" = "none" ]; then
-            echo "client"
-        else
-            echo "pveguest"
-        fi
+      # Virtualized Linux guest
+      if [ "$(systemd-detect-virt)" = "none" ]; then
+        echo "client"
+      else
+        echo "pveguest"
+      fi
     else
-        echo "unknown linux"
+      echo "unknown linux"
     fi
   else
     #debuglog "Detected client"
