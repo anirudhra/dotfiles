@@ -37,6 +37,12 @@ source "${ALIASES_HOME}/.aliases_dev"
 
 ######## functions ######################
 
+# function to recursively archive an entire folder
+tardir() {
+  local target="${1%/}"
+  tar -czvf "${target}_$(date +%Y-%m-%d).tar.gz" "$target"
+}
+
 # sets up tmux plugins
 setuptmux() {
   local tpm_path="${HOME}/.tmux/plugins/tpm"
