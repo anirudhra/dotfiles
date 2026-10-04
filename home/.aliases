@@ -148,6 +148,10 @@ alias getdot='
   rm -f main.tar.gz
 '
 
+# ansible aliases
+alias dfupdateall="goans && ./ans.sh dfupdateall"
+alias upgradeall="goans && ./ans.sh upgradeall"
+
 export lscolors="auto"
 export lesscolors=""
 # if the terminal supports colors, set lscolors to always
