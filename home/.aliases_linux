@@ -345,7 +345,11 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
   else
     export MEDIADIR="/mnt/storage/media"
     export DATADIR="/mnt/storage/data"
+    export MEDIA_PATH="${MEDIADIR}"
+    export DATA_PATH="${DATADIR}"
     export DOCKERDIR="${DATADIR}/docker/compose"
+    export DOCKER_C_PATH="${DOCKERDIR}"
+    export DOCKER_D_PATH="${DATADIR}/docker/data"
     export DOCKERBACKUPDIR="${DOCKERBACKUPDIR:-${HOME}}"
     alias upgrade='fullupdate && fullclean && dockerupdateall'
   fi
