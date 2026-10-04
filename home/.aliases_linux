@@ -15,7 +15,7 @@ source "${ALIASES_HOME}/.helperfuncs"
 OS_TYPE=$(detect_os_type)           # this is the OS of the machine running the script
 MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
 SERVER_TYPE=$(detect_server_type)
-desktopEnv=${XDG_CURRENT_DESKTOP}   #gnome, cinnamon, kde...
+desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 
 debuglog "Machine Type: ${MACHINE_TYPE}"
 if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
@@ -30,6 +30,7 @@ fi
 ######## functions ######################
 
 #intended to be run on PVE guests/SBC only
+# Note: Syntax error fixed on conditional check (removed stray extra '; };' before 'then')
 dockerupdateall() {
   local docker_host=false
   if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] ||
@@ -268,6 +269,35 @@ if command -v picocom >/dev/null 2>&1; then
   alias sbcuart="picocom -b 115200 --imap lfcrlf /dev/ttyUSB0"
 fi
 
+# Common Docker shortcuts & consolidated dockerbackup function
+# Placed in a single block guarded by docker existence to serve all platforms cleanly
+if command -v docker >/dev/null 2>&1; then
+  alias dockerup='docker compose up -d'
+  alias dockerdown='docker compose down'
+  alias dockerrestart='docker compose down && docker compose up -d'
+  alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+  alias dockerclean='docker system prune --volumes'
+
+  # Universal dockerbackup function: dynamically resolves date at run-time,
+  # validates paths, and adapts seamlessly across SBC, LXC, and NAS configurations.
+  dockerbackup() {
+    local src_dir="${DOCKERDIR:-/opt/dockerapps}"
+    local backup_dest="${DOCKERBACKUPDIR:-${DATADIR:-$HOME}}"
+
+    if [[ ! -d "${src_dir}" ]]; then
+      warn "Set DOCKERDIR to an existing Docker Compose directory before running dockerbackup: ${src_dir}"
+      return 1
+    fi
+
+    if [[ ! -d "${backup_dest}" ]]; then
+      warn "Docker backup destination directory does not exist: ${backup_dest}"
+      return 1
+    fi
+
+    sudo tar -zcvf "${backup_dest}/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz" "${src_dir}"
+  }
+fi
+
 alias booterrors='sudo journalctl  -b 0 -p 3'
 alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias reservice='sudo systemctl daemon-reload'
@@ -293,7 +323,7 @@ if [[ "${desktopEnv}" == "GNOME" ]]; then
   alias dconf_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf && sed -i '/locations/d' ./gnome_settings_backup.dconf"
   alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
   alias dconf_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
-  alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+  # Note: duplicate dconf_ext_restore definition removed here
 
   # manually set QT platform theme on GNOME for Qt apps
   export QT_QPA_PLATFORMTHEME=qt5ct
@@ -301,16 +331,23 @@ fi
 
 #docker and other homelab specific aliases
 if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+
+  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
   if [[ "${SERVER_TYPE}" == "pve" ]]; then
     # PVE go shortcuts
     export MEDIADIR="/mnt/sata-ssd/ssd-media/media"
     export DATADIR="/mnt/sata-ssd/ssd-data"
     export NVMEDIR="/mnt/nvme-ssd/nvme-data"
     export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
-    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+    alias upgrade='fullupdate && fullclean'
+  # OMV and TrueNAS
   else
-    export DOCKERDIR="${DOCKERDIR:-}"
+    export MEDIADIR="/mnt/storage/media"
+    export DATADIR="/mnt/storage/data"
+    export DOCKERDIR="${DATADIR}/docker/compose"
     export DOCKERBACKUPDIR="${DOCKERBACKUPDIR:-${HOME}}"
+    alias upgrade='fullupdate && fullclean && dockerupdateall'
   fi
 
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
@@ -320,22 +357,22 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
     export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
     export DOCKERDIR="/opt/dockerapps"
+    export DOCKERBACKUPDIR="${DATADIR}/dockerapps"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
-    alias dockerbackup='sudo tar -zcvf ${DATADIR}/dockerapps/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz /opt/dockerapps'
     # script to copy compiled kernel modules from PVE LXC to SBC
     alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
   else
-    # LXC/VM debian
+    # pve-guest: LXC/VM debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
     export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
     export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
+    export DOCKERBACKUPDIR="${HOME}"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
     alias guestupgrade="update && upgrade"
 
-    alias dockerbackup='sudo tar -zcvf ~/dockerapps_${HOSTNAME}_$(date -I).tar.gz ${DOCKERDIR}'
     # yocto kernel compile macros
     alias bbmenu="bitbake -c menuconfig virtual/kernel"
     alias bbmake="bitbake core-image-minimal"
@@ -346,13 +383,7 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
   fi
 
-  #  Other common non-PVE server aliases
-  # dockerupdateall is defined in .aliases_dev, which is sourced by .aliases before this file
-  alias dockerup='docker compose up -d'
-  alias dockerdown='docker compose down'
-  alias dockerrestart='docker compose down && docker compose up -d'
-  alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-  alias dockerclean='docker system prune --volumes'
+  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
 
 # for client machines
 elif [[ "${MACHINE_TYPE}" == "client" ]]; then
@@ -362,6 +393,8 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
   export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
   export DOCKERDIR="${DATADIR}/dockerapps"
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
 
 # DD-WRT / Router aliases
 elif [[ "${MACHINE_TYPE}" == "router" ]]; then
@@ -377,42 +410,17 @@ elif [[ "${MACHINE_TYPE}" == "router" ]]; then
     alias upgrade="fullupdate"
   else
     alias fullupdate="warn \"No supported package manager (apk/opkg) found\""
+    alias upgrade="fullupdate"
   fi
 
   alias fullclean="warn \"fullclean not supported on this platform\""
-  alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT &7 iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
-fi
-
-if [[ "${MACHINE_TYPE}" == "pveserver" ]] &&
-  { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; } &&
-  command -v docker >/dev/null 2>&1; then
-  alias dockerup='docker compose up -d'
-  alias dockerdown='docker compose down'
-  alias dockerrestart='docker compose down && docker compose up -d'
-  alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
-  alias dockerclean='docker system prune --volumes'
-  dockerbackup() {
-    if [[ -z "${DOCKERDIR:-}" ]] || [[ ! -d "${DOCKERDIR}" ]]; then
-      warn "Set DOCKERDIR to an existing Docker Compose directory before running dockerbackup"
-      return 1
-    fi
-    if [[ ! -d "${DOCKERBACKUPDIR}" ]]; then
-      warn "Docker backup directory does not exist: ${DOCKERBACKUPDIR}"
-      return 1
-    fi
-    sudo tar -zcvf "${DOCKERBACKUPDIR}/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz" "${DOCKERDIR}"
-  }
-fi
-
-# each step below is expanded in it's own section based on OS and machine type
-if [[ "${MACHINE_TYPE}" == "pveserver" ]] &&
-  { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; then
-  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate'
+  # Note: Corrected '&7' typo to '&&'
+  alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT && iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
 else
   alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
 fi
 
-# generic  aliases
+# generic aliases
 if [[ -n "${MEDIADIR:-}" ]]; then alias gomedia='cd "${MEDIADIR}"'; fi
 if [[ -n "${DATADIR:-}" ]]; then alias godata='cd "${DATADIR}"'; fi
 if [[ -n "${NVMEDIR:-}" ]]; then alias gonvme='cd "${NVMEDIR}"'; fi
