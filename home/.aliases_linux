@@ -323,7 +323,6 @@ if [[ "${desktopEnv}" == "GNOME" ]]; then
   alias dconf_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf && sed -i '/locations/d' ./gnome_settings_backup.dconf"
   alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
   alias dconf_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
-  # Note: duplicate dconf_ext_restore definition removed here
 
   # manually set QT platform theme on GNOME for Qt apps
   export QT_QPA_PLATFORMTHEME=qt5ct
@@ -340,16 +339,14 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
     export DATADIR="/mnt/sata-ssd/ssd-data"
     export NVMEDIR="/mnt/nvme-ssd/nvme-data"
     export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
+    export DOCKERDATADIR="${DOCKERDIR}"
     alias upgrade='fullupdate && fullclean'
   # OMV and TrueNAS
   else
     export MEDIADIR="/mnt/storage/media"
     export DATADIR="/mnt/storage/data"
-    export MEDIA_PATH="${MEDIADIR}"
-    export DATA_PATH="${DATADIR}"
     export DOCKERDIR="${DATADIR}/docker/compose"
-    export DOCKER_C_PATH="${DOCKERDIR}"
-    export DOCKER_D_PATH="${DATADIR}/docker/data"
+    export DOCKERDATADIR="${DATADIR}/docker/data"
     export DOCKERBACKUPDIR="${DOCKERBACKUPDIR:-${HOME}}"
     alias upgrade='fullupdate && fullclean && dockerupdateall'
   fi
@@ -361,6 +358,7 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
     export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
     export DOCKERDIR="/opt/dockerapps"
+    export DOCKERDATADIR="${DOCKERDIR}"
     export DOCKERBACKUPDIR="${DATADIR}/dockerapps"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
@@ -372,6 +370,7 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
     export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
     export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
+    export DOCKERDATADIR="${DOCKERDIR}"
     export DOCKERBACKUPDIR="${HOME}"
     export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
@@ -396,6 +395,7 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
   export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
   export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
   export DOCKERDIR="${DATADIR}/dockerapps"
+  export DOCKERDATADIR="${DOCKERDIR}"
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
   alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
@@ -429,4 +429,5 @@ if [[ -n "${MEDIADIR:-}" ]]; then alias gomedia='cd "${MEDIADIR}"'; fi
 if [[ -n "${DATADIR:-}" ]]; then alias godata='cd "${DATADIR}"'; fi
 if [[ -n "${NVMEDIR:-}" ]]; then alias gonvme='cd "${NVMEDIR}"'; fi
 if [[ -n "${DOCKERDIR:-}" ]]; then alias godocker='cd "${DOCKERDIR}"'; fi
+if [[ -n "${DOCKERDATADIR:-}" ]]; then alias godockerdata='cd "${DOCKERDATADIR}"'; fi
 if [[ -n "${PVEDIR:-}" ]]; then alias gopve='cd "${PVEDIR}"'; fi
