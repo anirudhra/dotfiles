@@ -82,6 +82,7 @@ alias sshowrt='ssh "${SSHROOT}@${OPENWRTROUTER}" -t "${SSHTMUX}"'
 #alias sshusg='ssh "${SSHROOT}@${USG}"'
 
 alias sshpve='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}" -t "${SSHTMUX}"'
+alias sshomv='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${OMVSERVER}" -t "${SSHTMUX}"'
 alias sshserver='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}"' #non-tmux version
 
 alias sshsbc='ssh "${SSHROOT}@${SBC}" -t "${SSHTMUX}"'

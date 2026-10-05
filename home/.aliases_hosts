@@ -78,6 +78,7 @@ export CAM_BASE="${NET1}.40"
 
 # Servers
 export PVESERVER="${NET1}.50"
+export OMVSERVER="${NET1}.10"
 export SBC="${NET1}.51"
 export SBCWIFI="${NET1}.52"
 #export SBC1="${NET3}.53"
