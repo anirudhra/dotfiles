@@ -3,12 +3,12 @@
 # Helper functions for dotfiles
 # detects various system types, OS and architectures
 
-# Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_HELPERFUNCS}" ]; then
-  return 0 # Exit the script if already sourced
+# Guard variable to ensure sourcing only once.
+# Safe when the caller enables set -u.
+if [[ -n "${SOURCED_HELPERFUNCS:-}" ]]; then
+    return 0
 fi
 
-# Set the guard variable
 SOURCED_HELPERFUNCS=1
 
 # Logging functions

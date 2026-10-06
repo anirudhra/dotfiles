@@ -126,6 +126,9 @@ source ${HOME}/.profile
 # zoxide to replace cd, if it exists
 command -v zoxide &>/dev/null && eval "$(zoxide init --cmd cd zsh)"
 
+# no more homebrew compile, lock it as it doesn't provide any intel binaries anymore 
+export HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK=1
+
 setopt CORRECT
 
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
