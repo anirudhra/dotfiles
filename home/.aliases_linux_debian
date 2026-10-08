@@ -14,6 +14,7 @@ SOURCED_ALIASES_LINUX_DEBIAN=1
 source "${ALIASES_HOME}/.helperfuncs"
 
 MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+SERVER_TYPE=$(detect_server_type)
 
 debuglog "Debian aliases sourced"
 
@@ -23,7 +24,11 @@ export pkgmgr="apt"
 export pkgmgrdpkg="dpkg"
 
 alias fullclean='sudo ${pkgmgr} clean -y && sudo ${pkgmgr} autoclean -y && sudo ${pkgmgr} --purge autoremove -y'
-alias fullupdate='sudo ${pkgmgr} update -y && sudo ${pkgmgr} dist-upgrade -y'
+if [[ "${SERVER_TYPE}" == "openmediavault" ]]; then
+  alias fullupdate='sudo omv-upgrade && fullclean && sudo omv-salt deploy run apt'
+else
+  alias fullupdate='sudo ${pkgmgr} update -y && sudo ${pkgmgr} dist-upgrade -y'
+fi
 
 alias showinstalled="sudo ${pkgmgr} list --installed | less ${lesscolors}"
 alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && ${pkgmgrdpkg} --list | grep -i -e kernel- -e linux-image"

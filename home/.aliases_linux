@@ -349,11 +349,7 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
     export DOCKERDATADIR="${DATADIR}/docker/data"
     export DOCKERBACKUPDIR="${DOCKERBACKUPDIR:-${HOME}}"
 
-    if [[ "${SERVER_TYPE}" == "openmediavault" ]]; then
-      alias upgrade='sudo omv-upgrade && fullclean && sudo omv-salt deploy run apt && dockerupdateall'
-    else
-      alias upgrade='fullupdate && fullclean && dockerupdateall'
-    fi
+    alias upgrade='fullupdate && fullclean'
   fi
 
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
