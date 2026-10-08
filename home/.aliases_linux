@@ -348,7 +348,12 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
     export DOCKERDIR="${DATADIR}/docker/compose"
     export DOCKERDATADIR="${DATADIR}/docker/data"
     export DOCKERBACKUPDIR="${DOCKERBACKUPDIR:-${HOME}}"
-    alias upgrade='fullupdate && fullclean && dockerupdateall'
+
+    if [[ "${SERVER_TYPE}" == "openmediavault" ]]; then
+      alias upgrade='sudo omv-upgrade && fullclean && dockerupdateall'
+    else
+      alias upgrade='fullupdate && fullclean && dockerupdateall'
+    fi
   fi
 
 elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
