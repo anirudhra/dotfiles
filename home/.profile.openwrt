@@ -10,7 +10,10 @@
 
 # always fixed on ddwrt
 export TEMP_ROOT_HOME="/root" #this gets wiped on every reboot only in DDWRT (/tmp/root)
-export ROOT_HOME="/root"      #this is persistent on emmc
+
+# use one of the ROOT_HOMEs not both, pick emmc or usb mounted on /opt
+#export ROOT_HOME="/root"      #this is persistent on emmc
+export ROOT_HOME="/opt/root" #this is persistent on usb
 export DOTFILES_HOME="${ROOT_HOME}"
 #export JFFS_HOME="/jffs"            #this is persistent on USB, only in DDWRT, not in OpenWRT
 
