@@ -176,7 +176,7 @@ manualstow() {
 
 alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
 alias redot='cd "${HOME}/dotfiles" && git pull && restow'
-alias dotupdate='cd "${HOME}/dotfiles" && gitpullall && cd -'
+alias dotupdate='cd "${DOTFILES_HOME}/dotfiles" && gitpullall && cd -'
 alias getdot='
   cd "$DOTFILES_HOME" &&
   wget -O main.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" &&
