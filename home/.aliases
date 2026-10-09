@@ -37,6 +37,44 @@ source "${ALIASES_HOME}/.aliases_dev"
 
 ######## functions ######################
 
+# batch copy to recursively copy from a list of directories or files
+batch_copy() {
+  local list_file="$1"
+  local src_dir="$2"
+  local dest_dir="$3"
+
+  if [[ -z "$list_file" || -z "$src_dir" || -z "$dest_dir" ]]; then
+    echo "Usage: batch_copy <list_file> <source_dir> <destination_dir>" >&2
+    return 1
+  fi
+
+  if [[ ! -f "$list_file" ]]; then
+    echo "Error: List file '$list_file' not found." >&2
+    return 1
+  fi
+
+  mkdir -p "$dest_dir" || return 1
+
+  while IFS= read -r item || [[ -n "$item" ]]; do
+    # Strip carriage returns (CRLF) and leading/trailing whitespace
+    item="${item%$'\r'}"
+    item="$(echo -e "${item}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+    # Skip empty lines and comment lines
+    [[ -z "$item" || "$item" =~ ^# ]] && continue
+
+    local source_path="${src_dir%/}/$item"
+
+    if [[ -e "$source_path" ]]; then
+      echo "Copying: $item"
+      # -a preserves permissions, symlinks, timestamps, and copies recursively
+      cp -a "$source_path" "$dest_dir/"
+    else
+      echo "Warning: '$source_path' does not exist, skipping." >&2
+    fi
+  done <"$list_file"
+}
+
 # function to recursively archive an entire folder
 tardir() {
   local target="${1%/}"
