@@ -43,6 +43,11 @@ batch_copy() {
   local src_dir="$2"
   local dest_dir="$3"
 
+  # Use following commands to generate the batch copy list
+  # Standard items (excluding hidden files): printf '%s\n' * > list.txt
+  # Include hidden files and folders: (shopt -s nullglob dotglob; printf '%s\n' * > list.txt)
+  # Directories only: printf '%s\n' */ | sed 's|/$||' > list.txt
+
   if [[ -z "$list_file" || -z "$src_dir" || -z "$dest_dir" ]]; then
     echo "Usage: batch_copy <list_file> <source_dir> <destination_dir>" >&2
     return 1
