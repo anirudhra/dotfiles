@@ -1,3 +1,9 @@
+# Exit immediately if shell is non-interactive (cron, OMV, scripts)
+case "$-" in
+*i*) ;;
+*) return 0 2>/dev/null || exit 0 ;;
+esac
+
 # Guard variable to ensure sourcing only once
 if [ -n "${SOURCED_PROFILE}" ]; then
   return 0 # Exit the script if already sourced
