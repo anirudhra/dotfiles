@@ -40,7 +40,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export VISUAL='vimr'
   export EDITOR='nvim'
 
-  export PATH="${HOME}/.local/bin:${PATH}"
+  export PATH="/opt/local/bin:${HOME}/.local/bin:${PATH}"
   export PATH="./:/usr/local/sbin:${PATH}"
 
   LESSPIPE=$(which src-hilite-lesspipe.sh)
