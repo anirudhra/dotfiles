@@ -194,7 +194,7 @@ alias getdot='
 
 # ansible aliases
 alias dfupdateall="goans && ./ans.sh dfupdateall && cd -"
-alias upgradeall="goans && ./ans.sh upgradeall && cd -"
+alias pveupgradeall="goans && ./ans.sh upgradeall && cd -"
 
 export lscolors="auto"
 export lesscolors=""
