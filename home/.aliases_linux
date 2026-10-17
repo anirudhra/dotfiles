@@ -1,0 +1,434 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for linux; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_LINUX}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_LINUX=1
+
+source "${ALIASES_HOME}/.helperfuncs"
+
+OS_TYPE=$(detect_os_type)           # this is the OS of the machine running the script
+MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+SERVER_TYPE=$(detect_server_type)
+desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
+
+debuglog "Machine Type: ${MACHINE_TYPE}"
+if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+  debuglog "Server Type: ${SERVER_TYPE}"
+fi
+debuglog "Linux aliases sourced"
+
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]]; then
+  source "${ALIASES_HOME}/.aliases_linux_${OS_TYPE}"
+fi
+
+######## functions ######################
+
+#intended to be run on PVE guests/SBC only
+# Note: Syntax error fixed on conditional check (removed stray extra '; };' before 'then')
+dockerupdateall() {
+  local docker_host=false
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] ||
+    { [[ "${MACHINE_TYPE}" == "pveserver" ]] && { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; }; then
+    docker_host=true
+  fi
+
+  if [[ "${docker_host}" != "true" ]]; then
+    warn "dockerupdateall not supported on this platform"
+    return 1
+  fi
+
+  if ! command -v docker >/dev/null 2>&1; then
+    warn "docker is not installed on this platform"
+    return 1
+  fi
+  if [[ -z "${DOCKERDIR:-}" ]] || [[ ! -d "${DOCKERDIR}" ]]; then
+    warn "Set DOCKERDIR to an existing Docker Compose directory before running dockerupdateall"
+    return 1
+  fi
+
+  local original_dir="${PWD}"
+  cd "${DOCKERDIR}" || return 1
+  find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans" \;
+  docker image prune -a -f
+  docker system prune --volumes -f
+  cd "${original_dir}" || return 1
+}
+
+#intended to be run on PVE guests/SBC/Client only
+movemovie() {
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] || [[ "${MACHINE_TYPE}" == "client" ]]; then
+    case $# in
+    1)
+      chmod 777 "$1"
+      chown -R nobody:nogroup "$1"
+      mv "$1" "${MEDIADIR}/video/MyMovies"
+      ;;
+    *)
+      info "USAGE : movemovie <movie_dir>"
+      ;;
+    esac
+  fi
+}
+
+#intended to be run on linux only
+cleanlocales() {
+  sudo find /usr/share/locale/* -maxdepth 0 -type d -not -iname "en*" -exec rm -r {} \;
+}
+
+# wifi reset for ifc6410 dev board
+wifi-reset() {
+  if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+
+    local target_ssid="${1:-Tank}"
+    local sdio_dev="mmc1:0001:1"
+    local sdio_driver="/sys/bus/sdio/drivers/ath6kl_sdio"
+
+    # Ensure root execution
+    if [[ $EUID -ne 0 ]]; then
+      echo "[!] wifi-reset requires root privileges. Escalating..." >&2
+      sudo -E zsh -c "$(typeset -f wifi-reset); wifi-reset '$target_ssid'"
+      return $?
+    fi
+
+    echo "==> Stopping network managers..."
+    systemctl stop NetworkManager wpa_supplicant 2>/dev/null
+
+    # Reset the physical SDIO target to trigger SRAM/firmware reload
+    if [[ -d "$sdio_driver" ]]; then
+      if [[ -e "$sdio_driver/$sdio_dev" ]]; then
+        echo "==> Detaching SDIO target ($sdio_dev)..."
+        echo "$sdio_dev" >"$sdio_driver/unbind"
+        sleep 1
+      fi
+
+      echo "==> Re-binding SDIO target ($sdio_dev)..."
+      echo "$sdio_dev" >"$sdio_driver/bind"
+      sleep 2
+    else
+      echo "[!] ath6kl_sdio driver path not found in sysfs!" >&2
+      return 1
+    fi
+
+    # Bring up the interface and turn off power management
+    echo "==> Bringing wlan0 UP and disabling 802.11 power saving..."
+    ip link set wlan0 up
+    iw dev wlan0 set power_save off
+
+    echo "==> Starting network services..."
+    systemctl start wpa_supplicant NetworkManager
+    sleep 3
+
+    echo "==> Associating with '$target_ssid'..."
+    nmcli connection up "$target_ssid"
+  else
+    echo "Only supported on IFC6410 SBC"
+  fi
+}
+
+copyrockboxthemes() {
+  # Usage:
+  #   copyrockboxthemes            # copy from current dir's backdrops/fonts/icons/themes/wps
+  #   copyrockboxthemes <srcdir>   # for each subdir of <srcdir>, cd into .rockbox and copy contents
+  if [[ "${MACHINE_TYPE}" == "client" ]]; then
+    local mountbasedir="/run/media/anirudh"
+    local ipod_base=""
+
+    if [ -d "${mountbasedir}/IPOD7G" ]; then
+      ipod_base="${mountbasedir}/IPOD7G"
+    elif [ -d "${mountbasedir}/IPOD5G" ]; then
+      ipod_base="${mountbasedir}/IPOD5G"
+    else
+      warn "Neither ${mountbasedir}/IPOD7G nor ${mountbasedir}/IPOD5G found"
+      return 1
+    fi
+
+    local ipoddir="${ipod_base}/.rockbox"
+    if [ ! -d "${ipoddir}" ]; then
+      warn ".rockbox directory not found in ${ipod_base}"
+      return 1
+    fi
+
+    mkdir -p "${ipoddir}/backdrops" "${ipoddir}/fonts" "${ipoddir}/icons" "${ipoddir}/themes" "${ipoddir}/wps"
+
+    if [ -n "$1" ]; then
+      local srcdir="$1"
+      if [ ! -d "${srcdir}" ]; then
+        warn "Source directory ${srcdir} not found"
+        return 1
+      fi
+
+      find "${srcdir}" -maxdepth 1 -type d \( ! -name . \) -exec bash -c "cd '{}' && if [ -d .rockbox ]; then cd .rockbox && pwd ; \
+        cp -r backdrops/* \"${ipoddir}/backdrops/\" 2>/dev/null || true ; \
+        cp -r fonts/* \"${ipoddir}/fonts/\" 2>/dev/null || true ; \
+        cp -r icons/* \"${ipoddir}/icons/\" 2>/dev/null || true ; \
+        cp -r themes/* \"${ipoddir}/themes/\" 2>/dev/null || true ; \
+        cp -r wps/* \"${ipoddir}/wps/\" 2>/dev/null || true ; fi" \;
+    else
+      cp -r backdrops/* "${ipoddir}/backdrops/" 2>/dev/null || true
+      cp -r fonts/* "${ipoddir}/fonts/" 2>/dev/null || true
+      cp -r icons/* "${ipoddir}/icons/" 2>/dev/null || true
+      cp -r themes/* "${ipoddir}/themes/" 2>/dev/null || true
+      cp -r wps/* "${ipoddir}/wps/" 2>/dev/null || true
+    fi
+  fi
+}
+
+# this function copies the compiled kernel image and modules archives into "artifacts" directory
+# and creates 3 versions of the kernel image to boot from: sda1, emmc and sdcard
+# Run this on the host that builds the Linux kernel
+getsbckernels() {
+  if [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
+    local TARGET_USER="${SBC_USER:-nonroot}"
+    local TARGET_GROUP="${SBC_GROUP:-${TARGET_USER}}"
+
+    local DATE=$(date +%Y%m%d)
+    local KERNEL_VER="6.6.9"
+
+    local KERNEL_IMG_BUILDNAME="boot-qcom-apq8064-ifc6410-qcom-armv7a.img"
+    local MODULES_TAR_BUILDNAME="modules-qcom-armv7a.tgz"
+    local KERNEL_IMG_BASE="boot-ifc6410-armv7a-${KERNEL_VER}-${DATE}"
+    local MODULES_TAR="modules-ifc6410-armv7a-${KERNEL_VER}-${DATE}.tgz"
+    local KERNEL_DTB_BUILDNAME="qcom-apq8064-ifc6410.dtb"
+
+    local KERNEL_IMG_SDA1="${KERNEL_IMG_BASE}-sda1.img"
+    local KERNEL_IMG_SDCARD="${KERNEL_IMG_BASE}-sdcard.img"
+    local KERNEL_IMG_EMMC="${KERNEL_IMG_BASE}-emmc.img"
+
+    local BUILD_DIR="./tmp/deploy/images/qcom-armv7a"
+    local KERNEL_CONFIG="./tmp/work-shared/qcom-armv7a/kernel-build-artifacts/.config"
+    local KERNEL_DEFCONFIG="defconfig"
+    local WORKING_DIR="."
+    local ARTIFACTS_DIR="${WORKING_DIR}/artifacts"
+
+    # Command lines
+    local CMDLINE_COMMON="rw rootwait console=ttyMSM0,115200n8 libata.force=1.5Gbps,noncq systemd.unit=multi-user.target systemd.unified_cgroup_hierarchy=1"
+    local CMDLINE_SDA1="root=/dev/sda1 ${CMDLINE_COMMON}"
+    local CMDLINE_EMMC="root=/dev/mmcblk2p13 ${CMDLINE_COMMON}"
+    local CMDLINE_SDCARD="root=/dev/mmcblk0p1 ${CMDLINE_COMMON}"
+
+    # create a backup if directory already exists
+    if [ -d "${ARTIFACTS_DIR}" ]; then
+      rm -rf "${ARTIFACTS_DIR}_backup"
+      mv -f "${ARTIFACTS_DIR}" "${ARTIFACTS_DIR}_backup"
+    fi
+
+    # copy build artifacts
+    mkdir -p "${ARTIFACTS_DIR}"
+    sudo cp -f "${BUILD_DIR}/${MODULES_TAR_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${BUILD_DIR}/${KERNEL_IMG_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${BUILD_DIR}/${KERNEL_DTB_BUILDNAME}" "${ARTIFACTS_DIR}/"
+    sudo cp -f "${KERNEL_CONFIG}" "${ARTIFACTS_DIR}/${KERNEL_DEFCONFIG}"
+    info "Copied ${KERNEL_IMG_BUILDNAME}, ${MODULES_TAR_BUILDNAME} and ${KERNEL_DEFCONFIG}"
+
+    cd "${ARTIFACTS_DIR}" || return 1
+    sudo chown -R "${TARGET_USER}:${TARGET_GROUP}" *
+
+    # rename and replicate target images
+    mv -f "${MODULES_TAR_BUILDNAME}" "${MODULES_TAR}"
+    cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDA1}"
+    cp -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_SDCARD}"
+    mv -f "${KERNEL_IMG_BUILDNAME}" "${KERNEL_IMG_EMMC}"
+
+    # update cmdline inline without extracting or writing temporary configs
+    abootimg -u "${KERNEL_IMG_SDA1}" -c "cmdline=${CMDLINE_SDA1}"
+    abootimg -u "${KERNEL_IMG_SDCARD}" -c "cmdline=${CMDLINE_SDCARD}"
+    abootimg -u "${KERNEL_IMG_EMMC}" -c "cmdline=${CMDLINE_EMMC}"
+
+    cd - >/dev/null || return 1
+  fi
+}
+
+##############################################
+
+if command -v fwupdmgr >/dev/null 2>&1; then
+  alias fwupdate='sudo fwupdmgr refresh --force && sudo fwupdmgr get-updates && sudo fwupdmgr update'
+  alias checkfw='sudo fwupdmgr get-devices'
+else
+  alias fwupdate="warn \"fwupdmgr not supported on this platform\""
+  alias checkfw="warn \"fwupdmgr not supported on this platform\""
+fi
+
+if command -v flatpak >/dev/null 2>&1; then
+  alias flatpakupdate='sudo flatpak upgrade -y'
+else
+  alias flatpakupdate="warn \"flatpak not supported on this platform\""
+fi
+
+# other linux-only aliases
+if command -v inxi >/dev/null 2>&1; then
+  alias sysinfo='sudo inxi -Fzx'
+fi
+
+if command -v picocom >/dev/null 2>&1; then
+  alias sbcuart="picocom -b 115200 --imap lfcrlf /dev/ttyUSB0"
+fi
+
+# Common Docker shortcuts & consolidated dockerbackup function
+# Placed in a single block guarded by docker existence to serve all platforms cleanly
+if command -v docker >/dev/null 2>&1; then
+  alias dockerup='docker compose up -d'
+  alias dockerdown='docker compose down'
+  alias dockerrestart='docker compose down && docker compose up -d'
+  alias dockerupdate='docker compose down && docker compose pull && docker compose up -d --remove-orphans && docker image prune -f && docker system prune --volumes'
+  alias dockerclean='docker system prune --volumes'
+
+  # Universal dockerbackup function: dynamically resolves date at run-time,
+  # validates paths, and adapts seamlessly across SBC, LXC, and NAS configurations.
+  dockerbackup() {
+    local src_dir="${DOCKERDIR:-/opt/dockerapps}"
+    local backup_dest="${DOCKERBACKUPDIR:-${DATADIR:-$HOME}}"
+
+    if [[ ! -d "${src_dir}" ]]; then
+      warn "Set DOCKERDIR to an existing Docker Compose directory before running dockerbackup: ${src_dir}"
+      return 1
+    fi
+
+    if [[ ! -d "${backup_dest}" ]]; then
+      warn "Docker backup destination directory does not exist: ${backup_dest}"
+      return 1
+    fi
+
+    sudo tar -zcvf "${backup_dest}/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz" "${src_dir}"
+  }
+fi
+
+alias booterrors='sudo journalctl  -b 0 -p 3'
+alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
+alias reservice='sudo systemctl daemon-reload'
+alias serialnum='sudo dmidecode -t system'
+alias showlog='sudo tail -f /var/log/messages'
+alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
+
+# pkgmgr is defined in aliases_linux_<distro>
+alias pkgadd="sudo ${pkgmgr} install -y"
+alias pkgrm="sudo ${pkgmgr} remove -y"
+
+#tailscale
+alias tsup="sudo tailscale up --accept-routes && tailscale status"
+alias tsdown="sudo tailscale down && tailscale status"
+
+#ssd/nvme/hdd benchmarking
+alias nvmeperf='sudo hdparm -Tt /dev/nvme0n1'
+alias sdaperf='sudo hdparm -Tt /dev/sda'
+
+if [[ "${desktopEnv}" == "GNOME" ]]; then
+  alias fm='nautilus . &'
+  alias dconf_ext_backup="dconf dump /org/gnome/shell/extensions/ > ./gnome_extensions_backup.dconf && sed -i '/locations/d' ./gnome_extensions_backup.dconf"
+  alias dconf_backup="dconf dump /org/gnome/ > ./gnome_settings_backup.dconf && sed -i '/locations/d' ./gnome_settings_backup.dconf"
+  alias dconf_ext_restore="dconf load /org/gnome/shell/extensions/ < ./gnome_extensions_backup.dconf"
+  alias dconf_restore="dconf load /org/gnome/ < ./gnome_settings_backup.dconf"
+
+  # manually set QT platform theme on GNOME for Qt apps
+  export QT_QPA_PLATFORMTHEME=qt5ct
+fi
+
+#docker and other homelab specific aliases
+if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+
+  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+  if [[ "${SERVER_TYPE}" == "pve" ]]; then
+    # PVE go shortcuts
+    export MEDIADIR="/mnt/sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/nvme-ssd/nvme-data"
+    export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
+    export DOCKERDATADIR="${DOCKERDIR}"
+    alias upgrade='fullupdate && fullclean'
+  # OMV and TrueNAS
+  else
+    export MEDIADIR="/mnt/storage/media"
+    export DATADIR="/mnt/storage/data"
+    export DOCKERDIR="${DATADIR}/docker/compose"
+    export DOCKERDATADIR="${DATADIR}/docker/data"
+    export DOCKERBACKUPDIR="${DOCKERBACKUPDIR:-${HOME}}"
+
+    alias upgrade='fullupdate && fullclean'
+  fi
+
+elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+  # LXC/VM and SBC shortcuts
+  if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+    export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
+    export DOCKERDIR="/opt/dockerapps"
+    export DOCKERDATADIR="${DOCKERDIR}"
+    export DOCKERBACKUPDIR="${DATADIR}/dockerapps"
+    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+    # script to copy compiled kernel modules from PVE LXC to SBC
+    alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
+  else
+    # pve-guest: LXC/VM debian
+    export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
+    export DATADIR="/mnt/pve-sata-ssd/ssd-data"
+    export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
+    export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
+    export DOCKERDATADIR="${DOCKERDIR}"
+    export DOCKERBACKUPDIR="${HOME}"
+    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+    alias guestupgrade="update && upgrade"
+
+    # yocto kernel compile macros
+    alias bbmenu="bitbake -c menuconfig virtual/kernel"
+    alias bbmake="bitbake core-image-minimal"
+    alias bbsync="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && git pull && cd meta-qcom && git pull && cd .."
+    alias bbsync6="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky6.0 && git pull && cd meta-qcom && git pull && cd .."
+    alias bbinit="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky && source oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom"
+    alias bbinit6="cd /mnt/pve-sata-ssd/ssd-data/backup/ifc6410/github/poky6.0 && source openembedded-core/oe-init-build-env build/qcom-armv7a && bitbake-layers add-layer ../../meta-qcom &&  bitbake-layers add-layer ../../meta-ifc6410"
+    alias bbdefcfg="bitbake virtual/kernel -c savedefconfig"
+  fi
+
+  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
+
+# for client machines
+elif [[ "${MACHINE_TYPE}" == "client" ]]; then
+  # set the right nfs directories
+  export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
+  export DATADIR="/mnt/nfs/sata-ssd/ssd-data"
+  export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
+  export DOCKERDIR="${DATADIR}/dockerapps"
+  export DOCKERDATADIR="${DOCKERDIR}"
+  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+
+  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
+
+# DD-WRT / Router aliases
+elif [[ "${MACHINE_TYPE}" == "router" ]]; then
+  PKG_MGR=""
+  if command -v apk >/dev/null 2>&1 || [ -x /sbin/apk ] || [ -x /usr/bin/apk ]; then
+    PKG_MGR="apk"
+  elif command -v opkg >/dev/null 2>&1 || [ -x /bin/opkg ] || [ -x /usr/bin/opkg ]; then
+    PKG_MGR="opkg"
+  fi
+
+  if [ -n "${PKG_MGR}" ]; then
+    alias fullupdate="${PKG_MGR} update && ${PKG_MGR} upgrade"
+    alias upgrade="fullupdate"
+  else
+    alias fullupdate="warn \"No supported package manager (apk/opkg) found\""
+    alias upgrade="fullupdate"
+  fi
+
+  alias fullclean="warn \"fullclean not supported on this platform\""
+  # Note: Corrected '&7' typo to '&&'
+  alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT && iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
+else
+  alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
+fi
+
+# generic aliases
+if [[ -n "${MEDIADIR:-}" ]]; then alias gomedia='cd "${MEDIADIR}"'; fi
+if [[ -n "${DATADIR:-}" ]]; then alias godata='cd "${DATADIR}"'; fi
+if [[ -n "${NVMEDIR:-}" ]]; then alias gonvme='cd "${NVMEDIR}"'; fi
+if [[ -n "${DOCKERDIR:-}" ]]; then alias godocker='cd "${DOCKERDIR}"'; fi
+if [[ -n "${DOCKERDATADIR:-}" ]]; then alias godockerdata='cd "${DOCKERDATADIR}"'; fi
+if [[ -n "${PVEDIR:-}" ]]; then alias gopve='cd "${PVEDIR}"'; fi

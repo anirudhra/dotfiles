@@ -1,0 +1,34 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for Debian Linux and derivatives; will be sourced by parent aliases
+## This should work for SBC, LXC/VM and Client Debian installs
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_LINUX_DEBIAN}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_LINUX_DEBIAN=1
+
+source "${ALIASES_HOME}/.helperfuncs"
+
+MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+SERVER_TYPE=$(detect_server_type)
+
+debuglog "Debian aliases sourced"
+
+# add conditions for debian/derivatives specific command here
+
+export pkgmgr="apt"
+export pkgmgrdpkg="dpkg"
+
+alias fullclean='sudo ${pkgmgr} clean -y && sudo ${pkgmgr} autoclean -y && sudo ${pkgmgr} --purge autoremove -y'
+if [[ "${SERVER_TYPE}" == "openmediavault" ]]; then
+  alias fullupdate='sudo omv-upgrade && fullclean && sudo omv-salt deploy run apt'
+else
+  alias fullupdate='sudo ${pkgmgr} update -y && sudo ${pkgmgr} dist-upgrade -y'
+fi
+
+alias showinstalled="sudo ${pkgmgr} list --installed | less ${lesscolors}"
+alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && ${pkgmgrdpkg} --list | grep -i -e kernel- -e linux-image"

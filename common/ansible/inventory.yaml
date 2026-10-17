@@ -1,0 +1,181 @@
+# Local machines
+dockerlxc:
+  hosts:
+    wg:
+      ansible_host: 10.100.10.63
+    vega:
+      ansible_host: 10.100.10.61
+    blanka:
+      ansible_host: 10.100.10.62
+    sagat:
+      ansible_host: 10.100.10.66
+    immich:
+      ansible_host: 10.100.10.69
+    nanobot:
+      ansible_host: 10.100.10.68
+    n8n:
+      ansible_host: 10.100.10.70
+  vars:
+    ansible_user: root
+
+nondockerlxc:
+  hosts:
+    uptimekuma:
+      ansible_host: 10.100.10.67
+#    lms:
+#      ansible_host: 10.100.10.68
+#    unify:
+#      ansible_host: 10.100.10.70
+    jf:
+      ansible_host: 10.100.10.60
+  vars:
+    ansible_user: root
+
+toolslxc:
+  hosts:
+    ventoy:
+      ansible_host: 10.100.10.71
+    ubuntu:
+      ansible_host: 10.100.10.65
+  vars:
+    ansible_user: root
+
+servicevm:
+  hosts:
+    ha:
+      ansible_host: 10.100.10.64
+  vars:
+    ansible_user: root
+
+server:
+  hosts:
+    pve:
+      ansible_host: 10.100.10.50
+  vars:
+    ansible_user: root
+
+router:
+  hosts:
+    linksys:
+      ansible_host: 10.100.10.1
+  vars:
+    ansible_user: root
+    ansible_port: 6666
+    ansible_python_interpreter: /opt/bin/python3
+
+sbc:
+  hosts:
+    sbceth:
+      ansible_host: 10.100.10.51
+    sbcwifi:
+      ansible_host: 10.100.10.52
+  vars:
+    ansible_user: root
+
+# Remote machines
+# Remote ASUS Router
+rrouter:
+  hosts:
+    rasus:
+      ansible_host: 10.100.100.1
+  vars:
+    ansible_user: admin
+    #ansible_port: 6666
+    ansible_python_interpreter: /opt/bin/python3
+
+# Remote PVE Server
+rserver:
+  hosts:
+    rpve:
+      ansible_host: 10.100.100.10
+  vars:
+    ansible_user: root
+
+# Remote PVE LXC containers
+rlxc:
+  hosts:
+    rdocker:
+      ansible_host: 10.100.100.20
+    rnavidrome:
+      ansible_host: 10.100.100.21
+    rlms:
+      ansible_host: 10.100.100.22
+    rjf:
+      ansible_host: 10.100.100.23
+    rdockerlxc:
+      ansible_host: 10.100.100.24
+    rsyncthing:
+      ansible_host: 10.100.100.25
+    rmemos:
+      ansible_host: 10.100.100.26
+    rowntone:
+      ansible_host: 10.100.100.27
+  vars:
+    ansible_user: root
+
+# Groups
+# Local Machines
+alllxc:
+  children:
+    dockerlxc:
+    nondockerlxc:
+    toolslxc:
+
+activelxc:
+  children:
+    dockerlxc:
+    nondockerlxc:
+
+allvm:
+  children:
+    servicevm:
+
+activevm:
+  children:
+    servicevm:
+
+allpveguests:
+  children:
+    alllxc:
+    allvm:
+
+activepveguests:
+  children:
+    activelxc:
+    activevm:
+
+allactive:
+  children:
+    activelxc:
+    activevm:
+    #router:
+    server:
+
+upgradepveactive:
+  children:
+    activelxc:
+    server:
+
+upgradepveall:
+  children:
+    alllxc:
+    server:
+
+updatedfall:
+  children:
+    alllxc:
+    server:
+
+# Remote Machines
+remotelxc:
+  children:
+    rlxc:
+
+remotepvelxc:
+  children:
+    rlxc:
+    rserver:
+
+remotepve:
+  children:
+    rserver:

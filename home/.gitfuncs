@@ -1,0 +1,191 @@
+#!/bin/bash
+# git clone, pull helper functions
+# Usage:
+#   clonerepo <giturl> <localdir>
+#   updaterepo <giturl> <localdir>
+#   syncrepo <giturl> <localdir>
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_GITFUNCS}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_GITFUNCS=1
+
+source "${ALIASES_HOME}/.helperfuncs"
+
+debuglog "Git functions sourced"
+
+#######################################################################
+# Functions
+#######################################################################
+
+# Print help for theme update scripts
+print_git_theme_update_help() {
+  echo "Usage: $0 [--force] [--help]"
+  echo "  --force   Run install/update even if repo sync fails. (optional, default is false)"
+  echo "  --help    Show this help message."
+}
+
+# Clone a repo if it doesn't exist
+clonerepo_latestcommit() {
+  local giturl="$1"
+  local gitdir="$2"
+  local git_options="${3:-}"
+
+  if [ ! -d "$gitdir/.git" ]; then
+    if git clone --depth=1 "$giturl" "$gitdir"; then
+      return 0
+    else
+      warn "Clone failed!"
+      return 1
+    fi
+  else
+    info "Repo exists: $gitdir"
+    return 1
+  fi
+}
+
+# Clone a repo if it doesn't exist, full history, not just the latest commit
+clonerepo_allcommits() {
+  local giturl="$1"
+  local gitdir="$2"
+  local git_options="${3:-}"
+
+  if [ ! -d "$gitdir/.git" ]; then
+    if git clone "$giturl" "$gitdir"; then
+      return 0
+    else
+      warn "Clone failed!"
+      return 1
+    fi
+  else
+    info "Repo exists: $gitdir"
+    return 1
+  fi
+}
+
+# Update a repo if it exists, only to latest commit
+# default update function to only sync to head instead of full history
+updaterepo_latestcommit() {
+  local giturl="$1"
+  local gitdir="$2"
+  if [ -d "$gitdir/.git" ]; then
+    cd "$gitdir" >/dev/null 2>&1 || {
+      echo "Failed to enter $gitdir"
+      return 1
+    }
+    local syncstatus
+    syncstatus=$(
+      #git rebase
+      git pull --rebase --depth=1
+    )
+    if [[ "$syncstatus" != "Already up to date." ]]; then
+      info "Repo updated: $giturl"
+      cd - >/dev/null 2>&1
+      return 0
+    else
+      info "No new updates."
+      cd - >/dev/null 2>&1
+      return 1
+    fi
+  else
+    warn "Repo does not exist: $gitdir"
+    return 1
+  fi
+}
+
+# Update a repo if it exists, pull all commits since last sync
+# function not called by default as it pulls full history
+updaterepo_allcommits() {
+  local giturl="$1"
+  local gitdir="$2"
+  if [ -d "$gitdir/.git" ]; then
+    cd "$gitdir" >/dev/null 2>&1 || {
+      echo "Failed to enter $gitdir"
+      return 1
+    }
+    local syncstatus
+    syncstatus=$(
+      # git rebase
+      git pull --rebase
+    )
+    if [[ "$syncstatus" != "Already up to date." ]]; then
+      info "Repo updated: $giturl"
+      cd - >/dev/null 2>&1
+      return 0
+    else
+      info "No new updates."
+      cd - >/dev/null 2>&1
+      return 1
+    fi
+  else
+    warn "Repo does not exist: $gitdir"
+    return 1
+  fi
+}
+
+# Clone or update a repo; return 0 if cloned or updated, 1 if no new updates
+syncrepo() {
+  local giturl="$1"
+  local gitdir="$2"
+  if clonerepo_latestcommit "$giturl" "$gitdir"; then
+    info "Repo cloned: $giturl to $(pwd)/$gitdir"
+    return 0
+  elif updaterepo_latestcommit "$giturl" "$gitdir"; then
+    info "Repo updated: $giturl to $(pwd)/$gitdir"
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Run repo sync and install/update logic, with optional force
+# Usage: run_git_update_and_install <giturl> <gitdir> <installupdate_func> [--force] [--help]
+run_git_update_and_install() {
+  local _giturl="$1"
+  local _gitdir="$2"
+  local _installupdate_func="$3"
+  shift 3
+
+  local force_update="false"
+  for arg in "$@"; do
+    case $arg in
+    --force)
+      force_update="true"
+      ;;
+    -h | --help)
+      print_git_theme_update_help
+      exit 0
+      ;;
+    *)
+      print_git_theme_update_help
+      exit 1
+      ;;
+    esac
+  done
+
+  syncrepo "$_giturl" "$_gitdir"
+  local sync_status=$?
+  if [ $sync_status -eq 0 ] || [ "$force_update" = "true" ]; then
+    echo "Forced install/update: $force_update"
+    cd "$_gitdir" || exit 1
+    "$_installupdate_func"
+  fi
+}
+
+# this function will remove all history until current commit and rebase the repo with current
+# commit as the initial/base commit. use this if a repo has become too huge/unmanageable to start over
+gitrebasemain() {
+  # this function must be called from within the repo directory
+  # CAUTION: make a manual backup before doing this!
+  # hardcoded to rebase 'main' branch
+  git checkout --orphan newBranch
+  git add -A # Add all files and commit them
+  git commit -m "Clear history, refresh repo"
+  git branch -D main              # Deletes the master branch
+  git branch -m main              # Rename the current branch to master
+  git push -f origin main         # Force push master branch to github
+  git gc --aggressive --prune=all # remove the old files
+}

@@ -1,0 +1,9 @@
+# ~/.config/yazi/yazi.toml
+[mgr]
+linemode = "size_and_mtime"
+show_hidden = true
+show_symlink = true
+
+[preview]
+wrap = "yes"
+

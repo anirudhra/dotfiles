@@ -1,0 +1,138 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for Homelab hosts/ssh/etc; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_HOSTS}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_HOSTS=1
+
+debuglog "Hosts aliases sourced"
+
+# constants
+export ROUTERSSHPORT="6666"
+export SSHADMIN="admin"
+export SSHROOT="root"
+export SSHNONROOT="nonroot"
+
+export SSHTMUX="tmux -2 attach || tmux -2 new"
+export SSHMAC="hmac-sha2-256"
+export SBCHOST="ifc6410"
+export PVEHOST="pve"
+
+#subnets
+export NET1="10.100.10"
+# guest
+export NET2="192.168.130"
+# network#2
+export NET3="10.100.100"
+# network#2 guest
+#export NET4="192.168.4"
+# usg
+#export NET4="192.168.1"
+
+#router bridges
+export MAINBR="br0"
+export GUESTBR="br1"
+
+# Routers
+#export ROUTER="${NET3}.1"
+export DDWRTROUTER="${NET1}.1"
+export OPENWRTROUTER="${NET1}.2"
+export OPENWRTAP="${NET1}.5"
+#export USG="${NET5}.1"
+
+# Remote Machines
+export R_ASUSROUTER="${NET3}.1"
+export R_PVE="${NET3}.10"
+export R_PVEDOCKER="${NET3}.20"
+export R_PVENAVI="${NET3}.21"
+export R_PVELMS="${NET3}.22"
+export R_PVEJF="${NET3}.23"
+export R_PVEDOCKERLXC="${NET3}.24"
+export R_PVEST="${NET3}.25"
+export R_PVEMEMOS="${NET3}.26"
+export R_PVEOT="${NET3}.27"
+
+# Remote Machines via tailscale
+if command -v tailscale >/dev/null 2>&1; then
+  export TS_R_PVE="$(tailscale status | awk '$2 == "acharya-pve-server" {print $1}')"
+  export TS_R_ASUSROUTER="$(tailscale status | awk '$2 == "router-rt-ax82u" {print $1}')"
+fi
+
+# Clients
+export GUILE="${NET1}.20"
+export GUILELAN="${NET1}.21"
+export KEN="${NET1}.22"
+export KENLAN="${NET1}.23"
+export RYULAN="${NET1}.24"
+export RYU="${NET1}.25"
+
+# Devices
+export SOUNDBAR="${NET1}.26"
+export PRINTER="${NET1}.30"
+export CAM_BASE="${NET1}.40"
+
+# Servers
+export PVESERVER="${NET1}.50"
+export OMVSERVER="${NET1}.10"
+export SBC="${NET1}.51"
+export SBCWIFI="${NET1}.52"
+#export SBC1="${NET3}.53"
+#export SBCETH="${NET1}.54"
+
+# LXC/VMs
+export PVEJF="${NET1}.60"
+export PVEVEGA="${NET1}.61"
+export PVEBLANKA="${NET1}.62"
+export PVWG="${NET1}.63"
+export PVEHA="${NET1}.64"
+export PVEUBUNTU="${NET1}.65"
+export PVESAGAT="${NET1}.66"
+export PVEKUMA="${NET1}.67"
+export PVEBOT="${NET1}.68"
+export PVEIMM="${NET1}.69"
+export PVEN8N="${NET1}.70"
+export PVEVENTOY="${NET1}.71"
+
+# Guest network hosts
+export FRIDGE="${NET2}.15"
+
+# iRobot
+#export ROOMBA="${NET2}.16"
+#export BRAVAJET="${NET2}.17"
+
+export MYQGARAGE="${NET2}.18"
+
+# Tapo
+export KD110_DOORBELL="${NET2}.19"
+export TAPO_C210_CAM="${NET2}.20"
+
+export THERMOSTAT="${NET2}.21"
+export ENTRANCE_LIGHT="${NET2}.22"
+
+# Powerstrips
+export MASTER_POWER_STRIP="${NET2}.23"
+export MEDIA_CENTER_POWER_STRIP="${NET2}.24"
+
+# Fans
+export LIVINGROOM_FAN="${NET2}.25"
+export MASTER_FAN="${NET2}.26"
+
+# Tapo
+export S505D_CEILING="${NET2}.27"
+export S505_CHANDELIER="${NET2}.28"
+export S500D_GUEST_CEILING="${NET2}.29"
+export S500D_OFFICE_CEILING="${NET2}.30"
+export S500D_MASTER_CEILING="${NET2}.31"
+export S500D_KITCHEN_HALL="${NET2}.32"
+
+# Tuya
+export DINING_LIGHT="${NET2}.33"
+export OFFICE_LIGHT="${NET2}.34"
+export GUEST_LIGHT="${NET2}.35"
+export NIGHT_LAMP1="${NET2}.36"
+export GUEST_LAMP="${NET2}.37"

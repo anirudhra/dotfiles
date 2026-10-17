@@ -1,0 +1,75 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for macos; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_MACOS}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_MACOS=1
+
+debuglog "macOS aliases sourced"
+
+# add condition for macos specific commmand here - diskutil not available on linux, only macos
+alias brew_update='brew update && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+alias upgrade='brew_update'
+
+# all other macos aliases/macros
+alias showkext="kextstat | grep -E"
+alias gvim='vimr'
+
+#finder hidden files
+alias showhidden='defaults write com.apple.finder AppleShowAllFiles YES && killall Finder /System/Library/CoreServices/Finder.app'
+alias hidehidden='defaults write com.apple.finder AppleShowAllFiles NO && killall Finder /System/Library/CoreServices/Finder.app'
+alias finder='open'
+alias shuf='gshuf'
+
+# replace cat with bat+syntax highlighting
+alias cat='bat --color=always'
+
+# Desktop Programs
+alias preview="open -a '$PREVIEW'"
+alias xcode="open -a '/Applications/XCode.app'"
+alias edge="open -a '/Applications/Microsoft\ Edge.app'"
+alias filemerge="open -a '/Developer/Applications/Utilities/FileMerge.app'"
+alias safari="open -a safari"
+alias firefox="open -a firefox"
+alias chrome="open -a google\ chrome"
+alias textedit='open -a TextEdit'
+
+# uart connection with picocom
+if command -v picocom &>/dev/null; then
+  alias sbcuart="picocom -b 115200 --flow none /dev/cu.usbserial-AB0P5YZV"
+fi
+
+# iTunes playlist converter for NAS
+alias updatepl="cp ~/Music/MusicLibrary/library/Library.xml ~/Music/Playlists/library/Library.xml && cd ~/code/github/ipod_scripts/playlists_itunesxml_m3u && ./runme_itunesxml_m3u.sh && cp ~/Music/Playlists/playlists/* ~/Music/MusicLibrary/playlists/"
+
+# hotcorner settings
+#0: No Option
+#2: Mission Control
+#3: Show application windows
+#4: Desktop
+#5: Start screen saver
+#6: Disable screen saver
+#7: Dashboard
+#10: Put display to sleep
+#11: Launchpad
+#12: Notification Center
+#13: Lock Screen
+alias sethc="defaults write com.apple.dock wvous-tl-corner -int 2 && \
+             defaults write com.apple.dock wvous-tr-corner -int 6 && \
+             defaults write com.apple.dock wvous-bl-corner -int 13 && \
+             defaults write com.apple.dock wvous-br-corner -int 6 && \
+             killall Dock"
+
+#monitor cpu clock
+alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
+
+# jupyterlab aliases
+alias ipy="jupyter lab ~/code/github/jupyternb"
+
+# goto aliases
+alias gooc='cd ~/code/OpenCore'

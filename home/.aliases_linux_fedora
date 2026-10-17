@@ -1,0 +1,39 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for Fedora Linux and derivatives; will be sourced by parent aliases
+## Assumption is this is for Client only, not SBC or PVE Server or Guests
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_LINUX_FEDORA}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_LINUX_FEDORA=1
+
+debuglog "Fedora aliases sourced"
+
+export pkgmgr="dnf"
+export pkgmgrrpm="rpm"
+
+######## functions ######################
+
+# remove old kernels in fedora
+cleankernels() {
+  old_kernels=($(${pkgmgr} repoquery --installonly --latest-limit=-1 -q))
+
+  if [ "${#old_kernels[@]}" -eq 0 ]; then
+    info "No old kernels found"
+  elif ! ${pkgmgr} remove "${old_kernels[@]}"; then
+    warn "Failed to remove old kernels"
+  fi
+}
+##########################################
+
+# add condition for fedora specific commands here
+alias fullclean='sudo ${pkgmgr} clean all -y && sudo ${pkgmgr} autoremove -y && sudo flatpak uninstall --unused -y'
+#alias fullupgrade='sudo ${pkgmgr} update --refresh && sudo ${pkgmgr} upgrade -y'
+alias fullupdate='sudo ${pkgmgr} update --refresh -y && sudo flatpak upgrade -y && sudo ${pkgmgr} distro-sync -y --skip-broken'
+
+alias showkernel='echo Active Kernel && sudo uname -a && echo && echo Installed Kernels && sudo ${pkgmgrrpm} -q kernel-core'
+alias showinstalled="${pkgmgrrpm} --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less ${lesscolors}"

@@ -1,0 +1,501 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases
+
+# set aliases home directory, this is where all subscripts live
+# if not defined, set it to $HOME by default: should already be defined in .profile, but this is for shells that won't execute .profile for some reason
+#export ALIASES_HOME="${ALIASES_HOME:-$HOME}"   #if stowed, then they must be same as home, else the locaitons for <path>/dotfiles/home, default to home
+#export DOTFILES_HOME="${DOTFILES_HOME:-$HOME}" #usually under /home/<user> but sometimes could be different, default to home
+
+# more robust than above
+if [[ -z "${DOTFILES_HOME}" ]]; then
+  export DOTFILES_HOME="${HOME}"
+fi
+
+if [[ -z "${ALIASES_HOME}" ]]; then
+  export ALIASES_HOME="${HOME}"
+fi
+
+# source helpers
+source "${ALIASES_HOME}/.gitfuncs"
+source "${ALIASES_HOME}/.helperfuncs"
+source "${ALIASES_HOME}/.filefuncs"
+
+OS_TYPE=$(detect_os_type)
+ARCH_TYPE=$(detect_arch_type)
+SHELL_TYPE=$(detect_shell_type)
+MACHINE_TYPE=$(detect_machine_type)
+
+################################################################################################
+#   OS agnostic aliases
+################################################################################################
+
+################################################
+# aliases common to all OSes for home computers
+source "${ALIASES_HOME}/.aliases_dev"
+################################################
+
+######## functions ######################
+
+# batch copy to recursively copy from a list of directories or files
+batch_copy() {
+  local list_file="$1"
+  local src_dir="$2"
+  local dest_dir="$3"
+
+  # Use following commands to generate the batch copy list
+  # Standard items (excluding hidden files): printf '%s\n' * > list.txt
+  # Include hidden files and folders: (shopt -s nullglob dotglob; printf '%s\n' * > list.txt)
+  # Directories only: printf '%s\n' */ | sed 's|/$||' > list.txt
+
+  if [[ -z "$list_file" || -z "$src_dir" || -z "$dest_dir" ]]; then
+    echo "Usage: batch_copy <list_file> <source_dir> <destination_dir>" >&2
+    return 1
+  fi
+
+  if [[ ! -f "$list_file" ]]; then
+    echo "Error: List file '$list_file' not found." >&2
+    return 1
+  fi
+
+  mkdir -p "$dest_dir" || return 1
+
+  while IFS= read -r item || [[ -n "$item" ]]; do
+    # Strip carriage returns (CRLF) and leading/trailing whitespace
+    item="${item%$'\r'}"
+    item="$(echo -e "${item}" | sed -e 's/^[[:space:]]*//' -e 's/[[:space:]]*$//')"
+
+    # Skip empty lines and comment lines
+    [[ -z "$item" || "$item" =~ ^# ]] && continue
+
+    local source_path="${src_dir%/}/$item"
+
+    if [[ -e "$source_path" ]]; then
+      echo "Copying: $item"
+      # -a preserves permissions, symlinks, timestamps, and copies recursively
+      cp -a "$source_path" "$dest_dir/"
+    else
+      echo "Warning: '$source_path' does not exist, skipping." >&2
+    fi
+  done <"$list_file"
+}
+
+# function to recursively archive an entire folder
+tardir() {
+  local target="${1%/}"
+  if [[ ! -e "$target" ]]; then
+    echo "Error: '$target' does not exist." >&2
+    return 1
+  fi
+
+  # Archives parent directory + contents, including dotfiles and direct files
+  tar -czvf "${target}_$(date +%Y-%m-%d).tar.gz" "$target"
+}
+
+# sets up tmux plugins
+setuptmux() {
+  local tpm_path="${HOME}/.tmux/plugins/tpm"
+  local config_src="${DOTFILES_HOME}/dotfiles/home/.config/tmux/tmux.conf"
+  local config_dest="${HOME}/.tmux.conf"
+
+  # 1 & 2: Handle TPM directory and repo
+  if [ ! -d "$tpm_path/.git" ]; then
+    echo "Installing TPM..."
+    mkdir -p "$(dirname "$tpm_path")"
+    git clone --depth=1 https://github.com/tmux-plugins/tpm "$tpm_path"
+    echo "Done... now exit and re-run tmux and press <Prefix> + I (caps) to install plugins"
+  else
+    echo "TPM already installed."
+  fi
+
+  # 3: Handle tmux.conf symlink
+  if [ -f "$config_src" ]; then
+    if [ "$(readlink "$config_dest")" != "$config_src" ]; then
+      echo "Creating symlink for tmux.conf..."
+      ln -sf "$config_src" "$config_dest"
+    else
+      echo "Symlink already correct."
+    fi
+  else
+    echo "Warning: Source config $config_src not found."
+  fi
+}
+
+# more flexible flac2alac, can take a single file, wildcard or directory as input
+flac2alac() {
+  # 1. Check for ffmpeg
+  if ! command -v ffmpeg &>/dev/null; then
+    echo "Error: 'ffmpeg' is not installed."
+    return 1
+  fi
+
+  # 2. Usage check
+  if [ "$#" -eq 0 ]; then
+    echo "Usage: flac2alac <file.flac | *.flac | directory>"
+    return 1
+  fi
+
+  # 3. Process each argument
+  for arg in "$@"; do
+    # -L follows symlinks; -type f finds files
+    # -maxdepth 1 keeps it in the specified dir
+    find "$arg" -maxdepth 1 -type f -name "*.flac" -print0 | while IFS= read -r -d '' input_file; do
+
+      # Correctly strip .flac and add .m4a
+      local output_file="${input_file%.flac}.m4a"
+
+      echo "Converting: $(basename "$input_file")"
+
+      # 4. The -nostdin fix
+      # This prevents ffmpeg from eating the next filename in your loop!
+      ffmpeg -hide_banner -loglevel error -stats -nostdin -n -i "$input_file" -c:a alac -c:v copy "$output_file"
+
+    done
+  done
+}
+
+mkcd() {
+  case $# in
+  1)
+    mkdir -p "$1"
+    cd "$1" || return
+    ;;
+  *)
+    info "USAGE : mkcd <directory>"
+    ;;
+  esac
+}
+
+# for machines without gnu stow
+manualstow() {
+  if [[ "${MACHINE_TYPE}" == "router" ]]; then
+    echo "Manual stow not available on ${MACHINE_TYPE}"
+  else
+    # manually copy all dot files and directories
+    SOURCE_DIR="${HOME}/dotfiles/home"
+    DEST_DIR="${HOME}"
+    cp -a "${SOURCE_DIR}/." "${DEST_DIR}/"
+  fi
+}
+#########################################
+
+alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
+alias redot='cd "${HOME}/dotfiles" && git pull && restow'
+alias dotupdate='cd "${DOTFILES_HOME}/dotfiles" && gitpullall && cd -'
+alias getdot='
+  cd "$DOTFILES_HOME" &&
+  wget -O main.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" &&
+  rm -rf "$DOTFILES_HOME/dotfiles-bak" &&
+  [ ! -d "$DOTFILES_HOME/dotfiles" ] || mv "$DOTFILES_HOME/dotfiles" "$DOTFILES_HOME/dotfiles-bak" &&
+  tar -xzf main.tar.gz &&
+  mv "$DOTFILES_HOME/dotfiles-main" "$DOTFILES_HOME/dotfiles" &&
+  rm -f main.tar.gz
+'
+
+alias u='upgrade'
+
+# ansible aliases
+alias dfupdateall="goans && ./ans.sh dfupdateall && cd -"
+alias pveupgradeall="goans && ./ans.sh upgradeall && cd -"
+
+export lscolors="auto"
+export lesscolors=""
+# if the terminal supports colors, set lscolors to always
+if [ "${TERM}" = "xterm-kitty" ] || [ "${TERM}" = "xterm-256color" ] || [ "${TERM}" = "screen-256color" ]; then
+  export lscolors="always"
+  export lesscolors="-R"
+fi
+
+# default pagination
+export pages="less ${lesscolors}"
+# check if most is installed, if so, replace less with most
+if command -v most >/dev/null 2>&1; then
+  export pages="most"
+fi
+
+# Enable syntax-highlighting in less/cat
+# Note: needs source-highlight and highlight brew packages for these to work
+alias lessc="less -R"
+alias more="${pages}"
+
+# if eza is installed, replace ls with eza
+if command -v eza >/dev/null 2>&1; then
+
+  export EZA_CONFIG_DIR="${HOME}/.config/eza"
+  unalias ls >/dev/null 2>&1
+
+  # only show icons on client machines and macs, not on remote machines
+  if [[ "${OS_TYPE}" == "macos" ]] || [[ "${MACHINE_TYPE}" == "client" ]]; then
+    icons_enabled="--icons"
+  else
+    icons_enabled=""
+  fi
+
+  ## ls aliases
+  alias ls='eza ${icons_enabled} --color=${lscolors} -F -G'
+  #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+  alias ll="eza -la ${icons_enabled} --color=${lscolors} --header --git | ${pages}"
+  ## Show hidden files ##
+  alias ll.="eza -l -d -F -G ${icons_enabled} --color=${lscolors} .* | ${pages}"
+  alias ls.='eza -d -F -G ${icons_enabled} --color=${lscolors} .*'
+  alias l='eza -lah ${icons_enabled}'                  #size,show type,human readable
+  alias la='eza -laAh -F ${icons_enabled}'             #long list,show almost all,show type,human readable
+  alias lr='eza ${icons_enabled} -F -R -h -t modified' #sorted by date,recursive,show type,human readable
+  alias lt='eza ${icons_enabled} -lh -F -t modified'   #long list,sorted by date,show type,human readable
+  alias ldot='eza ${icons_enabled} -ld .*'
+  alias lS='eza ${icons_enabled} -F -1S -s name'
+  alias lart='eza ${icons_enabled} -1artm -F'
+  alias lrt='eza ${icons_enabled} -1rtm -F'
+  alias lsr='eza ${icons_enabled} -lARh -F' #Recursive list of files and directories
+  alias lsn='eza ${icons_enabled} -1'       #A column contains name of files and directories
+  # Detailed listings with icons and Git status
+  alias lsd='eza -l ${icons_enabled} --git'
+  alias lsa='eza -la ${icons_enabled} --git'
+  # Tree view
+  # alias tree='eza --tree --level=2' # Adjust --level for desired depth
+  # Show hidden files and directories
+  alias lh='eza -la ${icons_enabled} --header --icons --git'
+  # Sort by modification time, newest first
+  alias lsnew='eza ${icons_enabled} -l --sort newest'
+  # Sort by size, largest first
+  alias lss='eza ${icons_enabled} -l --sort size'
+  # Show file permissions in octal
+  alias lso='eza ${icons_enabled} -l --octal-permissions'
+  # List directories only
+  alias lsdir='eza -D ${icons_enabled}'
+  # List files only
+  alias lsfiles='eza -F ${icons_enabled}'
+else
+  ## ls aliases
+  ## Colorize the ls output ##
+  alias ls='ls --color=${lscolors} -F'
+  #export LSCOLORS=gxBxhxDxfxhxhxhxhxcxcx
+  alias ll="ls -la --color=${lscolors} | ${pages}"
+  ## Show hidden files ##
+  alias ll.="ls -l -d -F --color=${lscolors} .* | ${pages}"
+  alias ls.='ls -d -F --color=${lscolors} .*'
+  alias l='ls -lFh'   #size,show type,human readable
+  alias la='ls -lAFh' #long list,show almost all,show type,human readable
+  alias lr='ls -tRFh' #sorted by date,recursive,show type,human readable
+  alias lt='ls -ltFh' #long list,sorted by date,show type,human readable
+  alias ldot='ls -ld .*'
+  alias lS='ls -1FSsh'
+  alias lart='ls -1Fcart'
+  alias lrt='ls -1Fcrt'
+  alias lsr='ls -lARFh' #Recursive list of files and directories
+  alias lsn='ls -1'     #A column contains name of files and directories
+fi
+
+## a quick way to get out of current directory ##
+alias cd..='cd ..'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias .4='cd ../../../../'
+alias .5='cd ../../../../..'
+
+alias tmuxnew="tmux attach || tmux new"
+
+#directory related aliases
+alias mkdir='mkdir -pv'
+alias md='mkdir -pv'
+alias rd='rmdir'
+
+# "dos" aliases
+alias cls='clear'
+alias c='clear'
+alias dir='ls'
+
+alias path='echo -e ${PATH//:/\\n}'
+alias now='date +"%T"'
+alias nowtime='now'
+alias nowdate='date +"%d-%m-%Y"'
+alias a='alias'
+
+# find aliases
+alias fdir='find . -type d -name'
+alias count='find . -type f | wc -l'
+alias ffile='find . -type f -name'
+
+## disk space clean output ##
+if command -v duf >/dev/null 2>&1; then
+  alias duf='duf -hide special'
+else
+  alias duf="df -h -P -T"
+fi
+
+alias dud='du -d 1 -h'
+alias df='df -P -h -T'
+alias du='du -ch'
+alias dirsize='du -sh'
+alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
+
+# sort, unset etc.
+alias help='man'
+alias sortnr='sort -n -r'
+alias unexport='unset'
+
+#file aliases, always interactive mode
+#alias rm='rm -i'
+#alias cp='cp -i'
+#alias mv='mv -i'
+
+## get top process eating memory
+alias psmem='ps aux | sort -nr -k 4'
+alias psmem10='ps aux | sort -nr -k 4 | head -10'
+alias free='free -h'
+
+## get top process eating cpu ##
+alias pscpu='ps aux | sort -nr -k 3'
+alias pscpu10='ps aux | sort -nr -k 3 | head -10'
+
+alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
+alias proc='ps aux | grep -i '
+
+# become root #
+alias root='sudo -i'
+#alias su='sudo -i'
+alias please='sudo $( history -p !! )'
+
+# editor aliases, check in order of preference
+if command -v nvim >/dev/null 2>&1; then
+  alias vi='nvim'
+  alias vim='nvim'
+  alias vis='nvim "+set si"'
+  alias sudovi='sudo nvim'
+  alias edit='nvim'
+elif command -v vim >/dev/null 2>&1; then
+  alias vi='vim'
+  alias vim='vim'
+  alias vis='vim "+set si"'
+  alias sudovi='sudo vim'
+  alias edit='vim'
+elif command -v vim.tiny >/dev/null 2>&1; then
+  alias vi='vim.tiny'
+  alias vim='vim.tiny'
+  alias vis='vim.tiny "+set si"'
+  alias sudovi='sudo vim.tiny'
+  alias edit='vim.tiny'
+else
+  # Failsafe, in almost every OS
+  alias vi='nano'
+  alias vim='nano'
+  alias vis='nano "+set si"'
+  alias sudovi='sudo nano'
+  alias edit='nano'
+fi
+
+# would automatically be one of the above
+export EDITOR='vim'
+alias v='vim'
+
+# ncdu aliases
+alias ncdu='ncdu -e -2 --color dark-bg --show-graph --show-itemcount' # better default ncdu
+alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclude "/mnt/pve-nvme-ssd" --exclude-kernfs -e -2 --color dark-bg --show-graph --show-itemcount'
+
+# pager and readme aliases
+alias pager="${PAGER}"
+alias readme="find . -maxdepth 1 -iname \"readme*\" -exec \"${pages}\" {} \;"
+
+# Tree
+if [ ! -x "$(which tree 2>/dev/null)" ]; then
+  alias tree="find . -print | sed -e 's;[^/]*/;|____;g;s;____|; |;g'"
+fi
+
+# Get rid of .DS_Store files recursiveloy in current directory tree
+alias dsclean='find . -type f -name .DS_Store -delete && find . -type f -name ._.DS_Store -delete'
+alias dotclean='find . -name ._\* -delete'
+
+#use column command for a table. syntax: column -t -s "separator like , :" <filename>
+alias table='column -t -s'
+
+#dumps directory contents to file, usage dir2file <filename>
+alias dir2file="find \"${PWD}\" -iname \"*\" >"
+
+#use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
+alias refresh='watch --interval=3'
+
+# network related
+# Stop after sending count ECHO_REQUEST packets #
+alias ping='ping -c 5'
+# Do not wait interval 1 second, go fast #
+alias fastping='ping -c 100 -s.2'
+alias ports='netstat -tulanp'
+alias wget='wget -c'
+
+#quick access to zshrc and bashrc files
+if [[ "${SHELL_TYPE}" == "bash" ]]; then
+  alias bashrc='${EDITOR} ${HOME}/.bashrc'
+  alias bashrc.='${EDITOR} ${HOME}/.bashrc.local'
+elif [[ "${SHELL_TYPE}" == "zsh" ]]; then
+  alias zshrc='${EDITOR} ${HOME}/.zshrc'
+  alias zshrc.='${EDITOR} ${HOME}/.zshrc.local'
+fi
+
+# not available for routers
+if [[ "${MACHINE_TYPE}" == "router" ]]; then
+  #alias stow="echo Stow not available on type: \"${MACHINE_TYPE}"\"
+  alias stow='${DOTFILES_HOME}/dotfiles/common/scripts/dotsync.sh'
+  alias restow='stow'
+else
+
+  ## Colorize the grep command output for ease of use (good for log files)##
+  alias grep='grep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+  alias grepc='grep --color=always -n -H --exclude-dir={.git,.svn,CVS}'
+  alias egrep='egrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+  alias fgrep='fgrep --color=${lscolors} -n -H --exclude-dir={.git,.svn,CVS}'
+  alias sgrep='grep -R -n -H -C 5 --exclude-dir={.git,.svn,CVS} '
+  alias hgrep="fc -El 0 | grep"
+  alias greph='history | grep'
+
+  #stow aliases
+  if [ -x "$(command -v stow)" ]; then
+    alias unstow='cd ${HOME}/dotfiles/home && stow --verbose=2 --target=${HOME} --delete . && cd -'
+    alias restow='cd ${HOME}/dotfiles/home && stow --verbose=1 --target=${HOME} --stow --adopt . && cd -'
+  else
+    # call the manual stow function
+    alias restow=manualstow
+    alias dotstow='cp -f "${HOME}/dotfiles/home"/.* "${HOME}"'
+  fi
+fi
+
+BAT_UTIL="false"
+# if bat utility (batcat on debian distros) is installed
+if command -v batcat >/dev/null 2>&1; then
+  BAT_UTIL="true"
+  alias bat="batcat --color=${lscolors}"
+elif command -v bat >/dev/null 2>&1; then
+  BAT_UTIL="true"
+  alias bat="bat --color=${lscolors}"
+fi
+
+# other bat aliases
+if [[ "${BAT_UTIL}" == "true" ]]; then
+  if command -v batpipe >/dev/null 2>&1; then
+    eval "$(batpipe)"
+  fi
+  alias cat="bat"
+fi
+
+################################################################################################
+#   END: OS agnostic aliases
+################################################################################################
+
+################################################################################################
+#   OS specific aliases
+################################################################################################
+
+debuglog "Architecture Detected: ${ARCH_TYPE}"
+debuglog "OS Detected: ${OS_TYPE}"
+debuglog "Shell Detected: ${SHELL_TYPE}"
+
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
+  source "${ALIASES_HOME}/.aliases_linux"
+elif [[ "${OS_TYPE}" == "macos" ]]; then
+  source "${ALIASES_HOME}/.aliases_macos"
+fi
+
+################################################################################################
+#   END: OS specific aliases
+################################################################################################

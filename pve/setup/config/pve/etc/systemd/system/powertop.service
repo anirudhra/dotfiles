@@ -1,0 +1,13 @@
+[Unit]
+Description=PowerTOP Auto Tune
+DefaultDependencies=no
+After=basic.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/powertop --auto-tune
+RemainAfterExit=yes
+
+[Install]
+WantedBy=basic.target
+

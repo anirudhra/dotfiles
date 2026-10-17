@@ -1,0 +1,172 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for Dev/Homelab, common for macOS and Linux; will be sourced by parent aliases
+# This file is sourced by .aliases before .aliases_linux/* or .aliases_macos
+# This file should not contain any OS-specific aliases, as it will be sourced
+# by both macOS and Linux based on machine type
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_DEV}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_DEV=1
+
+source "${ALIASES_HOME}/.aliases_hosts"
+source "${ALIASES_HOME}/.helperfuncs"
+
+debuglog "Dev/Homelab aliases sourced"
+
+######## functions ######################
+
+# SSHFS Auto-Mount Function
+sshfsmount() {
+  # --- CONFIGURATION VARIABLES ---
+  local SSH_USER="root"
+  local DEFAULT_PORT="22"
+  local REMOTE_DIR="/"
+  local LOCAL_MOUNT="$HOME/sshfs"
+  # ------------------------------
+
+  # Check if at least the IP/Hostname was provided
+  if [ -z "$1" ]; then
+    echo "Error: Please provide a machine IP or hostname."
+    echo "Usage: sshmount <IP_ADDRESS> [PORT]"
+    return 1
+  fi
+
+  # Determine which port to use (Input argument $2 OR the default configuration)
+  local TARGET_PORT="${2:-$DEFAULT_PORT}"
+
+  # Ensure the local directory exists
+  mkdir -p "$LOCAL_MOUNT"
+
+  # Run the mount command using the variables
+  sshfs "${SSH_USER}@${1}:${REMOTE_DIR}" "$LOCAL_MOUNT" -o port="$TARGET_PORT",reconnect,ServerAliveInterval=15,ServerAliveCountMax=3
+
+  # Check if the command succeeded
+  if [ $? -eq 0 ]; then
+    echo "Successfully mounted ${SSH_USER}@${1}:${REMOTE_DIR} (Port: $TARGET_PORT) to $LOCAL_MOUNT"
+  else
+    echo "Failed to mount."
+  fi
+}
+
+#create timelapse from set of images in a directory
+timelapse() {
+  if command -v mencoder >/dev/null 2>&1; then
+    if command -v ffmpeg >/dev/null 2>&1; then
+      #10fps should be good, but adjust as needed
+      info "Place all images in current directory sorted in ascending order by file name"
+      ls -1tr | grep -v files.txt >files.txt
+      mencoder -nosound -noskip -oac copy -ovc copy -o output.avi -mf fps=10 'mf://@files.txt'
+      #ffmpeg -i output.avi -vf scale=1920:1440,crop=1920:1080 output-final.avi
+      # adjust res and codec manually
+      ffmpeg -i output.avi output-final.avi
+      info "Done. You may delete original output.avi and files.txt"
+    else
+      warn "ffmpeg not found, please install it"
+    fi
+  else
+    warn "mencoder not found, please install it" #ffmpeg is a dependency of mencoder
+  fi
+}
+###############################################
+
+# ssh aliases
+alias sshddwrt='ssh "${SSHROOT}@${DDWRTROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
+alias sshowrt='ssh "${SSHROOT}@${OPENWRTROUTER}" -t "${SSHTMUX}"'
+#alias sshowrt='ssh "${SSHROOT}@${OPENWRTROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
+#alias sshusg='ssh "${SSHROOT}@${USG}" -t "${SSHTMUX}"'
+#alias sshusg='ssh "${SSHROOT}@${USG}"'
+
+alias sshpve='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}" -t "${SSHTMUX}"'
+alias sshomv='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${OMVSERVER}" -t "${SSHTMUX}"'
+alias sshserver='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}"' #non-tmux version
+
+alias sshsbc='ssh "${SSHROOT}@${SBC}" -t "${SSHTMUX}"'
+alias sshsbcwifi='ssh "${SSHROOT}@${SBCWIFI}" -t "${SSHTMUX}"'
+
+alias sshwg='ssh "${SSHROOT}@${PVWG}" -t "${SSHTMUX}"'
+alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
+alias sshvega='ssh "${SSHROOT}@${PVEVEGA}" -t "${SSHTMUX}"'
+alias sshblanka='ssh "${SSHROOT}@${PVEBLANKA}" -t "${SSHTMUX}"'
+alias sshha='ssh "${SSHROOT}@${PVEHA}" -t "${SSHTMUX}"'
+alias sshjf='ssh "${SSHROOT}@${PVEJF}" -t "${SSHTMUX}"'
+alias sshsagat='ssh "${SSHROOT}@${PVESAGAT}" -t "${SSHTMUX}"'
+alias sshimm='ssh "${SSHROOT}@${PVEIMM}" -t "${SSHTMUX}"'
+alias sshbot='ssh "${SSHROOT}@${PVEBOT}" -t "${SSHTMUX}"'
+alias sshnn='ssh "${SSHROOT}@${PVEN8N}" -t "${SSHTMUX}"'
+alias sshubuntu='ssh "${SSHROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
+alias sshubuntuuser='ssh "${SSHNONROOT}@${PVEUBUNTU}" -t "${SSHTMUX}"'
+alias sshkuma='ssh "${SSHROOT}@${PVEKUMA}" -t "${SSHTMUX}"'
+alias sshlms='ssh "${SSHROOT}@${PVELMS}" -t "${SSHTMUX}"'
+
+# Remote machine aliases
+alias sshrasus='ssh "${SSHADMIN}@${R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
+alias sshrpve='ssh "${SSHROOT}@${R_PVE}" -t "${SSHTMUX}"'
+alias sshrdocker='ssh "${SSHROOT}@${R_PVEDOCKER}" -t "${SSHTMUX}"'
+alias sshrdockerlxc='ssh "${SSHROOT}@${R_PVEDOCKERLXC}" -t "${SSHTMUX}"'
+alias sshrnavi='ssh "${SSHROOT}@${R_PVENAVI}" -t "${SSHTMUX}"'
+alias sshrlms='ssh "${SSHROOT}@${R_PVELMS}" -t "${SSHTMUX}"'
+alias sshrjf='ssh "${SSHROOT}@${R_PVEJF}" -t "${SSHTMUX}"'
+alias sshrst='ssh "${SSHROOT}@${R_PVEST}" -t "${SSHTMUX}"'
+alias sshrmemos='ssh "${SSHROOT}@${R_PVEMEMOS}" -t "${SSHTMUX}"'
+alias sshrot='ssh "${SSHROOT}@${R_PVEOT}" -t "${SSHTMUX}"'
+# easy way to remember above machines
+alias sshr1='sshrasus'
+alias sshr10='sshrpve'
+alias sshr20='sshrdocker'
+alias sshr24='sshrdockerlxc'
+alias sshr21='sshrnavi'
+alias sshr22='sshrlms'
+alias sshr23='sshrjf'
+alias sshr25='sshrst'
+alias sshr26='sshrmemos'
+alias sshr27='sshrot'
+# tailscale dynamic IPs
+if command -v tailscale >/dev/null 2>&1; then
+  alias sshtsasus='tailscale ssh "${SSHADMIN}@${TS_R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
+  alias sshtspve='tailscale ssh "${SSHROOT}@${TS_R_PVE}" -t "${SSHTMUX}"'
+fi
+
+# generic tmux ssh aliases
+alias sshtmux='ssh -t "tmux -2 attach || tmux -2 new"'
+
+# ping aliases
+#alias pingrouter='ping "${ROUTER}"'
+alias pingddwrt='ping "${DDWRTROUTER}"'
+alias pingserver='ping "${PVESERVER}"'
+
+# iperf3 aliases for network testing
+alias iperfdown='iperf3 -Rc "${PVESERVER}"'
+alias iperfup='iperf3 -c "${PVESERVER}"'
+
+if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+  alias iperfupwifi="iperf3 -c ${PVESERVER} --bind-dev wlan0 -B ${SBCWIFI} -t 10 -i 1"
+  alias iperfdownwifi="iperf3 -c ${PVESERVER} --bind-dev wlan0 -B ${SBCWIFI} -R -t 10 -i 1"
+fi
+
+# goto aliases
+alias gocode='cd "${HOME}/code"'
+alias gogit='cd "${HOME}/code/github"'
+alias gopkg='cd "${HOME}/packages/install"'
+alias godot='cd "${DOTFILES_HOME}/dotfiles"'
+alias gopve='cd "${DOTFILES_HOME}/dotfiles/pve"'
+alias goscripts='cd "${DOTFILES_HOME}/dotfiles/common/scripts"'
+alias goans='cd "${DOTFILES_HOME}/dotfiles/common/ansible/scripts"'
+
+#git
+alias gitpush="git pull && git add * && git commit -a && git push"
+alias gitpullall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull\" \;"
+alias gitpushall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull && git add * && git commit -a && git push\" \;"
+
+# change ownership to nobdoy:nogroup, primarily for shares
+alias nobodyown='chown -R nobody:nogroup *'
+
+# Create m3u playlist from file listing in current directory recursively
+alias createplaylist="find . -type f -iname \"*.mp3\" -or -iname \"*.flac\" -or -iname \"*.alac\" -or -iname \"*.m4a\" > Playlist.m3u"
+
+# gemini-cli alias
+alias geminicli="npx https://github.com/google-gemini/gemini-cli"

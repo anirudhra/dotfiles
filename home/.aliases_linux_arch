@@ -1,0 +1,31 @@
+#!/bin/bash
+## (c) Anirudh Acharya 2024, 2025
+## useful aliases for Arch Linux and derivatives; will be sourced by parent aliases
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_LINUX_ARCH}" ]; then
+  return 0 # Exit the script if already sourced
+fi
+
+# Set the guard variable
+SOURCED_ALIASES_LINUX_ARCH=1
+
+source "${ALIASES_HOME}/.helperfuncs"
+
+MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+
+debuglog "Arch aliases sourced"
+
+export pkgmgr="yay"
+export pkgmgralt="pacman"
+
+alias fullclean='${pkgmgr} -Scc'
+alias fullupdate='${pkgmgr} -Syu'
+
+#alias fullupgrade='fullupdate && fullclean'
+# alias fullclean='${pkgmgr} -Syu && ${pkgmgr} -Scc && sudo flatpak uninstall --unused -y'
+#alias fullupdate='sudo ${pkgmgr} update --refresh && sudo ${pkgmgr} upgrade -y && sudo flatpak upgrade -y'
+#alias fullupgrade='sudo ${pkgmgr} update --refresh && sudo flatpak upgrade -y && sudo ${pkgmgr} distro-sync'
+
+#alias showkernel='echo Active Kernel && sudo uname -a && echo && echo Installed Kernels && sudo ${pkgmgrrpm} -q kernel-core'
+#alias showinstalled="${pkgmgrrpm} --query --all --queryformat '%{NAME}.%{ARCH}: %{SUMMARY}\n' | less ${lesscolors}"
