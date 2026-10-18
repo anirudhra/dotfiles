@@ -1,43 +1,38 @@
 #!/bin/sh
-# This file is to be used only on DD-WRT/OpenWRT routers that have temp root home directory
-# This file must be called by the startup script to set the correct directories for proper alias/script sourcing
+# OpenWrt setup; source before the router-specific hostname profile.
 
-#This file is called before the router specific .profile.<hostname> is called, in order to set the correct directories and symlinks.
-#This is necessary as ddwrt's ${HOME} is a ramdisk and gets wiped on reboot
-
-# on-chip emmc, that may get wiped across boots or firmware upgrades
+# Internal root home and preferred USB storage are separate.
 export JFFS_ROOT_HOME="/root"
+export ROOT_HOME="/opt/root"
+WRT_LINK_HOME="${JFFS_ROOT_HOME}"
 
-# use one of the ROOT_HOMEs not both, pick emmc or usb mounted on /opt
-export ROOT_HOME="/opt/root" #this is persistent on usb
-export DOTFILES_HOME="${ROOT_HOME}"
+# Honor an override; otherwise prefer USB, then internal storage.
+if [ -z "${DOTFILES_HOME:-}" ]; then
+  if [ -d "${ROOT_HOME}" ]; then
+    DOTFILES_HOME="${ROOT_HOME}"
+  else
+    DOTFILES_HOME="${JFFS_ROOT_HOME}"
+  fi
+fi
+export DOTFILES_HOME
 
-# always fixed relative to DOTFILES_HOME
-export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
+# Fail clearly rather than silently selecting another configuration tree.
+if [ ! -r "${DOTFILES_HOME}/dotfiles/home/.profile.wrt" ]; then
+  printf 'Common router profile not readable: %s\n' \
+    "${DOTFILES_HOME}/dotfiles/home/.profile.wrt" >&2
+  return 1
+fi
 
-ln -s "${DOTFILES_HOME}/dotfiles" "${JFFS_ROOT_HOME}/dotfiles" >/dev/null 2>&1
-
-# use entware-specific ddwrt vimrc file instead of standard one as not all options are supported
-ln -s "${ALIASES_HOME}/.vimrc.entware" "${JFFS_ROOT_HOME}/.vimrc" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.vim" "${JFFS_ROOT_HOME}/.vim" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.config" "${JFFS_ROOT_HOME}/.config" >/dev/null 2>&1
-
-# Fallback for OpenWrt missing the hostname binary, to detect openwrt device
+# Fallback for firmware without a hostname binary.
 if [ -f /etc/openwrt_release ] && ! command -v hostname >/dev/null 2>&1; then
   alias hostname="uci -q get system.@system[0].hostname || echo 'OpenWrt'"
 fi
 
 #alias themeinstall="wget -qO- https://openwrt.eamonxg.fun/install.sh | CHANNEL=releases sh"
 
-# set an informative prompt: user@host:IP
-export LAN_IP=$(ip -4 addr show br-lan | grep inet | awk '{print $2}' | cut -d/ -f1)
-export PS1="\\u@\\h:${LAN_IP}:\\w\\$ "
+# Preserve the original user@host:LAN-IP:directory prompt.
+LAN_IP=$(ip -4 addr show br-lan | grep inet | awk '{print $2}' | cut -d/ -f1)
+export LAN_IP
+export PS1="\u@\h:${LAN_IP}:\w\$ "
 
-# add usb /opt/bin to path for custom scripts and binaries
-export PATH="/opt/bin:${PATH}"
-
-# source .profile, that will source .aliases
-. "${ALIASES_HOME}/.profile"
-echo
-uname -a
-echo
+. "${DOTFILES_HOME}/dotfiles/home/.profile.wrt"

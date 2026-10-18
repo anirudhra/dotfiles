@@ -1,0 +1,57 @@
+#!/bin/sh
+
+# 1. Gather System Metrics Natively
+KERN=$(uname -r)
+UPTIME=$(uptime | awk -F, '{print $1}' | sed 's/.*up //')
+
+# Check Memory (Handles BusyBox 'free' format variations)
+RAM_TOTAL=$(free -m | awk '/Mem:/ {print $2}')
+RAM_USED=$(free -m | awk '/Mem:/ {print $3}')
+
+# 2. Identify Firmware Ecosystem and Hardware Profile
+if [ -f /etc/openwrt_release ]; then
+    # OpenWrt Path
+    . /etc/openwrt_release
+    OS_NAME="$DISTRIB_DESCRIPTION $DISTRIB_REVISION"
+    MODEL=$(ubus call system board 2>/dev/null | jsonfilter -e '@.model')
+    [ -z "$MODEL" ] && MODEL=$(cat /proc/device-tree/model 2>/dev/null)
+    [ -z "$MODEL" ] && MODEL=$(uname -m)
+
+    # Authentic OpenWrt Official Logo Output (Re-aligned)
+    echo ""
+    printf "\033[33m  _______                     ________        __     \033[36mHost:\033[0m   %s\n" "$MODEL"
+    printf "\033[33m |       |.-----.-----.-----.|  |  |  |.----.|  |_   \033[36mOS:\033[0m     %s\n" "$OS_NAME"
+    printf "\033[33m |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|  \033[36mKernel:\033[0m %s\n" "$KERN"
+    printf "\033[33m |_______||   __|_____|__|__||________||__|  |____|  \033[36mUptime:\033[0m %s\n" "$UPTIME"
+    printf "\033[33m          |__| \033[31mW I R E L E S S   F R E E D O M\033[0m       \033[36mMemory:\033[0m %sMB / %sMB\n" "$RAM_USED" "$RAM_TOTAL"
+    echo ""
+
+elif [ -f /etc/nvram.txt ] || nvram get os_name >/dev/null 2>&1; then
+    # DD-WRT Path
+    OS_NAME=$(nvram get os_name 2>/dev/null)
+    [ -z "$OS_NAME" ] && OS_NAME="DD-WRT"
+    OS_VER=$(nvram get os_version 2>/dev/null)
+    MODEL=$(nvram get router_name 2>/dev/null)
+    [ -z "$MODEL" ] && MODEL=$(cat /proc/device-tree/model 2>/dev/null)
+    [ -z "$MODEL" ] && MODEL=$(uname -m)
+
+    # Authentic DD-WRT Official Block Logo Output
+    echo ""
+    printf "\033[32m  ██████╗ ██████╗       ██╗    ██╗██████╗ ████████╗  \033[36mHost:\033[0m   %s\n" "$MODEL"
+    printf "\033[32m  ██╔══██╗██╔══██╗      ██║    ██║██╔══██╗╚══██╔══╝  \033[36mOS:\033[0m     %s %s\n" "$OS_NAME" "$OS_VER"
+    printf "\033[32m  ██║  ██║██║  ██║█████╗██║ █╗ ██║██████╔╝   ██║     \033[36mKernel:\033[0m %s\n" "$KERN"
+    printf "\033[32m  ██║  ██║██║  ██║╚════╝██║███╗██║██╔══██╗   ██║     \033[36mUptime:\033[0m %s\n" "$UPTIME"
+    printf "\033[32m  ██████╔╝██████╔╝      ╚███╔███╔╝██║  ██║   ██║     \033[36mMemory:\033[0m %sMB / %sMB\n" "$RAM_USED" "$RAM_TOTAL"
+    printf "\033[32m  ╚═════╝ ╚═════╝        ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝\033[0m\n"
+    echo ""
+else
+    # Fallback for Generic Linux Router
+    MODEL=$(cat /proc/device-tree/model 2>/dev/null || uname -m)
+    echo ""
+    printf "\033[36mHost:\033[0m   %s\n" "$MODEL"
+    printf "\033[36mOS:\033[0m     Generic Linux Router\n"
+    printf "\033[36mKernel:\033[0m %s\n" "$KERN"
+    printf "\033[36mUptime:\033[0m %s\n" "$UPTIME"
+    printf "\033[36mMemory:\033[0m %sMB / %sMB\n" "$RAM_USED" "$RAM_TOTAL"
+    echo ""
+fi

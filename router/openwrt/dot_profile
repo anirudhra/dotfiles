@@ -1,4 +1,6 @@
+# Load the persistent OpenWrt configuration from USB.
 export ROOT_HOME="/opt/root"
 export DOTFILES_HOME="${ROOT_HOME}"
-[ -f "${DOTFILES_HOME}/dotfiles/home/.profile.openwrt" ] && source "${DOTFILES_HOME}/dotfiles/home/.profile.openwrt"
 
+[ -r "${DOTFILES_HOME}/dotfiles/home/.profile.openwrt" ] &&
+  . "${DOTFILES_HOME}/dotfiles/home/.profile.openwrt"

@@ -1,0 +1,30 @@
+#!/bin/sh
+# Shared ash-compatible login setup; source from the platform profile.
+
+# Prevent repeated/recursive sourcing; safe with set -u. Do not export.
+if [ -n "${SOURCED_PROFILE_WRT:-}" ]; then
+  return 0
+fi
+
+export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
+# Allow a later retry if the selected tree is incomplete.
+if [ ! -r "${ALIASES_HOME}/.profile" ]; then
+  printf 'Home profile not readable: %s\n' "${ALIASES_HOME}/.profile" >&2
+  return 1
+fi
+SOURCED_PROFILE_WRT=1
+
+# Restore links in the firmware login home; source files remain persistent.
+ln -s "${DOTFILES_HOME}/dotfiles" "${WRT_LINK_HOME}/dotfiles" >/dev/null 2>&1
+# Entware Vim uses a reduced-option vimrc.
+ln -s "${ALIASES_HOME}/.vimrc.entware" "${WRT_LINK_HOME}/.vimrc" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.vim" "${WRT_LINK_HOME}/.vim" >/dev/null 2>&1
+ln -s "${ALIASES_HOME}/.config" "${WRT_LINK_HOME}/.config" >/dev/null 2>&1
+
+# Load USB tools and the existing home profile, which sources .aliases.
+export PATH="/opt/bin:${PATH}"
+. "${ALIASES_HOME}/.profile"
+echo
+#uname -a
+ln -s "${DOTFILES_HOME}/dotfiles/common/scripts/routerfastfetch" /opt/bin/fastfetch >/dev/null 2>&1
+echo

@@ -1,45 +1,35 @@
 #!/bin/sh
-# This file is to be used only on DD-WRT/OpenWRT routers that have temp root home directory
-# This file must be called by the startup script to set the correct directories for proper alias/script sourcing
+# DD-WRT setup; source before the router-specific hostname profile.
 
-#This file is called before the router specific .profile.<hostname> is called, in order to set the correct directories and symlinks.
-#This is necessary as ddwrt's ${HOME} is a ramdisk and gets wiped on reboot
-
-# source entware profile, if file exists
+# Load Entware first, when installed.
 [ -f /opt/etc/profile ] && . /opt/etc/profile
 
-# always fixed on ddwrt
-export TEMP_ROOT_HOME="/tmp/root" #this gets wiped on every reboot
-export ROOT_HOME="/opt/root"      #this is persistent on USB
-export JFFS_HOME="/jffs"          #this is persistent on USB
+# RAM login home is wiped on reboot; USB and JFFS homes are persistent.
+export TEMP_ROOT_HOME="/tmp/root"
+export ROOT_HOME="/opt/root"
+export JFFS_HOME="/jffs"
+export JFFS_ROOT_HOME="${JFFS_HOME}/root"
+WRT_LINK_HOME="${TEMP_ROOT_HOME}"
 
-# if router startup script doesn't define DOTFILES_HOME (/jffs vs /opt/root), then choose current file's directory as home
-if [[ -z "${DOTFILES_HOME}" ]]; then
-  profileddwrt_path="$0"
-  profileddwrt_dir=$(dirname "$profileddwrt_path")
-  export DOTFILES_HOME="${profileddwrt_dir}"
-  #export DOTFILES_HOME="${ROOT_HOME}"
+# Honor an override; otherwise prefer USB, then internal storage.
+if [ -z "${DOTFILES_HOME:-}" ]; then
+  if [ -d "${ROOT_HOME}" ]; then
+    DOTFILES_HOME="${ROOT_HOME}"
+  else
+    DOTFILES_HOME="${JFFS_ROOT_HOME}"
+  fi
+fi
+export DOTFILES_HOME
+
+# Fail clearly rather than silently selecting another configuration tree.
+if [ ! -r "${DOTFILES_HOME}/dotfiles/home/.profile.wrt" ]; then
+  printf 'Common router profile not readable: %s\n' \
+    "${DOTFILES_HOME}/dotfiles/home/.profile.wrt" >&2
+  return 1
 fi
 
-# always fixed relative to DOTFILES_HOME
-export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
+# Preserve the original USB-based adblock source, independent of overrides.
+[ ! -f "${JFFS_HOME}/ddwrt-adblock-s.sh" ] && \
+  cp "${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh" "${JFFS_HOME}/ddwrt-adblock-s.sh"
 
-# create symlink on reboot for persistent link to home and dotfiles under temp root folder
-ln -s "${DOTFILES_HOME}/dotfiles" "${TEMP_ROOT_HOME}/dotfiles" >/dev/null 2>&1
-# use entware-specific ddwrt vimrc file instead of standard one as not all options are supported
-#ln -s "${ALIASES_HOME}/.vimrc" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.vimrc.entware" "${TEMP_ROOT_HOME}/.vimrc" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.vim" "${TEMP_ROOT_HOME}/.vim" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
-
-# copy adblock, in case file has been wiped for some reason
-[ ! -f "${JFFS_HOME}/ddwrt-adblock-s.sh" ] && cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
-
-# add usb /opt/bin to path for custom scripts/binaries
-export PATH="/opt/bin:${PATH}"
-
-# source .profile, that will source .aliases
-. "${ALIASES_HOME}/.profile"
-echo
-uname -a
-echo
+. "${DOTFILES_HOME}/dotfiles/home/.profile.wrt"

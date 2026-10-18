@@ -1,8 +1,8 @@
 # =====================================================================
 # USER VARIABLE BLOCK (Modify here if your network topology changes)
 # =====================================================================
-MAIN_SUBNET="10.100.10.0/24"      # Main LAN address space (Zion)
-ADGUARD_IP="10.100.10.1"          # The central AdGuard Home DNS instance
+MAIN_SUBNET="10.100.10.0/24"      # Your main LAN address space (Zion)
+ADGUARD_IP="10.100.10.1"         # The central AdGuard Home DNS instance
 
 # Dedicated Media Host IP Allocations
 HASS_IP="10.100.10.64"            # Home Assistant / Music Assistant Server
@@ -11,6 +11,13 @@ DOCKER_AUDIO_IP="10.100.10.61"    # Dedicated Audio Stack Host (Navidrome, OwnTo
 
 # Tightened Audio Ports (Added 3483 for Lyrion/AirPlay Discovery Engines)
 PORTS_AUDIO_STREAM="4533,3689,9000,3483"
+
+# Gaming PC Host Allocations (Zion), Wifi and Ethernet
+GAMING_PC_IPS="10.100.10.37,10.100.10.38"
+
+# Sunshine / Moonlight Streaming Engine Ports
+PORTS_SUNSHINE_TCP="47984,47989,48010"
+PORTS_SUNSHINE_UDP="47998,47999,48000,48002,48010"
 
 # =====================================================================
 # !!! SYSTEM CONSTANTS BARRIER - DO NOT MODIFY ANYTHING BELOW THIS !!!
@@ -74,6 +81,14 @@ iptables -A FORWARD -p tcp -m multiport --dports "$PORTS_AIRPLAY_TCP" -j ACCEPT
 iptables -A FORWARD -p udp -m multiport --dports "$PORTS_AIRPLAY_UDP_SYNC" -j ACCEPT
 iptables -A FORWARD -p udp --dport "$PORTS_AIRPLAY_STREAM" -j ACCEPT
 
+# IGMP Snooping + Querier Engine (Prevents multicast bridge flooding)
+for br in $ALL_BRIDGES; do
+    [ -d "/sys/devices/virtual/net/$br/bridge" ] && {
+        echo 1 > "/sys/devices/virtual/net/$br/bridge/multicast_snooping"
+        echo 1 > "/sys/devices/virtual/net/$br/bridge/multicast_querier"
+    }
+done
+
 # =====================================================================
 # 3. GLOBAL STATE ENGINE
 # =====================================================================
@@ -88,11 +103,17 @@ iptables -A FORWARD -i "$NET_GUEST" -o "$NET_MEDIA" -m state --state NEW -j ACCE
 # Force explicit WAN forwarding for the Main trusted network (prevents silent client drops)
 iptables -A FORWARD -i "$NET_MAIN" -o ! br+ -m state --state NEW -j ACCEPT
 
+# EXPLICIT WAN ACCESS FOR ALL BRIDGES (Prevents silent WAN drops on non-main VLANs)
+for br in $ALL_BRIDGES; do
+    iptables -A FORWARD -i "$br" -o ! br+ -m state --state NEW -j ACCEPT
+done
+
 # =====================================================================
 # 5. SERVER SPECIAL RULES
 # =====================================================================
 # Stateful access rule for Home Assistant to control IoT devices securely
-iptables -A FORWARD -i "$NET_MAIN" -s "$HASS_IP" -o "$NET_IOT" -m state --state NEW -j ACCEPT
+# Below not needed anymore because permitting $NET_MAIN -> $NET_IOT already covers $HASS_IP
+# iptables -A FORWARD -i "$NET_MAIN" -s "$HASS_IP" -o "$NET_IOT" -m state --state NEW -j ACCEPT
 
 # CHROMECAST / MUSIC ASSISTANT: Allow Media subnet to pull control and audio chunks from HASS
 iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$HASS_IP" -p tcp -m multiport --dports "$PORTS_MUSIC_ASSISTANT_WEB,$PORTS_MUSIC_ASSISTANT_STREAM" -m state --state NEW -j ACCEPT
@@ -106,8 +127,14 @@ iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$DOCKER_AUDIO_IP" -p tcp 
 # LYRION DYNAMIC STREAMING EXCEPTION: Exposes the dynamic UPnP bridge ephemeral port block for Chromecast streams
 iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$DOCKER_AUDIO_IP" -p tcp --dport 49152:65535 -m state --state NEW -j ACCEPT
 
-# LYS/AIRPLAY DISCOVERY EXCEPTION (UDP Core Engine Audio Pipelines)
+# LY/AIRPLAY DISCOVERY EXCEPTION (UDP Core Engine Audio Pipelines)
 iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$DOCKER_AUDIO_IP" -p udp -m multiport --dports "3483,$PORTS_AIRPLAY_STREAM" -m state --state NEW -j ACCEPT
+
+# SUNSHINE / MOONLIGHT: Allow Media bridge (TV) to open streams to Gaming PC (LAN + Wi-Fi)
+for target_ip in $(echo "$GAMING_PC_IPS" | tr ',' ' '); do
+    iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$target_ip" -p tcp -m multiport --dports "$PORTS_SUNSHINE_TCP" -m state --state NEW -j ACCEPT
+    iptables -A FORWARD -i "$NET_MEDIA" -o "$NET_MAIN" -d "$target_ip" -p udp -m multiport --dports "$PORTS_SUNSHINE_UDP" -m state --state NEW -j ACCEPT
+done
 
 # =====================================================================
 # 6. THE IRON CURTAIN
@@ -139,4 +166,3 @@ done
 for br in $ISOLATED_BRIDGES; do
     iptables -I INPUT -i "$br" -p tcp -m multiport --dports "$PORTS_MGMT_BLOCK" -j REJECT --reject-with tcp-reset
 done
-
