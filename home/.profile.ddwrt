@@ -35,5 +35,8 @@ ln -s "${ALIASES_HOME}/.config" "${TEMP_ROOT_HOME}/.config" >/dev/null 2>&1
 # copy adblock, in case file has been wiped for some reason
 [ ! -f "${JFFS_HOME}/ddwrt-adblock-s.sh" ] && cp ${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh ${JFFS_HOME}/ddwrt-adblock-s.sh
 
+# add usb /opt/bin to path for custom scripts/binaries
+export PATH="/opt/bin:${PATH}"
+
 # source .profile, that will source .aliases
 . "${ALIASES_HOME}/.profile"
