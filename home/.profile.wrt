@@ -37,7 +37,5 @@ unset -f create_symlink_if_missing
 export PATH="/opt/bin:${PATH}"
 . "${ALIASES_HOME}/.profile"
 
-echo
 #uname -a
 [ -f "${FASTFETCH_BIN}" ] && [ -x "${FASTFETCH_BIN}" ] && "${FASTFETCH_BIN}"
-echo
