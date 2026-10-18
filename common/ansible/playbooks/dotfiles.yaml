@@ -1,0 +1,11 @@
+- name: Synchronize dotfiles repository and symlinks
+  hosts: "{{ target | default('updatedfall') }}"
+  tasks:
+    - name: Execute updatedotfiles script
+      ansible.builtin.command: ./updatedotfiles.sh
+      args:
+        chdir: "{{ ansible_env.HOME }}/dotfiles/common/ansible/clientscripts"
+      register: out
+
+    - ansible.builtin.debug:
+        var: out.stdout_lines

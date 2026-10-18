@@ -1,3 +1,8 @@
+# Global defaults
+all:
+  vars:
+    ansible_user: root
+
 # Local machines
 dockerlxc:
   hosts:
@@ -15,8 +20,6 @@ dockerlxc:
       ansible_host: 10.100.10.68
     n8n:
       ansible_host: 10.100.10.70
-  vars:
-    ansible_user: root
 
 nondockerlxc:
   hosts:
@@ -28,8 +31,6 @@ nondockerlxc:
 #      ansible_host: 10.100.10.70
     jf:
       ansible_host: 10.100.10.60
-  vars:
-    ansible_user: root
 
 toolslxc:
   hosts:
@@ -37,29 +38,22 @@ toolslxc:
       ansible_host: 10.100.10.71
     ubuntu:
       ansible_host: 10.100.10.65
-  vars:
-    ansible_user: root
 
 servicevm:
   hosts:
     ha:
       ansible_host: 10.100.10.64
-  vars:
-    ansible_user: root
 
 server:
   hosts:
     pve:
       ansible_host: 10.100.10.50
-  vars:
-    ansible_user: root
 
 router:
   hosts:
     linksys:
       ansible_host: 10.100.10.1
   vars:
-    ansible_user: root
     ansible_port: 6666
     ansible_python_interpreter: /opt/bin/python3
 
@@ -69,8 +63,6 @@ sbc:
       ansible_host: 10.100.10.51
     sbcwifi:
       ansible_host: 10.100.10.52
-  vars:
-    ansible_user: root
 
 # Remote machines
 # Remote ASUS Router
@@ -88,8 +80,6 @@ rserver:
   hosts:
     rpve:
       ansible_host: 10.100.100.10
-  vars:
-    ansible_user: root
 
 # Remote PVE LXC containers
 rlxc:
@@ -110,10 +100,8 @@ rlxc:
       ansible_host: 10.100.100.26
     rowntone:
       ansible_host: 10.100.100.27
-  vars:
-    ansible_user: root
 
-# Groups
+# Group Aggregations
 # Local Machines
 alllxc:
   children:

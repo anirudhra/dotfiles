@@ -1,9 +1,10 @@
-- name: Apt Update and clean PVE server
+- name: Apt update and upgrade PVE server
   hosts: pve
   tasks:
-    - name: Run apt update and clean commands on remote services host
-      #ansible.builtin.ping:
-      ansible.builtin.shell: sudo apt update -y && sudo apt dist-upgrade -y ; sudo apt clean -y ; sudo apt autoclean -y ; sudo apt autoremove -y
-      register: out
-
-    - debug: var=out.stdout_lines
+    - name: Run apt update, dist-upgrade, autoclean, and autoremove
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes

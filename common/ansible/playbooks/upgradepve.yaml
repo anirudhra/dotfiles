@@ -2,8 +2,10 @@
   hosts: pve
   tasks:
     - name: Run upgrade.sh script on PVE Server
-      #ansible.builtin.ping:
-      ansible.builtin.shell: cd "${HOME}/dotfiles/common/ansible/clientscripts" && ./upgrade.sh
+      ansible.builtin.command: ./upgrade.sh
+      args:
+        chdir: "{{ ansible_env.HOME }}/dotfiles/common/ansible/clientscripts"
       register: out
 
-    - debug: var=out.stdout_lines
+    - ansible.builtin.debug:
+        var: out.stdout_lines

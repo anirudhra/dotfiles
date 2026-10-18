@@ -1,10 +1,15 @@
 #!/bin/sh
 # Lightweight router summary for BusyBox ash; execute rather than source.
+# Highly optimized for low-power embedded CPUs (MIPS/ARM).
+# (c) Anirudh Acharya 2024, 2025, 2026
+
 # Set to 1 to enable OpenWrt ASCII logo, 0 to disable (default: 0)
 SHOW_OPENWRT_LOGO=${SHOW_OPENWRT_LOGO:-0}
 # Set to 1 to enable DD-WRT ASCII logo, 0 to disable (default: 1)
 SHOW_DDWRT_LOGO=${SHOW_DDWRT_LOGO:-1}
+
 has_command() { command -v "$1" >/dev/null 2>&1; }
+
 show_field() {
   [ -n "$2" ] || return 0
   printf '  %-13s %s\n' "$1:" "$2"
@@ -14,15 +19,17 @@ show_field() {
 FIRMWARE=linux
 OS_NAME="Generic Linux Router"
 MODEL=
+
 if [ -f /etc/openwrt_release ]; then
   FIRMWARE=openwrt
+  # shellcheck source=/dev/null
   . /etc/openwrt_release
   OS_NAME=${DISTRIB_DESCRIPTION:-OpenWrt}
   if has_command ubus && has_command jsonfilter; then
     MODEL=$(ubus call system board 2>/dev/null | jsonfilter -e '@.model' 2>/dev/null)
   fi
 elif [ -f /etc/nvram.txt ] || nvram get os_name >/dev/null 2>&1; then
-  # Original DD-WRT detection condition.
+  # DD-WRT detection
   FIRMWARE=ddwrt
   OS_NAME=$(nvram get os_name 2>/dev/null)
   [ -z "$OS_NAME" ] && OS_NAME="DD-WRT"
@@ -31,7 +38,7 @@ elif [ -f /etc/nvram.txt ] || nvram get os_name >/dev/null 2>&1; then
   MODEL=$(nvram get DD_BOARD 2>/dev/null)
 fi
 
-# Remove device-tree NUL terminators before shell assignment.
+# Remove device-tree NUL terminators before shell assignment
 if [ -z "$MODEL" ]; then
   for MODEL_FILE in /proc/device-tree/model /sys/firmware/devicetree/base/model; do
     if [ -r "$MODEL_FILE" ]; then
@@ -41,51 +48,86 @@ if [ -z "$MODEL" ]; then
   done
 fi
 MODEL=${MODEL:-Unknown}
-HOST_NAME=$(cat /proc/sys/kernel/hostname 2>/dev/null)
+
+# Hostname via shell builtin read (0 fork/exec)
+HOST_NAME=
+if [ -r /proc/sys/kernel/hostname ]; then
+  read -r HOST_NAME < /proc/sys/kernel/hostname 2>/dev/null
+fi
 if [ -z "$HOST_NAME" ] && has_command hostname; then
   HOST_NAME=$(hostname 2>/dev/null)
 fi
 HOST_NAME=${HOST_NAME:-Unknown}
+
 KERNEL=$(uname -r 2>/dev/null)
 ARCH=$(uname -m 2>/dev/null)
 
-# Prefer descriptive CPU fields over numeric processor indexes.
-CPU=$(awk -F: '
-  function clean(s) {sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s}
-  {key=tolower(clean($1)); value=clean($2)}
-  key=="model name" && name=="" {name=value}
-  key=="cpu model" && model=="" {model=value}
-  key=="hardware" && hardware=="" {hardware=value}
-  key=="system type" && system=="" {system=value}
-  key=="processor" && value !~ /^[0-9]+$/ && processor=="" {processor=value}
-  END {
-    if(name!="") print name; else if(model!="") print model;
-    else if(system!="") print system; else if(hardware!="") print hardware;
-    else if(processor!="") print processor;
-  }' /proc/cpuinfo 2>/dev/null)
+# Single-pass CPU and Core extraction from /proc/cpuinfo (1 awk call instead of 2)
+CPU=
+CORES=
+if [ -r /proc/cpuinfo ]; then
+  eval "$(awk -F: '
+    function clean(s) {sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s}
+    {key=tolower(clean($1)); val=clean($2)}
+    key=="model name" && name=="" {name=val}
+    key=="cpu model" && model=="" {model=val}
+    key=="hardware" && hw=="" {hw=val}
+    key=="system type" && sys=="" {sys=val}
+    key=="processor" && val !~ /^[0-9]+$/ && proc=="" {proc=val}
+    tolower($1) ~ /^processor[ \t]*$/ {cores++}
+    END {
+      cpu = (name!="" ? name : (model!="" ? model : (sys!="" ? sys : (hw!="" ? hw : proc))));
+      gsub(/["\\]/, "\\\\&", cpu);
+      print "CPU=\"" cpu "\"";
+      print "CORES=\"" (cores ? cores : "") "\"";
+    }' /proc/cpuinfo 2>/dev/null)"
+fi
 CPU=${CPU:-${ARCH:-Unknown}}
-CORES=$(awk -F: 'tolower($1) ~ /^processor[ \t]*$/ {n++} END {if(n) print n}' /proc/cpuinfo 2>/dev/null)
-UPTIME=$(awk '{s=int($1); d=int(s/86400); h=int(s%86400/3600); m=int(s%3600/60);
-  if(d) printf "%dd ",d; printf "%dh %dm\n",h,m}' /proc/uptime 2>/dev/null)
-LOAD=$(awk '{printf "%s / %s / %s (1 / 5 / 15 min)\n",$1,$2,$3}' /proc/loadavg 2>/dev/null)
 
-# Use available memory; estimate only on older kernels.
-MEMORY=$(awk '
-  /^MemTotal:/ {total=$2} /^MemAvailable:/ {available=$2; have=1}
-  /^MemFree:/ {free=$2} /^Buffers:/ {buffers=$2} /^Cached:/ {cache=$2}
-  /^SReclaimable:/ {reclaim=$2} /^Shmem:/ {shared=$2}
-  END {if(total>0) {
-    if(!have) available=free+buffers+cache+reclaim-shared;
-    if(available<0) available=0; if(available>total) available=total;
-    used=total-available;
-    printf "%.1f / %.1f MiB (%.0f%%)%s\n",used/1024,total/1024,100*used/total,
-      have ? "" : " [estimated]";
-  }}' /proc/meminfo 2>/dev/null)
-SWAP=$(awk '/^SwapTotal:/ {total=$2} /^SwapFree:/ {free=$2}
-  END {if(total>0) printf "%.1f / %.1f MiB\n",(total-free)/1024,total/1024;
-       else print "Disabled"}' /proc/meminfo 2>/dev/null)
+# Uptime via shell builtin read + arithmetic (0 fork/exec)
+UPTIME=""
+if [ -r /proc/uptime ]; then
+  read -r up_sec _ < /proc/uptime 2>/dev/null
+  up_s=${up_sec%%.*}
+  d=$((up_s / 86400))
+  h=$(( (up_s % 86400) / 3600 ))
+  m=$(( (up_s % 3600) / 60 ))
+  [ "$d" -gt 0 ] && UPTIME="${d}d "
+  UPTIME="${UPTIME}${h}h ${m}m"
+fi
 
-# Assigned IPv4 addresses, with ifconfig fallback.
+# Load Average via shell builtin read (0 fork/exec)
+LOAD=""
+if [ -r /proc/loadavg ]; then
+  read -r l1 l5 l15 _ < /proc/loadavg 2>/dev/null
+  LOAD="$l1 / $l5 / $l15 (1 / 5 / 15 min)"
+fi
+
+# Single-pass Memory and Swap extraction from /proc/meminfo (1 awk call instead of 2)
+MEMORY=""
+SWAP=""
+if [ -r /proc/meminfo ]; then
+  eval "$(awk '
+    /^MemTotal:/ {mt=$2} /^MemAvailable:/ {ma=$2; have_avail=1}
+    /^MemFree:/ {mf=$2} /^Buffers:/ {mb=$2} /^Cached:/ {mc=$2}
+    /^SReclaimable:/ {mr=$2} /^Shmem:/ {ms=$2}
+    /^SwapTotal:/ {st=$2} /^SwapFree:/ {sf=$2}
+    END {
+      if (mt > 0) {
+        if (!have_avail) ma = mf + mb + mc + mr - ms;
+        if (ma < 0) ma = 0; if (ma > mt) ma = mt;
+        used = mt - ma;
+        printf "MEMORY=\"%.1f / %.1f MiB (%.0f%%)%s\"\n", used/1024, mt/1024, 100*used/mt, (have_avail ? "" : " [estimated]");
+      }
+      if (st > 0) {
+        printf "SWAP=\"%.1f / %.1f MiB\"\n", (st-sf)/1024, st/1024;
+      } else {
+        print "SWAP=\"Disabled\"";
+      }
+    }' /proc/meminfo 2>/dev/null)"
+fi
+
+# Assigned IPv4 addresses
 IPV4=
 if has_command ip; then
   IPV4=$(ip -4 addr show 2>/dev/null | awk '
@@ -104,11 +146,11 @@ if [ -z "$IPV4" ] && has_command ifconfig; then
     } END {if(sep!="") print ""}')
 fi
 
-# Suppress colors when redirected or NO_COLOR is set.
+# Suppress colors when redirected or NO_COLOR is set
 USE_COLOR=0
 if [ -t 1 ] && [ -z "${NO_COLOR+x}" ]; then USE_COLOR=1; fi
 
-# Determine whether to print logo (controlled by SHOW_OPENWRT_LOGO and SHOW_DDWRT_LOGO)
+# Determine whether to print logo
 PRINT_LOGO=1
 if [ "$FIRMWARE" = "openwrt" ] && [ "$SHOW_OPENWRT_LOGO" != "1" ]; then
   PRINT_LOGO=0
@@ -149,6 +191,7 @@ if [ "$PRINT_LOGO" -eq 1 ]; then
 else
   printf '\n'
 fi
+
 show_field Model "$MODEL"
 show_field Hostname "$HOST_NAME"
 show_field OS "$OS_NAME"
@@ -164,20 +207,16 @@ show_field Memory "$MEMORY"
 show_field Swap "$SWAP"
 show_field IPv4 "${IPV4:-Unavailable}"
 
-# Deduplicate backing filesystems by mount point; includes RAM-backed mounts.
+# Deduplicate backing filesystems in a single df invocation
 if has_command df; then
-  DISKS=$(
-    for DISK_PATH in / /overlay /jffs /opt /tmp; do
-      [ -d "$DISK_PATH" ] || continue
-      df -Pk "$DISK_PATH" 2>/dev/null | awk 'NR>1 && NF>=6 {print}'
-    done | awk '
-      function size(k) {
-        if(k>=1048576) return sprintf("%.2f GiB",k/1048576);
-        return sprintf("%.1f MiB",k/1024)
-      }
-      !seen[$NF]++ {printf "  %-13s %s / %s (%s), available %s\n",
-        $NF ":",size($3),size($2),$5,size($4)}'
-  )
+  DISKS=$(df -Pk / /overlay /jffs /opt /tmp 2>/dev/null | awk '
+    function size(k) {
+      if(k>=1048576) return sprintf("%.2f GiB",k/1048576);
+      return sprintf("%.1f MiB",k/1024)
+    }
+    NR>1 && NF>=6 && !seen[$NF]++ {
+      printf "  %-13s %s / %s (%s), available %s\n", $NF ":", size($3), size($2), $5, size($4)
+    }')
   if [ -n "$DISKS" ]; then
     printf '\n  Filesystems (includes RAM-backed mounts):\n%s\n' "$DISKS"
   fi

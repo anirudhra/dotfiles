@@ -1,9 +1,11 @@
-- name: Update all remote site PVE server and LXCs
+- name: Update all remote site LXCs
   hosts: remotelxc
   tasks:
     - name: Run upgrade.sh script on services hosts at remote site
-      #ansible.builtin.ping:
-      ansible.builtin.shell: cd "${HOME}/dotfiles/common/ansible/clientscripts" && ./upgrade.sh
+      ansible.builtin.command: ./upgrade.sh
+      args:
+        chdir: "{{ ansible_env.HOME }}/dotfiles/common/ansible/clientscripts"
       register: out
 
-    - debug: var=out.stdout_lines
+    - ansible.builtin.debug:
+        var: out.stdout_lines

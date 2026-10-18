@@ -1,0 +1,11 @@
+- name: Update and upgrade host packages and container stacks
+  hosts: "{{ target | default('allactive') }}"
+  tasks:
+    - name: Execute client upgrade script
+      ansible.builtin.command: ./upgrade.sh
+      args:
+        chdir: "{{ ansible_env.HOME }}/dotfiles/common/ansible/clientscripts"
+      register: out
+
+    - ansible.builtin.debug:
+        var: out.stdout_lines

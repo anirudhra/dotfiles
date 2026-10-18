@@ -1,15 +1,17 @@
 #!/usr/bin/env python3
 """iTunes Smart Playlist Synchronizer for OpenMediaVault / Docker Media Services."""
 
+from __future__ import annotations
+
 import argparse
 from datetime import datetime
 import hashlib
 import os
+from pathlib import Path
 import plistlib
 import shutil
 import sys
 import tarfile
-from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 # --- Defaults ---
@@ -80,6 +82,18 @@ def parse_arguments() -> argparse.Namespace:
         default=None,
         help="Full path to iTunes library XML file. If omitted, checks <base-dir>/library/.",
     )
+    parser.add_argument(
+        "--uid",
+        type=int,
+        default=int(os.environ.get("PUID", 1000)),
+        help="User ID to apply when running with root privileges.",
+    )
+    parser.add_argument(
+        "--gid",
+        type=int,
+        default=int(os.environ.get("PGID", 100)),
+        help="Group ID to apply when running with root privileges.",
+    )
 
     return parser.parse_args()
 
@@ -100,14 +114,28 @@ def resolve_xml_path(
         expanded = explicit_xml.expanduser()
         return expanded if expanded.is_file() else None
 
+    # Check candidate names directly
     for name in CANDIDATE_XML_NAMES:
         candidate = fallback_library_dir / name
         if candidate.is_file():
             return candidate
+
+    # Case-insensitive fallback lookup in library folder
+    if fallback_library_dir.is_dir():
+        candidate_lower = {name.lower(): name for name in CANDIDATE_XML_NAMES}
+        for entry in fallback_library_dir.iterdir():
+            if entry.is_file() and entry.name.lower() in candidate_lower:
+                return entry
+
     return None
 
 
 def calculate_sha256(file_path: Path) -> str:
+    # Use C-accelerated file_digest on Python 3.11+
+    if hasattr(hashlib, "file_digest"):
+        with open(file_path, "rb") as f:
+            return hashlib.file_digest(f, "sha256").hexdigest()
+
     hasher = hashlib.sha256()
     with open(file_path, "rb") as f:
         while chunk := f.read(65536):
@@ -221,13 +249,13 @@ def sync_playlists():
     # 4. Create isolated staging directory
     base_dir = playlists_dir.parent
     base_dir.mkdir(parents=True, exist_ok=True)
-    safe_chown(base_dir, 1000, 100)
+    safe_chown(base_dir, args.uid, args.gid)
 
     staging_dir = base_dir / f"{playlists_dir.name}_staging"
     if staging_dir.exists():
         shutil.rmtree(staging_dir)
     staging_dir.mkdir(parents=True, exist_ok=True)
-    safe_chown(staging_dir, 1000, 100)
+    safe_chown(staging_dir, args.uid, args.gid)
 
     # 5. Determine prefix
     if args.music_dir:
@@ -262,7 +290,7 @@ def sync_playlists():
                         if tid in tracks:
                             out.write(f"{music_prefix}/{tracks[tid]}\n")
 
-                safe_chown(playlist_file, 1000, 100)
+                safe_chown(playlist_file, args.uid, args.gid)
                 created_count += 1
 
     except Exception as e:
@@ -274,7 +302,7 @@ def sync_playlists():
             shutil.rmtree(staging_dir)
         sys.exit(1)
 
-    # 7. Swap directories and archive previous playlists
+    # 7. Swap directories and archive previous playlists with rollback safety
     temp_old_dir = base_dir / f"{playlists_dir.name}_pending_backup"
     if temp_old_dir.exists():
         shutil.rmtree(temp_old_dir)
@@ -283,13 +311,21 @@ def sync_playlists():
         playlists_dir.is_dir() and any(playlists_dir.iterdir())
     )
 
-    if has_existing_data:
-        playlists_dir.rename(temp_old_dir)
-    elif playlists_dir.exists():
-        playlists_dir.rmdir()
+    try:
+        if has_existing_data:
+            shutil.move(str(playlists_dir), str(temp_old_dir))
+        elif playlists_dir.exists():
+            playlists_dir.rmdir()
 
-    staging_dir.rename(playlists_dir)
-    safe_chown(playlists_dir, 1000, 100)
+        shutil.move(str(staging_dir), str(playlists_dir))
+        safe_chown(playlists_dir, args.uid, args.gid)
+    except Exception as swap_err:
+        print(f"Error during directory swap: {swap_err}. Rolling back...")
+        if temp_old_dir.exists() and not playlists_dir.exists():
+            shutil.move(str(temp_old_dir), str(playlists_dir))
+        if staging_dir.exists():
+            shutil.rmtree(staging_dir)
+        sys.exit(1)
 
     if has_existing_data:
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -299,7 +335,7 @@ def sync_playlists():
         with tarfile.open(archive_path, "w:gz") as tar:
             tar.add(temp_old_dir, arcname=playlists_dir.name)
 
-        safe_chown(archive_path, 1000, 100)
+        safe_chown(archive_path, args.uid, args.gid)
         shutil.rmtree(temp_old_dir)
         print(
             f"Archived previous playlist generation to '{archive_path.name}'."
@@ -331,7 +367,7 @@ def sync_playlists():
     # 8. Save visible hash inside playlists directory
     final_hash_file = playlists_dir / f"{xml_path.name}.hash"
     final_hash_file.write_text(current_hash)
-    safe_chown(final_hash_file, 1000, 100)
+    safe_chown(final_hash_file, args.uid, args.gid)
 
     print(
         f"Successfully processed {created_count} "

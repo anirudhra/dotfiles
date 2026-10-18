@@ -1,0 +1,10 @@
+- name: Native apt package maintenance
+  hosts: "{{ target | default('upgradepveall') }}"
+  tasks:
+    - name: Run apt update, dist-upgrade, autoclean, and autoremove
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        upgrade: dist
+        autoremove: yes
+        autoclean: yes
