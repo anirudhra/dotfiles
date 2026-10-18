@@ -21,13 +21,20 @@ if [[ -z "${ALIASES_HOME}" ]]; then
   export ALIASES_HOME="${HOME}"
 fi
 
+# Debug logging: set to 1 to print all debug logs, 0 to disable
+export DOTFILES_DEBUG="${DOTFILES_DEBUG:-1}"
+
 # source the aliases file, posix way
 . "${ALIASES_HOME}/.aliases"
 
 #macos only, test by checking if "diskutil" command exists (macos-only)
 #if (( ${+commands[diskutil]} )); then
 if [[ "$OSTYPE" == "darwin"* ]]; then
-  source <(fzf --zsh)
+  if [ -n "${ZSH_VERSION:-}" ] && command -v fzf >/dev/null 2>&1; then
+    source <(fzf --zsh)
+  elif [ -n "${BASH_VERSION:-}" ] && command -v fzf >/dev/null 2>&1; then
+    eval "$(fzf --bash 2>/dev/null)"
+  fi
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
   # /usr/local/bin/brew on Intel Macs and /opt/homebrew/bin/brew on Apple Silicon
@@ -40,8 +47,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export VISUAL='vimr'
   export EDITOR='nvim'
 
-  export PATH="/opt/local/bin:${HOME}/.local/bin:${PATH}"
-  export PATH="./:/usr/local/sbin:${PATH}"
+  export PATH="/opt/local/bin:/usr/local/sbin:${HOME}/.local/bin:${PATH}"
 
   LESSPIPE=$(which src-hilite-lesspipe.sh)
   export LESSOPEN="| ${LESSPIPE} %s"
@@ -52,7 +58,6 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   echo
 else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
-  export PATH="./:${PATH}"
 fi
 
 # force fix for kitty terminals, tmux won't work otherwise for ssh
@@ -63,9 +68,14 @@ fi
 HOST_PROFILE_ZSH="${ALIASES_HOME}/.profile.${HOST%%.*}"
 HOST_PROFILE_BASH="${ALIASES_HOME}/.profile.${HOSTNAME%%.*}"
 
-# hostname specific commands, both point to the same file and only one will run
-# bash specific
-[ -f "${HOST_PROFILE_BASH}" ] && . "${HOST_PROFILE_BASH}"
+# hostname specific commands (source once)
+if [ -n "${HOST_PROFILE_BASH}" ] && [ -f "${HOST_PROFILE_BASH}" ]; then
+  . "${HOST_PROFILE_BASH}"
+elif [ -n "${HOST_PROFILE_ZSH}" ] && [ -f "${HOST_PROFILE_ZSH}" ]; then
+  . "${HOST_PROFILE_ZSH}"
+fi
 
-# for zsh
-[ -f "${HOST_PROFILE_ZSH}" ] && . "${HOST_PROFILE_ZSH}"
+# Ensure ~/.local/bin is in PATH portably
+if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
+  export PATH="${HOME}/.local/bin:${PATH}"
+fi

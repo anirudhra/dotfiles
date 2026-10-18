@@ -13,8 +13,8 @@ SOURCED_ALIASES_LINUX_DEBIAN=1
 
 source "${ALIASES_HOME}/.helperfuncs"
 
-MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
-SERVER_TYPE=$(detect_server_type)
+[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
+[[ -z "${SERVER_TYPE:-}" ]] && export SERVER_TYPE="$(detect_server_type)"
 
 debuglog "Debian aliases sourced"
 

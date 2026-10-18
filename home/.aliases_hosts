@@ -57,11 +57,9 @@ export R_PVEST="${NET3}.25"
 export R_PVEMEMOS="${NET3}.26"
 export R_PVEOT="${NET3}.27"
 
-# Remote Machines via tailscale
-if command -v tailscale >/dev/null 2>&1; then
-  export TS_R_PVE="$(tailscale status | awk '$2 == "acharya-pve-server" {print $1}')"
-  export TS_R_ASUSROUTER="$(tailscale status | awk '$2 == "router-rt-ax82u" {print $1}')"
-fi
+# Remote Machines via tailscale (lazily resolved by sshts* functions to avoid shell startup delay)
+export TS_R_PVE="${TS_R_PVE:-}"
+export TS_R_ASUSROUTER="${TS_R_ASUSROUTER:-}"
 
 # Clients
 export GUILE="${NET1}.20"

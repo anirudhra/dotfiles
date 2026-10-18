@@ -12,7 +12,7 @@ SOURCED_ALIASES_LINUX_ARCH=1
 
 source "${ALIASES_HOME}/.helperfuncs"
 
-MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
+[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
 
 debuglog "Arch aliases sourced"
 

@@ -14,7 +14,7 @@ source "${ALIASES_HOME}/.helperfuncs"
 
 debuglog "File functions sourced"
 
-SHELL_TYPE=$(detect_shell_type)
+[[ -z "${SHELL_TYPE:-}" ]] && export SHELL_TYPE="$(detect_shell_type)"
 
 # Function to safely backup (if exists) and install files
 install_file() {

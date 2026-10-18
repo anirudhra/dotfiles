@@ -22,11 +22,24 @@ set termguicolors
 filetype plugin indent on
 "syntax on
 
+" Ensure backup and swap directories exist
+if !isdirectory(expand('~/.vim-tmp'))
+  silent! call mkdir(expand('~/.vim-tmp'), 'p')
+endif
 set backup
 set backupdir=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set backupskip=/tmp/*,/private/tmp/*
 set directory=~/.vim-tmp,~/.tmp,~/tmp,/var/tmp,/tmp
 set writebackup
+
+" Persistent undo
+if has('persistent_undo')
+  if !isdirectory(expand('~/.vim/undo'))
+    silent! call mkdir(expand('~/.vim/undo'), 'p')
+  endif
+  set undodir=~/.vim/undo
+  set undofile
+endif
 
 "set guifont=Menlo\ Regular:h15
 "set guifont=Monospace\ Regular:h12

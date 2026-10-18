@@ -16,15 +16,19 @@ if [[ -z "${ALIASES_HOME}" ]]; then
   export ALIASES_HOME="${HOME}"
 fi
 
+# Debug logging: set to 1 to print all debug logs, 0 to disable
+export DOTFILES_DEBUG="${DOTFILES_DEBUG:-1}"
+
 # source helpers
 source "${ALIASES_HOME}/.gitfuncs"
 source "${ALIASES_HOME}/.helperfuncs"
 source "${ALIASES_HOME}/.filefuncs"
 
-OS_TYPE=$(detect_os_type)
-ARCH_TYPE=$(detect_arch_type)
-SHELL_TYPE=$(detect_shell_type)
-MACHINE_TYPE=$(detect_machine_type)
+[[ -z "${OS_TYPE:-}" ]] && export OS_TYPE="$(detect_os_type)"
+[[ -z "${ARCH_TYPE:-}" ]] && export ARCH_TYPE="$(detect_arch_type)"
+[[ -z "${SHELL_TYPE:-}" ]] && export SHELL_TYPE="$(detect_shell_type)"
+[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
+[[ -z "${SERVER_TYPE:-}" ]] && export SERVER_TYPE="$(detect_server_type)"
 
 ################################################################################################
 #   OS agnostic aliases
@@ -193,6 +197,9 @@ alias getdot='
 '
 
 alias u='upgrade'
+
+# google agy harness
+alias sudoagy="agy --dangerously-skip-permissions"
 
 # ansible aliases
 alias dfupdateall="goans && ./ans.sh dfupdateall && cd -"

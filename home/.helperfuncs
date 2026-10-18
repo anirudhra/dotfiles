@@ -24,7 +24,9 @@ info() {
 }
 
 debuglog() {
-  echo -e "${CYAN}[DEBUG: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+  if [[ -n "${DOTFILES_DEBUG:-}" && "${DOTFILES_DEBUG}" != "0" ]] || [[ -n "${DEBUG:-}" && "${DEBUG}" != "0" ]]; then
+    echo -e "${CYAN}[DEBUG: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
+  fi
 }
 
 log() {

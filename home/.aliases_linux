@@ -12,9 +12,9 @@ SOURCED_ALIASES_LINUX=1
 
 source "${ALIASES_HOME}/.helperfuncs"
 
-OS_TYPE=$(detect_os_type)           # this is the OS of the machine running the script
-MACHINE_TYPE=$(detect_machine_type) # this is the machine type of the machine running the script
-SERVER_TYPE=$(detect_server_type)
+[[ -z "${OS_TYPE:-}" ]] && export OS_TYPE="$(detect_os_type)"
+[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
+[[ -z "${SERVER_TYPE:-}" ]] && export SERVER_TYPE="$(detect_server_type)"
 desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 
 debuglog "Machine Type: ${MACHINE_TYPE}"
@@ -136,7 +136,7 @@ copyrockboxthemes() {
   #   copyrockboxthemes            # copy from current dir's backdrops/fonts/icons/themes/wps
   #   copyrockboxthemes <srcdir>   # for each subdir of <srcdir>, cd into .rockbox and copy contents
   if [[ "${MACHINE_TYPE}" == "client" ]]; then
-    local mountbasedir="/run/media/anirudh"
+    local mountbasedir="/run/media/${USER}"
     local ipod_base=""
 
     if [ -d "${mountbasedir}/IPOD7G" ]; then

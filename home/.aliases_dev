@@ -125,10 +125,24 @@ alias sshr23='sshrjf'
 alias sshr25='sshrst'
 alias sshr26='sshrmemos'
 alias sshr27='sshrot'
-# tailscale dynamic IPs
+# tailscale dynamic IPs (resolved lazily when invoked to prevent shell startup latency)
 if command -v tailscale >/dev/null 2>&1; then
-  alias sshtsasus='tailscale ssh "${SSHADMIN}@${TS_R_ASUSROUTER}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"'
-  alias sshtspve='tailscale ssh "${SSHROOT}@${TS_R_PVE}" -t "${SSHTMUX}"'
+  sshtsasus() {
+    local target_ip="${TS_R_ASUSROUTER:-$(tailscale status 2>/dev/null | awk '$2 == "router-rt-ax82u" {print $1}')}"
+    if [ -z "$target_ip" ]; then
+      echo "Error: Could not resolve Tailscale IP for router-rt-ax82u" >&2
+      return 1
+    fi
+    tailscale ssh "${SSHADMIN}@${target_ip}" -p "${ROUTERSSHPORT}" -t "${SSHTMUX}"
+  }
+  sshtspve() {
+    local target_ip="${TS_R_PVE:-$(tailscale status 2>/dev/null | awk '$2 == "acharya-pve-server" {print $1}')}"
+    if [ -z "$target_ip" ]; then
+      echo "Error: Could not resolve Tailscale IP for acharya-pve-server" >&2
+      return 1
+    fi
+    tailscale ssh "${SSHROOT}@${target_ip}" -t "${SSHTMUX}"
+  }
 fi
 
 # generic tmux ssh aliases
