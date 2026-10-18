@@ -55,11 +55,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   export LESSOPEN="| ${LESSPIPE} %s"
   export LESS=' -R -X -F '
 
-  echo
-  cowsay "$(fortune -s)"
-  echo
 else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
+fi
+
+if command -v cowsay >/dev/null 2>&1 &&
+  command -v fortune >/dev/null 2>&1; then
+  cowsay "$(fortune -s)"
 fi
 
 # force fix for kitty terminals, tmux won't work otherwise for ssh
@@ -81,7 +83,3 @@ fi
 if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
   export PATH="${HOME}/.local/bin:${PATH}"
 fi
-
-
-# Added by Antigravity CLI installer
-export PATH="/Users/anirudh/.local/bin:$PATH"
