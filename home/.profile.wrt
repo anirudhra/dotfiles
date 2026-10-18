@@ -1,30 +1,39 @@
 #!/bin/sh
 # Shared ash-compatible login setup; source from the platform profile.
 
-# Prevent repeated/recursive sourcing; safe with set -u. Do not export.
+# Run once per shell and block recursive sourcing; safe with set -u.
+# Do not export this guard: child shells initialize independently.
 if [ -n "${SOURCED_PROFILE_WRT:-}" ]; then
   return 0
 fi
 
 export ALIASES_HOME="${DOTFILES_HOME}/dotfiles/home"
-# Allow a later retry if the selected tree is incomplete.
 if [ ! -r "${ALIASES_HOME}/.profile" ]; then
-  printf 'Home profile not readable: %s\n' "${ALIASES_HOME}/.profile" >&2
   return 1
 fi
 SOURCED_PROFILE_WRT=1
 
-# Restore links in the firmware login home; source files remain persistent.
-ln -s "${DOTFILES_HOME}/dotfiles" "${WRT_LINK_HOME}/dotfiles" >/dev/null 2>&1
-# Entware Vim uses a reduced-option vimrc.
-ln -s "${ALIASES_HOME}/.vimrc.entware" "${WRT_LINK_HOME}/.vimrc" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.vim" "${WRT_LINK_HOME}/.vim" >/dev/null 2>&1
-ln -s "${ALIASES_HOME}/.config" "${WRT_LINK_HOME}/.config" >/dev/null 2>&1
+# Skip existing files, directories, and even dangling symlinks.
+# This prevents ln from creating nested links inside directory destinations.
+create_symlink_if_missing() {
+  if [ ! -e "$2" ] && [ ! -L "$2" ]; then
+    ln -s "$1" "$2" >/dev/null 2>&1
+  fi
+  return 0
+}
 
-# Load USB tools and the existing home profile, which sources .aliases.
+# Restore configuration links in the platform's login home after reboot.
+create_symlink_if_missing "${DOTFILES_HOME}/dotfiles" "${WRT_LINK_HOME}/dotfiles"
+# Use the Entware-specific vimrc for its supported options.
+create_symlink_if_missing "${ALIASES_HOME}/.vimrc.entware" "${WRT_LINK_HOME}/.vimrc"
+create_symlink_if_missing "${ALIASES_HOME}/.vim" "${WRT_LINK_HOME}/.vim"
+create_symlink_if_missing "${ALIASES_HOME}/.config" "${WRT_LINK_HOME}/.config"
+
+# Add USB tools and load the existing home profile (which sources aliases).
 export PATH="/opt/bin:${PATH}"
 . "${ALIASES_HOME}/.profile"
 echo
 #uname -a
-ln -s "${DOTFILES_HOME}/dotfiles/common/scripts/routerfastfetch" /opt/bin/fastfetch >/dev/null 2>&1
+create_symlink_if_missing "${DOTFILES_HOME}/dotfiles/common/scripts/routerfastfetch" /opt/bin/fastfetch
+unset -f create_symlink_if_missing
 echo
