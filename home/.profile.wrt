@@ -22,18 +22,22 @@ create_symlink_if_missing() {
   return 0
 }
 
+FASTFETCH_BIN="/opt/bin/fastfetch"
+
 # Restore configuration links in the platform's login home after reboot.
 create_symlink_if_missing "${DOTFILES_HOME}/dotfiles" "${WRT_LINK_HOME}/dotfiles"
 # Use the Entware-specific vimrc for its supported options.
 create_symlink_if_missing "${ALIASES_HOME}/.vimrc.entware" "${WRT_LINK_HOME}/.vimrc"
 create_symlink_if_missing "${ALIASES_HOME}/.vim" "${WRT_LINK_HOME}/.vim"
 create_symlink_if_missing "${ALIASES_HOME}/.config" "${WRT_LINK_HOME}/.config"
+create_symlink_if_missing "${DOTFILES_HOME}/dotfiles/common/scripts/routerfastfetch" "${FASTFETCH_BIN}"
+unset -f create_symlink_if_missing
 
 # Add USB tools and load the existing home profile (which sources aliases).
 export PATH="/opt/bin:${PATH}"
 . "${ALIASES_HOME}/.profile"
+
 echo
 #uname -a
-create_symlink_if_missing "${DOTFILES_HOME}/dotfiles/common/scripts/routerfastfetch" /opt/bin/fastfetch
-unset -f create_symlink_if_missing
+[ -f "${FASTFETCH_BIN}" ] && [ -x "${FASTFETCH_BIN}" ] && "${FASTFETCH_BIN}"
 echo
