@@ -1,58 +1,167 @@
 #!/bin/sh
+# Lightweight router summary for BusyBox ash; execute rather than source.
+# No Bash, Python, jq, network requests, or additional packages required.
 
-# 1. Gather System Metrics Natively
-KERN=$(uname -r)
-UPTIME=$(uptime | awk -F, '{print $1}' | sed 's/.*up //')
+has_command() { command -v "$1" >/dev/null 2>&1; }
+nvram_value() { nvram get "$1" 2>/dev/null; }
+show_field() {
+  [ -n "$2" ] || return 0
+  printf '  %-13s %s\n' "$1:" "$2"
+}
 
-# Check Memory (Handles BusyBox 'free' format variations)
-RAM_TOTAL=$(free -m | awk '/Mem:/ {print $2}')
-RAM_USED=$(free -m | awk '/Mem:/ {print $3}')
-
-# 2. Identify Firmware Ecosystem and Hardware Profile
-if [ -f /etc/openwrt_release ]; then
-  # OpenWrt Path
+# Separate hardware identity from the configured hostname.
+FIRMWARE=linux
+OS_NAME='Generic Linux Router'
+MODEL=
+if [ -r /etc/openwrt_release ]; then
+  FIRMWARE=openwrt
   . /etc/openwrt_release
-  #OS_NAME="$DISTRIB_DESCRIPTION $DISTRIB_REVISION"
-  OS_NAME="$DISTRIB_DESCRIPTION"
-  MODEL=$(ubus call system board 2>/dev/null | jsonfilter -e '@.model')
-  [ -z "$MODEL" ] && MODEL=$(cat /proc/device-tree/model 2>/dev/null)
-  [ -z "$MODEL" ] && MODEL=$(uname -m)
-
-  # Authentic OpenWrt Official Logo Output (Re-aligned)
-  echo ""
-  printf "\033[33m  _______                     ________        __     \033[36mHost:\033[0m   %s\n" "$MODEL"
-  printf "\033[33m |       |.-----.-----.-----.|  |  |  |.----.|  |_   \033[36mOS:\033[0m     %s\n" "$OS_NAME"
-  printf "\033[33m |   -   ||  _  |  -__|     ||  |  |  ||   _||   _|  \033[36mKernel:\033[0m %s\n" "$KERN"
-  printf "\033[33m |_______||   __|_____|__|__||________||__|  |____|  \033[36mUptime:\033[0m %s\n" "$UPTIME"
-  printf "\033[33m          |__| \033[31mW I R E L E S S   F R E E D O M\033[0m       \033[36mMemory:\033[0m %sMB / %sMB\n" "$RAM_USED" "$RAM_TOTAL"
-  echo ""
-
-elif [ -f /etc/nvram.txt ] || nvram get os_name >/dev/null 2>&1; then
-  # DD-WRT Path
-  OS_NAME=$(nvram get os_name 2>/dev/null)
-  [ -z "$OS_NAME" ] && OS_NAME="DD-WRT"
-  OS_VER=$(nvram get os_version 2>/dev/null)
-  MODEL=$(nvram get router_name 2>/dev/null)
-  [ -z "$MODEL" ] && MODEL=$(cat /proc/device-tree/model 2>/dev/null)
-  [ -z "$MODEL" ] && MODEL=$(uname -m)
-
-  # Authentic DD-WRT Official Block Logo Output
-  echo ""
-  printf "\033[32m  ██████╗ ██████╗       ██╗    ██╗██████╗ ████████╗  \033[36mHost:\033[0m   %s\n" "$MODEL"
-  printf "\033[32m  ██╔══██╗██╔══██╗      ██║    ██║██╔══██╗╚══██╔══╝  \033[36mOS:\033[0m     %s %s\n" "$OS_NAME" "$OS_VER"
-  printf "\033[32m  ██║  ██║██║  ██║█████╗██║ █╗ ██║██████╔╝   ██║     \033[36mKernel:\033[0m %s\n" "$KERN"
-  printf "\033[32m  ██║  ██║██║  ██║╚════╝██║███╗██║██╔══██╗   ██║     \033[36mUptime:\033[0m %s\n" "$UPTIME"
-  printf "\033[32m  ██████╔╝██████╔╝      ╚███╔███╔╝██║  ██║   ██║     \033[36mMemory:\033[0m %sMB / %sMB\n" "$RAM_USED" "$RAM_TOTAL"
-  printf "\033[32m  ╚═════╝ ╚═════╝        ╚══╝╚══╝ ╚═╝  ╚═╝   ╚═╝\033[0m\n"
-  echo ""
-else
-  # Fallback for Generic Linux Router
-  MODEL=$(cat /proc/device-tree/model 2>/dev/null || uname -m)
-  echo ""
-  printf "\033[36mHost:\033[0m   %s\n" "$MODEL"
-  printf "\033[36mOS:\033[0m     Generic Linux Router\n"
-  printf "\033[36mKernel:\033[0m %s\n" "$KERN"
-  printf "\033[36mUptime:\033[0m %s\n" "$UPTIME"
-  printf "\033[36mMemory:\033[0m %sMB / %sMB\n" "$RAM_USED" "$RAM_TOTAL"
-  echo ""
+  OS_NAME=${DISTRIB_DESCRIPTION:-OpenWrt}
+  if has_command ubus && has_command jsonfilter; then
+    MODEL=$(ubus call system board 2>/dev/null | jsonfilter -e '@.model' 2>/dev/null)
+  fi
+elif has_command nvram; then
+  NVRAM_OS=$(nvram_value os_name)
+  case "$NVRAM_OS" in
+    *DD-WRT*|*dd-wrt*) FIRMWARE=ddwrt ;;
+    *) [ ! -f /etc/nvram.txt ] || FIRMWARE=ddwrt ;;
+  esac
+  if [ "$FIRMWARE" = ddwrt ]; then
+    OS_NAME="${NVRAM_OS:-DD-WRT}"
+    OS_VERSION=$(nvram_value os_version)
+    [ -z "$OS_VERSION" ] || OS_NAME="$OS_NAME $OS_VERSION"
+    MODEL=$(nvram_value DD_BOARD)
+  fi
 fi
+if [ -z "$MODEL" ]; then
+  for MODEL_FILE in /proc/device-tree/model /sys/firmware/devicetree/base/model; do
+    if [ -r "$MODEL_FILE" ]; then
+      MODEL=$(tr -d '\000' < "$MODEL_FILE" 2>/dev/null)
+      [ -z "$MODEL" ] || break
+    fi
+  done
+fi
+MODEL=${MODEL:-Unknown}
+HOST_NAME=$(cat /proc/sys/kernel/hostname 2>/dev/null)
+if [ -z "$HOST_NAME" ] && has_command hostname; then
+  HOST_NAME=$(hostname 2>/dev/null)
+fi
+HOST_NAME=${HOST_NAME:-Unknown}
+KERNEL=$(uname -r 2>/dev/null)
+ARCH=$(uname -m 2>/dev/null)
+
+# Prefer descriptive CPU fields; ignore numeric ARM 'processor' indexes.
+CPU=$(awk -F: '
+  function clean(s) {sub(/^[ \t]+/, "", s); sub(/[ \t]+$/, "", s); return s}
+  {key=tolower(clean($1)); value=clean($2)}
+  key=="model name" && name=="" {name=value}
+  key=="cpu model" && model=="" {model=value}
+  key=="hardware" && hardware=="" {hardware=value}
+  key=="system type" && system=="" {system=value}
+  key=="processor" && value !~ /^[0-9]+$/ && processor=="" {processor=value}
+  END {
+    if (name!="") print name; else if (model!="") print model;
+    else if (system!="") print system; else if (hardware!="") print hardware;
+    else if (processor!="") print processor;
+  }' /proc/cpuinfo 2>/dev/null)
+CPU=${CPU:-${ARCH:-Unknown}}
+CORES=$(awk -F: 'tolower($1) ~ /^processor[ \t]*$/ {n++} END {if(n) print n}' /proc/cpuinfo 2>/dev/null)
+UPTIME=$(awk '{s=int($1); d=int(s/86400); h=int(s%86400/3600); m=int(s%3600/60);
+  if(d) printf "%dd ",d; printf "%dh %dm\n",h,m}' /proc/uptime 2>/dev/null)
+LOAD=$(awk '{printf "%s / %s / %s (1 / 5 / 15 min)\n",$1,$2,$3}' /proc/loadavg 2>/dev/null)
+
+# MemAvailable reflects reclaimable memory; older kernels need an estimate.
+MEMORY=$(awk '
+  /^MemTotal:/ {total=$2} /^MemAvailable:/ {available=$2; have=1}
+  /^MemFree:/ {free=$2} /^Buffers:/ {buffers=$2} /^Cached:/ {cache=$2}
+  /^SReclaimable:/ {reclaim=$2} /^Shmem:/ {shared=$2}
+  END {if(total>0) {
+    if(!have) available=free+buffers+cache+reclaim-shared;
+    if(available<0) available=0; if(available>total) available=total;
+    used=total-available;
+    printf "%.1f / %.1f MiB (%.0f%%)%s\n",used/1024,total/1024,100*used/total,
+      have ? "" : " [estimated]";
+  }}' /proc/meminfo 2>/dev/null)
+SWAP=$(awk '/^SwapTotal:/ {total=$2} /^SwapFree:/ {free=$2}
+  END {if(total>0) printf "%.1f / %.1f MiB\n",(total-free)/1024,total/1024;
+       else print "Disabled"}' /proc/meminfo 2>/dev/null)
+
+# Read assigned non-loopback IPv4 addresses, including interface names.
+IPV4=
+if has_command ip; then
+  IPV4=$(ip -4 addr show 2>/dev/null | awk '
+    /^[0-9]+:/ {iface=$2; sub(/:$/, "", iface); sub(/@.*/, "", iface)}
+    $1=="inet" && $2 !~ /^127\./ {printf "%s%s %s", sep,iface,$2; sep=", "}
+    END {if(sep!="") print ""}')
+fi
+if [ -z "$IPV4" ] && has_command ifconfig; then
+  IPV4=$(ifconfig 2>/dev/null | awk '
+    /^[^ \t]/ {iface=$1; sub(/:$/, "", iface)}
+    /inet / {
+      for(i=1;i<=NF;i++) if($i=="inet") {
+        addr=$(i+1); sub(/^addr:/, "", addr);
+        if(addr !~ /^127\./) {printf "%s%s %s",sep,iface,addr; sep=", "}
+      }
+    } END {if(sep!="") print ""}')
+fi
+
+# Keep firmware branding; use plain output when stdout is redirected.
+if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then
+  case "$FIRMWARE" in
+    openwrt) printf '\033[33m' ;;
+    ddwrt) printf '\033[32m' ;;
+    *) printf '\033[36m' ;;
+  esac
+fi
+printf '\n'
+case "$FIRMWARE" in
+  openwrt)
+    printf '%s\n' \
+      ' _______                     ________        __' \
+      '|       |.-----.-----.-----.|  |  |  |.----.|  |_' \
+      '|   -   ||  _  |  -__|     ||  |  |  ||   _||   _|' \
+      '|_______||   __|_____|__|__||________||__|  |____|' \
+      '         |__|  W I R E L E S S   F R E E D O M' ;;
+  ddwrt)
+    printf '%s\n' \
+      '  ____  ____        __        ______ _____' \
+      ' |  _ \|  _ \       \ \      / /  _ \_   _|' \
+      ' | | | | | | | _____ \ \ /\ / /| |_) || |' \
+      ' | |_| | |_| ||_____| \ V  V / |  _ < | |' \
+      ' |____/|____/          \_/\_/  |_| \_\|_|' ;;
+  *) printf '%s\n' ' Router System Summary' ;;
+esac
+if [ -t 1 ] && [ -z "${NO_COLOR:-}" ]; then printf '\033[0m'; fi
+printf '\n'
+show_field Model "$MODEL"
+show_field Hostname "$HOST_NAME"
+show_field OS "$OS_NAME"
+show_field Kernel "$KERNEL"
+show_field Architecture "$ARCH"
+show_field CPU "$CPU"
+show_field 'Logical CPUs' "$CORES"
+show_field Uptime "$UPTIME"
+show_field Load "$LOAD"
+show_field Memory "$MEMORY"
+show_field Swap "$SWAP"
+show_field IPv4 "${IPV4:-Unavailable}"
+
+# Show the backing filesystem for useful router paths; deduplicate mounts.
+# /tmp is usually RAM-backed, not persistent disk storage.
+if has_command df; then
+  DISKS=$(
+    for DISK_PATH in / /overlay /jffs /opt /tmp; do
+      [ -d "$DISK_PATH" ] || continue
+      df -Pk "$DISK_PATH" 2>/dev/null | awk 'NR>1 && NF>=6 {print}'
+    done | awk '
+      function size(k) {
+        if(k>=1048576) return sprintf("%.2f GiB",k/1048576);
+        return sprintf("%.1f MiB",k/1024)
+      }
+      !seen[$NF]++ {printf "  %-13s %s / %s (%s), available %s\n",
+        $NF ":",size($3),size($2),$5,size($4)}')
+  if [ -n "$DISKS" ]; then
+    printf '\n  Filesystems (includes RAM-backed mounts):\n%s\n' "$DISKS"
+  fi
+fi
+printf '\n'
