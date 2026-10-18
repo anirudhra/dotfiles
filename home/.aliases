@@ -16,8 +16,8 @@ if [[ -z "${ALIASES_HOME}" ]]; then
   export ALIASES_HOME="${HOME}"
 fi
 
-# Debug logging: set to 1 to print all debug logs, 0 to disable
-export DOTFILES_DEBUG="${DOTFILES_DEBUG:-1}"
+# Inherit DOTFILES_DEBUG from .profile or environment (defaults to 0 if standalone)
+export DOTFILES_DEBUG="${DOTFILES_DEBUG:-0}"
 
 # source helpers
 source "${ALIASES_HOME}/.gitfuncs"

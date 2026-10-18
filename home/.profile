@@ -1,3 +1,8 @@
+# ==============================================================================
+# Dotfiles Debug Logging: set to 1 to enable all debug logs, 0 to disable
+# ==============================================================================
+export DOTFILES_DEBUG="${DOTFILES_DEBUG:-0}"
+
 # Exit immediately if shell is non-interactive (cron, OMV, scripts)
 case "$-" in
 *i*) ;;
@@ -20,9 +25,6 @@ fi
 if [[ -z "${ALIASES_HOME}" ]]; then
   export ALIASES_HOME="${HOME}"
 fi
-
-# Debug logging: set to 1 to print all debug logs, 0 to disable
-export DOTFILES_DEBUG="${DOTFILES_DEBUG:-1}"
 
 # source the aliases file, posix way
 . "${ALIASES_HOME}/.aliases"
