@@ -40,3 +40,6 @@ export PATH="/opt/bin:${PATH}"
 
 # source .profile, that will source .aliases
 . "${ALIASES_HOME}/.profile"
+echo
+uname -a
+echo
