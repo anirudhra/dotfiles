@@ -4,7 +4,7 @@
     - name: Run upgrade.sh script on PVE Server at remote site
       ansible.builtin.command: ./upgrade.sh
       args:
-        chdir: "{{ ansible_env.HOME }}/dotfiles/common/ansible/clientscripts"
+        chdir: "{{ ansible_facts['env']['HOME'] }}/dotfiles/common/ansible/clientscripts"
       register: out
 
     - ansible.builtin.debug:
