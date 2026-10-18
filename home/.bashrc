@@ -25,3 +25,7 @@ unset rc
 
 source "${HOME}/.profile"
 command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/anirudh/.local/bin:$PATH"

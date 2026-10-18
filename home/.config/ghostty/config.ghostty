@@ -1,0 +1,51 @@
+# ── Theme ──────────────────────────────────────────────────────
+# Built into Ghostty; no theme download required.
+theme = Catppuccin Mocha
+
+# ── Typography ─────────────────────────────────────────────────
+# Keep Ghostty's default font for a dependency-free setup.
+font-size = 13
+
+# Optional: uncomment after installing this font on BOTH machines.
+# Use `ghostty +list-fonts` to confirm its exact family name.
+# font-family = JetBrainsMono Nerd Font
+
+# Optional: disable programming ligatures.
+# font-feature = -calt, -liga, -dlig
+
+# ── Window ─────────────────────────────────────────────────────
+window-padding-x = 10
+window-padding-y = 8
+
+# Opaque background: consistent contrast without compositor setup.
+background-opacity = 1
+
+# ── Cursor and mouse ───────────────────────────────────────────
+cursor-style = block
+cursor-style-blink = false
+mouse-hide-while-typing = true
+
+# ── Scrollback ─────────────────────────────────────────────────
+# Bytes, not lines: approximately 100 MB maximum per terminal.
+scrollback-limit = 100000000
+
+# ── Clipboard ──────────────────────────────────────────────────
+# Selecting text should not replace the clipboard.
+copy-on-select = false
+
+# ── Shell integration ──────────────────────────────────────────
+# Detect the shell rather than hardcoding bash, zsh, or fish.
+shell-integration = detect
+
+# Preserve the configured cursor at the shell prompt.
+shell-integration-features = no-cursor
+
+# Deliberately retain Ghostty's native keybindings.
+# No forced shell, automatic tmux launch, or TERM override.
+#
+# text
+# TEMPORARY CONFIG-LOADING TEST
+#font-size = 24
+#window-padding-x = 60
+#window-padding-y = 40
+#background = #550055

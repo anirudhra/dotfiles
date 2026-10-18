@@ -81,3 +81,7 @@ fi
 if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
   export PATH="${HOME}/.local/bin:${PATH}"
 fi
+
+
+# Added by Antigravity CLI installer
+export PATH="/Users/anirudh/.local/bin:$PATH"
