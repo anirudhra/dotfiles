@@ -29,5 +29,9 @@ fi
 
 #alias themeinstall="wget -qO- https://openwrt.eamonxg.fun/install.sh | CHANNEL=releases sh"
 
+# set an informative prompt: user@host:IP
+export LAN_IP=$(ip -4 addr show br-lan | grep inet | awk '{print $2}' | cut -d/ -f1)
+export PS1="\\u@\\h:${LAN_IP}:\\w\\$ "
+
 # source .profile, that will source .aliases
 . "${ALIASES_HOME}/.profile"
