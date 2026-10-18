@@ -1,5 +1,9 @@
 #!/bin/sh
 # Lightweight router summary for BusyBox ash; execute rather than source.
+# Set to 1 to enable OpenWrt ASCII logo, 0 to disable (default: 0)
+SHOW_OPENWRT_LOGO=${SHOW_OPENWRT_LOGO:-0}
+# Set to 1 to enable DD-WRT ASCII logo, 0 to disable (default: 1)
+SHOW_DDWRT_LOGO=${SHOW_DDWRT_LOGO:-1}
 has_command() { command -v "$1" >/dev/null 2>&1; }
 show_field() {
   [ -n "$2" ] || return 0
@@ -103,35 +107,48 @@ fi
 # Suppress colors when redirected or NO_COLOR is set.
 USE_COLOR=0
 if [ -t 1 ] && [ -z "${NO_COLOR+x}" ]; then USE_COLOR=1; fi
-if [ "$USE_COLOR" -eq 1 ]; then
-  case "$FIRMWARE" in
-  openwrt) printf '\033[33m' ;;
-  ddwrt) printf '\033[32m' ;;
-  *) printf '\033[36m' ;;
-  esac
+
+# Determine whether to print logo (controlled by SHOW_OPENWRT_LOGO and SHOW_DDWRT_LOGO)
+PRINT_LOGO=1
+if [ "$FIRMWARE" = "openwrt" ] && [ "$SHOW_OPENWRT_LOGO" != "1" ]; then
+  PRINT_LOGO=0
+elif [ "$FIRMWARE" = "ddwrt" ] && [ "$SHOW_DDWRT_LOGO" != "1" ]; then
+  PRINT_LOGO=0
 fi
-printf '\n'
-case "$FIRMWARE" in
-openwrt)
-  printf '%s\n' \
-    ' _______                     ________        __' \
-    '|       |.-----.-----.-----.|  |  |  |.----.|  |_' \
-    '|   -   ||  _  |  -__|     ||  |  |  ||   _||   _|' \
-    '|_______||   __|_____|__|__||________||__|  |____|' \
-    '         |__|  W I R E L E S S   F R E E D O M'
-  ;;
-ddwrt)
-  printf '%s\n' \
-    '  ____  ____        __        ______ _____' \
-    ' |  _ \|  _ \       \ \      / /  _ \_   _|' \
-    ' | | | | | | | _____ \ \ /\ / /| |_) || |' \
-    ' | |_| | |_| ||_____| \ V  V / |  _ < | |' \
-    ' |____/|____/          \_/\_/  |_| \_\|_|'
-  ;;
-*) printf '%s\n' ' Router System Summary' ;;
-esac
-if [ "$USE_COLOR" -eq 1 ]; then printf '\033[0m'; fi
-printf '\n'
+
+if [ "$PRINT_LOGO" -eq 1 ]; then
+  if [ "$USE_COLOR" -eq 1 ]; then
+    case "$FIRMWARE" in
+    openwrt) printf '\033[33m' ;;
+    ddwrt) printf '\033[32m' ;;
+    *) printf '\033[36m' ;;
+    esac
+  fi
+  printf '\n'
+  case "$FIRMWARE" in
+  openwrt)
+    printf '%s\n' \
+      ' _______                     ________        __' \
+      '|       |.-----.-----.-----.|  |  |  |.----.|  |_' \
+      '|   -   ||  _  |  -__|     ||  |  |  ||   _||   _|' \
+      '|_______||   __|_____|__|__||________||__|  |____|' \
+      '         |__|  W I R E L E S S   F R E E D O M'
+    ;;
+  ddwrt)
+    printf '%s\n' \
+      '  ____  ____        __        ______ _____' \
+      ' |  _ \|  _ \       \ \      / /  _ \_   _|' \
+      ' | | | | | | | _____ \ \ /\ / /| |_) || |' \
+      ' | |_| | |_| ||_____| \ V  V / |  _ < | |' \
+      ' |____/|____/          \_/\_/  |_| \_\|_|'
+    ;;
+  *) printf '%s\n' ' Router System Summary' ;;
+  esac
+  if [ "$USE_COLOR" -eq 1 ]; then printf '\033[0m'; fi
+  printf '\n'
+else
+  printf '\n'
+fi
 show_field Model "$MODEL"
 show_field Hostname "$HOST_NAME"
 show_field OS "$OS_NAME"
