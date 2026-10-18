@@ -31,7 +31,7 @@ fi
 if [ -z "$MODEL" ]; then
   for MODEL_FILE in /proc/device-tree/model /sys/firmware/devicetree/base/model; do
     if [ -r "$MODEL_FILE" ]; then
-      MODEL=$(tr -d '\000' < "$MODEL_FILE" 2>/dev/null)
+      MODEL=$(tr -d '\000' <"$MODEL_FILE" 2>/dev/null)
       [ -z "$MODEL" ] || break
     fi
   done
@@ -105,28 +105,30 @@ USE_COLOR=0
 if [ -t 1 ] && [ -z "${NO_COLOR+x}" ]; then USE_COLOR=1; fi
 if [ "$USE_COLOR" -eq 1 ]; then
   case "$FIRMWARE" in
-    openwrt) printf '\033[33m' ;;
-    ddwrt) printf '\033[32m' ;;
-    *) printf '\033[36m' ;;
+  openwrt) printf '\033[33m' ;;
+  ddwrt) printf '\033[32m' ;;
+  *) printf '\033[36m' ;;
   esac
 fi
 printf '\n'
 case "$FIRMWARE" in
-  openwrt)
-    printf '%s\n' \
-      ' _______                     ________        __' \
-      '|       |.-----.-----.-----.|  |  |  |.----.|  |_' \
-      '|   -   ||  _  |  -__|     ||  |  |  ||   _||   _|' \
-      '|_______||   __|_____|__|__||________||__|  |____|' \
-      '         |__|  W I R E L E S S   F R E E D O M' ;;
-  ddwrt)
-    printf '%s\n' \
-      '  ____  ____        __        ______ _____' \
-      ' |  _ \|  _ \       \ \      / /  _ \_   _|' \
-      ' | | | | | | | _____ \ \ /\ / /| |_) || |' \
-      ' | |_| | |_| ||_____| \ V  V / |  _ < | |' \
-      ' |____/|____/          \_/\_/  |_| \_\|_|' ;;
-  *) printf '%s\n' ' Router System Summary' ;;
+openwrt)
+  printf '%s\n' \
+    ' _______                     ________        __' \
+    '|       |.-----.-----.-----.|  |  |  |.----.|  |_' \
+    '|   -   ||  _  |  -__|     ||  |  |  ||   _||   _|' \
+    '|_______||   __|_____|__|__||________||__|  |____|' \
+    '         |__|  W I R E L E S S   F R E E D O M'
+  ;;
+ddwrt)
+  printf '%s\n' \
+    '  ____  ____        __        ______ _____' \
+    ' |  _ \|  _ \       \ \      / /  _ \_   _|' \
+    ' | | | | | | | _____ \ \ /\ / /| |_) || |' \
+    ' | |_| | |_| ||_____| \ V  V / |  _ < | |' \
+    ' |____/|____/          \_/\_/  |_| \_\|_|'
+  ;;
+*) printf '%s\n' ' Router System Summary' ;;
 esac
 if [ "$USE_COLOR" -eq 1 ]; then printf '\033[0m'; fi
 printf '\n'
@@ -135,7 +137,9 @@ show_field Hostname "$HOST_NAME"
 show_field OS "$OS_NAME"
 show_field Kernel "$KERNEL"
 show_field Architecture "$ARCH"
-show_field CPU "$CPU"
+if [ -n "$CPU" ] && [ "$CPU" != "$ARCH" ]; then
+  show_field CPU "$CPU"
+fi
 show_field 'Logical CPUs' "$CORES"
 show_field Uptime "$UPTIME"
 show_field Load "$LOAD"
@@ -155,7 +159,8 @@ if has_command df; then
         return sprintf("%.1f MiB",k/1024)
       }
       !seen[$NF]++ {printf "  %-13s %s / %s (%s), available %s\n",
-        $NF ":",size($3),size($2),$5,size($4)}')
+        $NF ":",size($3),size($2),$5,size($4)}'
+  )
   if [ -n "$DISKS" ]; then
     printf '\n  Filesystems (includes RAM-backed mounts):\n%s\n' "$DISKS"
   fi
