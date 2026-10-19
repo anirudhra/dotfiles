@@ -8,6 +8,12 @@ set -euo pipefail  # Exit on error, undefined vars, pipe failures
 SOURCE_HOST="${1:-localhost}"
 ROOTFS="${2:-/mnt/rootfs}"
 
+# Script and configuration directories
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SBC_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+COMMON_ETC="${SBC_DIR}/common/etc"
+DEBIAN_ETC="${SBC_DIR}/debian/etc"
+
 # Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -180,11 +186,19 @@ main() {
     log "Stage 5: Copying custom configuration..."
     ###################
     
-    # Copy custom etc files if they exist
-    if [[ -d "./etc" ]]; then
-        cp -a ./etc/* "${ROOTFS}/etc/" || warn "Failed to copy custom etc files"
+    # 1. Copy hardware-specific common configuration (udev NCQ rules, MSM GPU blacklist, modules, resolv.conf)
+    if [[ -d "$COMMON_ETC" ]]; then
+        log "Applying hardware configurations from ${COMMON_ETC}..."
+        mkdir -p "${ROOTFS}/etc"
+        cp -a "${COMMON_ETC}/." "${ROOTFS}/etc/" || warn "Failed to copy common etc files"
     else
-        warn "Custom etc directory not found"
+        warn "Common etc directory not found at ${COMMON_ETC}"
+    fi
+
+    # 2. Copy distro-specific Debian configuration (apt sources, preferences)
+    if [[ -d "$DEBIAN_ETC" ]]; then
+        log "Applying Debian configurations from ${DEBIAN_ETC}..."
+        cp -a "${DEBIAN_ETC}/." "${ROOTFS}/etc/" || warn "Failed to copy debian etc files"
     fi
     
     ###################

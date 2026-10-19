@@ -12,8 +12,11 @@
 #rmdir /lib/modules/lib/modules
 #rmdir /lib/modules/lib
 
-# following doesn't work for whatever reason
-#source "~/dotfiles/home/.helperfuncs"
+# Sourcing helper functions (tilde expansion requires unquoted ~ or ${HOME})
+if [[ -f "${HOME}/dotfiles/home/.helperfuncs" ]]; then
+  # shellcheck source=/dev/null
+  source "${HOME}/dotfiles/home/.helperfuncs"
+fi
 
 info() {
   echo -e "INFO: $1"
@@ -58,17 +61,17 @@ Options:
   -v, --version           Show version information
   -s, --source DIR        Source directory for modules (default: ${BUILD_ARTIFACTS_DIR})
   -d, --dest DIR          Destination directory (default: ${MODULES_DIR})
-  -k, --kernel VERSION    Specific kernel version to install (default ${KERNEL_VER}
-  --no-backup             Skip creating backup of existing modules
+  -k, --kernel VERSION    Specific kernel version to install (default: ${KERNEL_VER:-auto})
+  -b, --backup            Create backup of existing modules in /tmp before overwrite (default: disabled)
   --force                 Force installation without confirmation
   --dry-run               Show what would be done without making changes
 
 Examples:
-  $0                                    # Install with defaults
+  $0                                    # Install with defaults (no backup)
   $0 -s /path/to/artifacts             # Use custom source directory
   $0 -k 6.6.0                          # Install specific kernel version
   $0 --dry-run                         # Preview installation
-  $0 --no-backup --force               # Install without backup or confirmation
+  $0 --backup --force                  # Install with module backup and skip confirmation
 
 EOF
 }
@@ -93,7 +96,7 @@ fi
 SOURCE_DIR="${BUILD_ARTIFACTS_DIR}"
 DEST_DIR="${MODULES_DIR}"
 KERNEL_VERSION="${KERNEL_VER}"
-NO_BACKUP=true
+DO_BACKUP=false
 FORCE=false
 DRY_RUN=false
 
@@ -111,8 +114,8 @@ while [[ $# -gt 0 ]]; do
     KERNEL_VERSION="$2"
     shift 2
     ;;
-  --no-backup)
-    NO_BACKUP=true
+  -b | --backup)
+    DO_BACKUP=true
     shift
     ;;
   --force)
@@ -167,7 +170,7 @@ show_config() {
   info "Source directory: ${SOURCE_DIR}"
   info "Destination directory: ${DEST_DIR}"
   info "Kernel version: ${KERNEL_VERSION}"
-  info "Backup: ${NO_BACKUP}"
+  info "Backup enabled: ${DO_BACKUP}"
   info "Force: ${FORCE}"
   info "Dry run: ${DRY_RUN}"
 }
@@ -205,8 +208,7 @@ check_existing_modules() {
 
 # Installation functions
 create_backup() {
-  if [[ "$NO_BACKUP" == "true" ]]; then
-    warn "Skipping backup as requested"
+  if [[ "$DO_BACKUP" != "true" ]]; then
     return
   fi
 
@@ -344,7 +346,7 @@ verify_installation() {
 }
 
 cleanup_backup() {
-  if [[ "$NO_BACKUP" == "true" ]]; then
+  if [[ "$DO_BACKUP" != "true" ]]; then
     return
   fi
 
