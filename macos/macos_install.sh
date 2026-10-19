@@ -1,38 +1,54 @@
 #!/bin/bash
-# (c) Anirudh Acharya 2024
+# (c) Anirudh Acharya 2024, 2026
 # macOS installer script
 # Run this script as non-root user
 
-source "../home/.helperfuncs"
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+export DOTFILES_DIR
+export ALIASES_HOME="${DOTFILES_DIR}/home"
+
+source "${ALIASES_HOME}/.helperfuncs"
 OS_TYPE=$(detect_os_type)
 
 # only run this script on macOS
 if [[ "${OS_TYPE}" != "macos" ]]; then
   error "This script is only supported for macOS"
   error "Please do not run this script from Linux/Windows etc."
-  error
   exit 1
 fi
 
-# check if running from the right directory
-INSTALL_DIR=$(pwd)
-if [[ ${INSTALL_DIR} != *"/dotfiles/macos"* ]]; then
-  error "Script invoked from incorrect directory!"
-  error "The current directory is: ${INSTALL_DIR}"
-  error "Please run this script from .../dotfiles/macos directory"
-  error
-  exit 1
-fi
+INSTALL_DIR="${SCRIPT_DIR}"
+ARCH_TYPE="$(uname -m)"
 
+info "Detected macOS (${ARCH_TYPE})"
+
+# Homebrew setup:
+# If Apple Silicon and brew is missing -> auto install.
+# If Intel and brew is missing -> skip installation entirely (optional on Intel).
 if command -v brew &>/dev/null; then
-  echo "homebrew is installed and is available, skipping installation."
+  info "Homebrew is already installed and available."
+  if [[ "${ARCH_TYPE}" == "arm64" && -x "/opt/homebrew/bin/brew" ]]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [[ -x "/usr/local/bin/brew" ]]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  fi
 else
-  echo "homebrew is not installed, launching installation."
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-  brew install homebrew/cask/brew-cask
+  if [[ "${ARCH_TYPE}" == "arm64" ]]; then
+    info "Apple Silicon detected (arm64): launching Homebrew installation..."
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    if [ -f "/opt/homebrew/bin/brew" ]; then
+      eval "$(/opt/homebrew/bin/brew shellenv)"
+    fi
+  else
+    warn "Intel CPU detected (${ARCH_TYPE}): skipping automated Homebrew installation as configured."
+    warn "If you wish to use Homebrew on this Intel Mac, install it manually from https://brew.sh/"
+  fi
 fi
 
-# command line apps
+# Command line applications
 corepackages=(
   'wget'
   'imagemagick'
@@ -63,7 +79,6 @@ corepackages=(
   'figlet'
   'neovim'
   'duf'
-  'most'
   'stow'
   'usbutils'
   'git'
@@ -72,11 +87,12 @@ corepackages=(
   'rdfind'
   'lolcat'
   'luarocks'
-  'unzip'
   'ncdu'
   'iperf3'
+  'rsync'
 )
 
+# Nerd fonts (available via Homebrew Cask)
 nerdfonts=(
   'font-fira-code-nerd-font'
   'font-fira-mono-nerd-font'
@@ -91,22 +107,8 @@ nerdfonts=(
   'font-droid-sans-mono-nerd-font'
 )
 
-gtkpackages=(
-  # gtk integration - none for now
-  #'gtk'
-  #'gtk+'
-  #'gtk+3'
-  #'gtk-mac-integration'
-  #'gtk-chtheme'
-  #'gtk-engines'
-  #'gtk-murrine-engine'
-  #'gnome-themes-standard'
-  # extract themes in /usr/local/Cellar/gtk+/2.24.31/share/themes
-)
-
+# GUI cask applications
 guipackages=(
-  # cask gui apps
-  #'macvim'
   'alfred'
   'gimp'
   'xquartz'
@@ -115,35 +117,46 @@ guipackages=(
   'iterm2'
 )
 
-echo
-echo "Installing command line apps..."
-brew install "${corepackages[@]}"
-#install iterm2 shell integration
-curl -L https://iterm2.com/shell_integration/zsh -o ~/.iterm2_shell_integration.zsh
-echo "Installing command line apps: done!"
+if command -v brew &>/dev/null; then
+  echo
+  info "Installing command line apps via Homebrew..."
+  brew install "${corepackages[@]}"
+  info "Installing command line apps: done!"
+
+  # Install iTerm2 shell integration script
+  curl -fsSL https://iterm2.com/shell_integration/zsh -o "${HOME}/.iterm2_shell_integration.zsh" || true
+
+  echo
+  info "Installing GUI cask apps..."
+  brew install --cask "${guipackages[@]}"
+  info "Installing GUI apps: done!"
+
+  echo
+  info "Installing nerd fonts..."
+  brew install --cask "${nerdfonts[@]}"
+  info "Installing nerd fonts: done!"
+
+  echo
+  info "Cleaning up Homebrew cache..."
+  brew cleanup
+  info "Cleaning up: done!"
+else
+  warn "Homebrew is not installed; skipping Homebrew package installation."
+fi
+
+# Oh-My-Zsh setup
+if [ ! -d "${HOME}/.oh-my-zsh" ]; then
+  echo
+  info "==============================================================================================="
+  info "Installing oh-my-zsh non-interactively..."
+  info "==============================================================================================="
+  RUNZSH=no CHSH=no sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" || true
+else
+  info "oh-my-zsh is already installed at ${HOME}/.oh-my-zsh, skipping."
+fi
 
 echo
-echo "Installing GUI apps..."
-brew install "${gtkpackages[@]}" "${guipackages[@]}"
-echo "Installing GUI apps: done!"
-
-echo
-echo "Installing nerd fonts..."
-brew install --cask "${nerdfonts[@]}"
-echo "Installing nerd fonts: done!"
-
-echo
-echo "Cleaning up..."
-brew cleanup
-#brew cask cleanup
-echo "Cleaning up: done!"
-
-echo "==============================================================================================="
-echo "Installing oh-my-zsh. The script will exit automatically after this."
-echo "Once oh-my-zsh is installed, quit and reopen terminal and run the macos_post_install.sh script"
-echo "==============================================================================================="
-
-sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-echo
-echo "Done!"
+info "==============================================================================================="
+info "macOS install complete! Please run macos_post_install.sh to finalize dotfiles and configs."
+info "==============================================================================================="
 echo

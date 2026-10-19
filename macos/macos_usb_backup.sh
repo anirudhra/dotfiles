@@ -1,38 +1,41 @@
 #!/bin/bash
-#
-# (c) Anirudh Acharya 2024
+# (c) Anirudh Acharya 2024, 2026
 # macOS Backup script to external USB HDD
-#
-
-# macOS backup to an external USB drive.
 #
 # Usage:
 #   bash macos_usb_backup.sh
+#   bash macos_usb_backup.sh --volume /Volumes/MyExternalDrive
 #   bash macos_usb_backup.sh --dry-run
-#   bash macos_usb_backup.sh -n
+#   bash macos_usb_backup.sh -n -v /Volumes/BackupPlus
 
 set -euo pipefail
 
-source "../home/.helperfuncs"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+export DOTFILES_DIR
+export ALIASES_HOME="${DOTFILES_DIR}/home"
+
+source "${ALIASES_HOME}/.helperfuncs"
 OS_TYPE=$(detect_os_type)
 
 # only run this script on macOS
 if [[ "${OS_TYPE}" != "macos" ]]; then
   error "This script is only supported for macOS"
   error "Please do not run this script from Linux/Windows etc."
-  error
   exit 1
 fi
 
 DRY_RUN=0
+BACKUP_VOLUME="/Volumes/BackupPlus"
 
 usage() {
     cat <<'EOF'
 Usage: macos_usb_backup.sh [OPTIONS]
 
 Options:
-  -n, --dry-run    Preview transfers and deletions without changing the backup.
-  -h, --help       Show this help.
+  -v, --volume PATH  Target backup volume path (default: /Volumes/BackupPlus).
+  -n, --dry-run      Preview transfers and deletions without changing the backup.
+  -h, --help         Show this help.
 
 Excluded files already on the backup remain there.
 Normal runs use --delete to remove non-excluded destination files
@@ -50,6 +53,14 @@ while [[ $# -gt 0 ]]; do
         -n|--dry-run)
             DRY_RUN=1
             ;;
+        -v|--volume)
+            [[ $# -ge 2 ]] || die "Option $1 requires an argument"
+            BACKUP_VOLUME="$2"
+            shift
+            ;;
+        --volume=*)
+            BACKUP_VOLUME="${1#*=}"
+            ;;
         -h|--help)
             usage
             exit 0
@@ -62,37 +73,61 @@ while [[ $# -gt 0 ]]; do
     shift
 done
 
-# Only run on macOS.
-[[ "$(uname -s)" == "Darwin" ]] ||
-    die "This script is only supported on macOS."
+# Strip any trailing slash from the volume path
+BACKUP_VOLUME="${BACKUP_VOLUME%/}"
 
-RSYNC="/usr/bin/rsync"
-[[ -x "$RSYNC" ]] || die "rsync not found at $RSYNC"
+# Locate the best available rsync (preferring modern Homebrew rsync 3.x over legacy Apple /usr/bin/rsync)
+find_best_rsync() {
+    if command -v brew &>/dev/null; then
+        local brew_prefix
+        brew_prefix="$(brew --prefix)"
+        if [[ -x "${brew_prefix}/bin/rsync" ]]; then
+            echo "${brew_prefix}/bin/rsync"
+            return 0
+        fi
+    fi
 
-# External backup drive.
-BACKUP_VOLUME="/Volumes/BackupPlus"
+    for candidate in "/opt/homebrew/bin/rsync" "/usr/local/bin/rsync" "/opt/local/bin/rsync"; do
+        if [[ -x "$candidate" ]]; then
+            echo "$candidate"
+            return 0
+        fi
+    done
+
+    local path_rsync
+    path_rsync="$(command -v rsync 2>/dev/null || true)"
+    if [[ -n "$path_rsync" && "$path_rsync" != "/usr/bin/rsync" ]]; then
+        echo "$path_rsync"
+        return 0
+    fi
+
+    echo "/usr/bin/rsync"
+}
+
+RSYNC="$(find_best_rsync)"
+[[ -x "$RSYNC" ]] || die "rsync not found or not executable at $RSYNC"
+
+# External backup destinations
 DEST_HOME_BASE_DIR="${BACKUP_VOLUME}/BACKUP/data/Mac"
 DEST_MEDIA_BASE_DIR="${BACKUP_VOLUME}/BACKUP/music"
 
-# Local source directories.
+# Local source directories
 SOURCE_HOME_BASE_DIR="${HOME}"
 SOURCE_MEDIA_BASE_DIR="${HOME}/Music"
 
-# Paths relative to SOURCE_HOME_BASE_DIR.
+# Paths relative to SOURCE_HOME_BASE_DIR
 SOURCE_HOME_DIR_LIST=(
     'Downloads'
     'Documents'
     'Pictures'
 )
 
-# Paths relative to SOURCE_MEDIA_BASE_DIR.
+# Paths relative to SOURCE_MEDIA_BASE_DIR
 SOURCE_MEDIA_DIR_LIST=(
     'MusicLibrary'
 )
 
-# Shared exclusions.
-# Review the temporary-file patterns before using them:
-# files with these names will not be backed up.
+# Shared exclusions
 RSYNC_EXCLUDES=(
     '--exclude=.DS_Store'
     '--exclude=._*'
@@ -103,7 +138,7 @@ RSYNC_EXCLUDES=(
     '--exclude=*~'
     '--exclude=.~lock.*#'
 
-    # Directory-only exclusions.
+    # Directory-only exclusions
     '--exclude=.Trash/'
     '--exclude=.Trashes/'
     '--exclude=.Spotlight-V100/'
@@ -111,7 +146,7 @@ RSYNC_EXCLUDES=(
     '--exclude=.TemporaryItems/'
 )
 
-# Retain the original transfer options.
+# Retain original transfer options
 RSYNC_OPTIONS=(
     '-hvrltD'
     '--delete'
@@ -123,14 +158,15 @@ if [[ "$DRY_RUN" -eq 1 ]]; then
     RSYNC_OPTIONS+=('--dry-run')
 fi
 
-# Verify the volume is actually mounted, not merely a leftover directory.
+# Verify the volume is actually mounted or directory exists
 MOUNT_LIST="$(/sbin/mount)"
-if ! printf '%s\n' "$MOUNT_LIST" |
-    /usr/bin/grep -Fq " on ${BACKUP_VOLUME} ("; then
-    die "Backup volume is not mounted at ${BACKUP_VOLUME}"
+if ! printf '%s\n' "$MOUNT_LIST" | /usr/bin/grep -Fq " on ${BACKUP_VOLUME} "; then
+    if [[ ! -d "${BACKUP_VOLUME}" ]]; then
+        die "Backup volume is not mounted or accessible at: ${BACKUP_VOLUME}"
+    fi
 fi
 
-# Require existing destinations to avoid accidentally using the wrong path.
+# Require existing destinations to avoid accidentally writing to wrong path
 for destination in "$DEST_HOME_BASE_DIR" "$DEST_MEDIA_BASE_DIR"; do
     [[ -d "$destination" ]] ||
         die "Destination directory does not exist: $destination"
@@ -141,7 +177,7 @@ for destination in "$DEST_HOME_BASE_DIR" "$DEST_MEDIA_BASE_DIR"; do
     fi
 done
 
-# Validate all sources before starting any transfers.
+# Validate all sources before starting any transfers
 for directory in "${SOURCE_HOME_DIR_LIST[@]}"; do
     source_path="${SOURCE_HOME_BASE_DIR}/${directory}"
     [[ -d "$source_path" ]] ||
@@ -161,7 +197,9 @@ else
     printf 'LIVE BACKUP: transfers and deletions will be performed.\n'
 fi
 
-printf '\nHome destination:  %s\n' "$DEST_HOME_BASE_DIR"
+printf '\nRsync binary:      %s (%s)\n' "$RSYNC" "$("$RSYNC" --version 2>&1 | head -n 1)"
+printf 'Backup volume:     %s\n' "$BACKUP_VOLUME"
+printf 'Home destination:  %s\n' "$DEST_HOME_BASE_DIR"
 printf 'Media destination: %s\n' "$DEST_MEDIA_BASE_DIR"
 
 printf '\nHome directories:\n'
@@ -199,8 +237,7 @@ backup_directory() {
     printf ' %q' "${command[@]}"
     printf '\n\n'
 
-    # No trailing slash on the source:
-    # copy the named directory into the destination.
+    # No trailing slash on source: copies named directory into destination
     if "${command[@]}"; then
         if [[ "$DRY_RUN" -eq 1 ]]; then
             printf '\nDry run completed: %s\n' "$source_path"
@@ -224,8 +261,7 @@ for directory in "${SOURCE_MEDIA_DIR_LIST[@]}"; do
         "$DEST_MEDIA_BASE_DIR"
 done
 
-# Write completion logs only after all transfers succeed.
-# Dry runs do not write logs.
+# Write completion logs only after all transfers succeed
 if [[ "$DRY_RUN" -eq 0 ]]; then
     COMPLETED_AT="$(date '+%Y-%m-%d %H:%M:%S %Z')"
 

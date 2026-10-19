@@ -1,5 +1,4 @@
-#!/bin/sh
-while sleep 3; do
-	clear
-	ioreg -l | grep \"PerformanceStatistics\" | cut -d '{' -f 2 | tr '|' ',' | tr -d '}' | tr ',' '\n' | grep 'Temp\|Fan\|%\|(W)\|Hz'
-done
+#!/bin/bash
+# (c) Anirudh Acharya
+# Wrapper around gpu.sh for continuous monitoring
+exec "$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/gpu.sh" --watch "$@"

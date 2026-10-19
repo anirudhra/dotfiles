@@ -13,7 +13,7 @@ SOURCED_ALIASES_MACOS=1
 debuglog "macOS aliases sourced"
 
 # add condition for macos specific commmand here - diskutil not available on linux, only macos
-alias brew_update='brew update && brew upgrade && brew cleanup && brew doctor && brew update && brew cleanup'
+alias brew_update='brew update && brew upgrade && brew cleanup && brew doctor'
 alias upgrade='brew_update'
 
 # all other macos aliases/macros
@@ -65,8 +65,10 @@ alias sethc="defaults write com.apple.dock wvous-tl-corner -int 2 && \
              defaults write com.apple.dock wvous-br-corner -int 6 && \
              killall Dock"
 
-#monitor cpu clock
+# monitor cpu clock and gpu stats
 alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
+alias gpu='${DOTFILES_HOME:-$HOME/dotfiles}/macos/gpu.sh'
+alias gpumon='${DOTFILES_HOME:-$HOME/dotfiles}/macos/gpu.sh --watch'
 
 # jupyterlab aliases
 alias ipy="jupyter lab ~/code/github/jupyternb"
