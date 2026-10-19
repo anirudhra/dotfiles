@@ -1,43 +1,39 @@
 #!/bin/bash
 
-VM_LIST=/tmp/list_VM.list
-CT_LIST=/tmp/list_CT.list
+# Target running VMs and containers only
+mapfile -t listvm < <(qm list 2>/dev/null | awk 'NR>1 && $3=="running" {print $1}')
+mapfile -t listct < <(pct list 2>/dev/null | awk 'NR>1 && $2=="running" {print $1}')
 
-# We catch the VM & CT from each server
-qm list | awk 'NR>1{ print $1 }' > $VM_LIST
-pct list | awk 'NR>1{ print $1 }' > $CT_LIST
+if [ "${#listvm[@]}" -eq 0 ] && [ "${#listct[@]}" -eq 0 ]; then
+  echo "No running VMs or containers found. Server can be safely shutdown."
+  exit 0
+fi
 
-mapfile -t listvm < $VM_LIST
-
-for i in ${listvm[@]};
-  do
-    echo "VM $i will be shutdown..."
-    qm shutdown $i
-    echo "VM $i has been shutdown"
-    echo ""
+if [ "${#listvm[@]}" -gt 0 ]; then
+  echo "Initiating shutdown for running VMs: ${listvm[*]}"
+  for vm in "${listvm[@]}"; do
+    echo "Sending shutdown signal to VM $vm..."
+    qm shutdown "$vm" || true
   done
 
-#echo ""
+  echo "Waiting for VMs to terminate..."
+  for vm in "${listvm[@]}"; do
+    qm wait "$vm" 60 2>/dev/null || echo "VM $vm wait timed out (may still be syncing disk caches)"
+  done
+fi
 
-mapfile -t listct < $CT_LIST
-
-for i in ${listct[@]};
-  do
-    echo "CT $i will be shutdown..."
-    pct shutdown $i
-    echo "CT $i has been shutdown"
-    echo ""
+if [ "${#listct[@]}" -gt 0 ]; then
+  echo "Initiating shutdown for running containers: ${listct[*]}"
+  for ct in "${listct[@]}"; do
+    echo "Sending shutdown signal to CT $ct..."
+    pct shutdown "$ct" || true
   done
 
-#echo ""
+  echo "Waiting for containers to terminate..."
+  for ct in "${listct[@]}"; do
+    pct wait "$ct" 60 2>/dev/null || echo "CT $ct wait timed out"
+  done
+fi
 
-#echo "We set the noout flag on CEPH Cluster:"
-#ceph osd set noout
-
-#echo "We now can safely shutdown the server"
-#shutdown -h now
-
-rm $VM_LIST
-rm $CT_LIST
-echo "Cleaned up temp. VM/CT lists. End of script. PVE Server can be safely shutdown."
+echo "All guests processed. PVE Server can now be safely shutdown."
 

@@ -35,15 +35,23 @@ done < <(pct list | awk 'NR>1')
 excluded_containers=$(whiptail --backtitle "Proxmox VE Helper Scripts" --title "Containers on $NODE" --checklist "\nSelect containers to skip from cleaning:\n" \
   16 $((MSG_MAX_LENGTH + 23)) 6 "${EXCLUDE_MENU[@]}" 3>&1 1>&2 2>&3 | tr -d '"') || exit  
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
 function clean_container() {
   container=$1
   header_info
-  name=$(pct exec "$container" hostname)
+  name=$(pct exec "$container" hostname 2>/dev/null || echo "$container")
   echo -e "${BL}[Info]${GN} Cleaning ${name} ${CL} \n"
-  # remote version
-  #pct exec $container -- bash -c "apt-get -y --purge autoremove && apt-get -y autoclean && bash <(curl -fsSL https://github.com/community-scripts/ProxmoxVE/raw/main/misc/clean.sh) && rm -rf /var/lib/apt/lists/* && apt-get update"
-  # local version
-  pct exec $container -- bash -c "apt-get -y --purge autoremove && apt-get -y autoclean && bash <(curl -fsSL https://raw.githubusercontent.com/anirudhra/pve_server/refs/heads/main/pve_lxc_scripts/maintenance/cleancache.sh) && rm -rf /var/lib/apt/lists/* && apt-get update"
+  
+  # Run package cleanup inside container
+  pct exec "$container" -- bash -c "apt-get -y --purge autoremove && apt-get -y autoclean"
+
+  # Run cleancache via local script if available, or fetch from dotfiles repo
+  if [ -f "${SCRIPT_DIR}/cleancache.sh" ]; then
+    pct exec "$container" -- bash < "${SCRIPT_DIR}/cleancache.sh"
+  else
+    pct exec "$container" -- bash <(curl -fsSL https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/pve/maintenance/cleancache.sh)
+  fi
 }
 for container in $(pct list | awk '{if(NR>1) print $1}'); do
   if [[ " ${excluded_containers[@]} " =~ " $container " ]]; then

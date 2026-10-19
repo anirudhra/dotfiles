@@ -145,6 +145,13 @@ echo "==========================================================================
 # read into dummy variable to pause
 read answer
 
+# Verify iPod is mounted to prevent syncing gigabytes into PVE rootfs
+if ! mountpoint -q "${IPOD_MOUNT_DIR}"; then
+  echo "ERROR: iPod mount directory '${IPOD_MOUNT_DIR}' is NOT an active mountpoint!" >&2
+  echo "Aborting sync to prevent writing directly to host root filesystem." >&2
+  exit 1
+fi
+
 # create destination ipod directories, in case they don't exist
 mkdir -p "${IPOD_PLAYLISTS_DIR}"
 mkdir -p "${IPOD_MUSIC_DIR}"

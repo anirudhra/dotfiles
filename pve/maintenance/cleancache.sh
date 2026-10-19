@@ -22,26 +22,30 @@ CL=$(echo "\033[m")
 name=$(hostname)
 header_info
 echo -e "${BL}[Info]${GN} Cleaning $name${CL} \n"
-cache=$(find /var/cache/ -type f)
-if [[ -z "$cache" ]]; then
-  echo -e "It appears there are no cached files on your system. \n"
-  sleep 2
-else
-  find /var/cache -type f -delete
+
+# Remove package and application caches
+if [ -d /var/cache ]; then
+  find /var/cache -type f -delete 2>/dev/null || true
   echo "Successfully Removed Cache"
-  sleep 2
 fi
+
 header_info
-echo -e "${BL}[Info]${GN} Cleaning $name${CL} \n"
-logs=$(find /var/log/ -type f)
-if [[ -z "$logs" ]]; then
-  echo -e "It appears there are no logs on your system. \n"
-  sleep 2
-else
-  find /var/log -type f -delete
-  echo "Successfully Removed Logs"
-  sleep 2
+echo -e "${BL}[Info]${GN} Cleaning logs on $name${CL} \n"
+
+# Vacuum systemd journal to 1 day
+if command -v journalctl >/dev/null 2>&1; then
+  journalctl --vacuum-time=1d >/dev/null 2>&1 || true
 fi
+
+# Remove rotated and archived logs without breaking open file descriptors
+if [ -d /var/log ]; then
+  find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.old" -o -name "*.bak" \) -delete 2>/dev/null || true
+  # Truncate active .log files rather than deleting them
+  find /var/log -type f -name "*.log" -exec truncate -s 0 {} + 2>/dev/null || true
+  echo "Successfully Cleaned Logs"
+fi
+
 header_info
-echo -e "${BL}[Info]${GN} Cleaning $name${CL} \n"
-echo -e "${GN}Populating apt lists${CL} \n"
+echo -e "${BL}[Info]${GN} Populating apt lists on $name${CL} \n"
+apt-get update >/dev/null 2>&1 || true
+echo -e "${GN}Done!${CL} \n"

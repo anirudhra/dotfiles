@@ -17,6 +17,8 @@ Reset network if hang detected in PVE networking, must be run as root.
 Options:
 -h this help
 -v verbose output, specify multiple times to increase verbosity
+-i INTERFACE ethernet interface to restart (default: eno1)
+-s WINDOW    journalctl query window (default: "12 minutes ago")
 EOF
 }
 
@@ -34,10 +36,11 @@ log_msg() {
 #defaults
 VERBOSITY=0
 
-# ethernet interface
+# ethernet interface and journal check window
 ETHIF="eno1"
+CHECK_WINDOW="12 minutes ago"
 
-while getopts "hv" OPTION; do
+while getopts "hvi:s:" OPTION; do
   case $OPTION in
   h)
     usage
@@ -45,6 +48,12 @@ while getopts "hv" OPTION; do
     ;;
   v)
     VERBOSITY=$((VERBOSITY + 1))
+    ;;
+  i)
+    ETHIF="$OPTARG"
+    ;;
+  s)
+    CHECK_WINDOW="$OPTARG"
     ;;
   \?)
     usage
@@ -55,11 +64,11 @@ done
 
 shift $((OPTIND - 1))
 
-[[ $VERBOSITY -ge 1 ]] && echo "Verbosity is: $VERBOSITY"
+[[ $VERBOSITY -ge 1 ]] && echo "Verbosity is: $VERBOSITY, Interface: $ETHIF, Window: $CHECK_WINDOW"
 
 # check system journal for recent hang
 if ! hangcount=$(journalctl \
-  --since "2 minutes ago" _TRANSPORT=kernel \
+  --since "$CHECK_WINDOW" _TRANSPORT=kernel \
   _KERNEL_SUBSYSTEM=pci --priority=3 |
   grep -c "Detected Hardware Unit Hang:"); then
   log_msg 1 "No network hang detected, exiting"

@@ -147,14 +147,15 @@ if [ "${mode}" = "pve" ]; then
       echo "Exporting NFS share mounts as ${server_subnet}:${mount_nfs}"
       echo
       echo "#share ${mount_nfs} over nfs" >>${serve_nfs_exports}
-      # there should be NO space between the subnet and (nfs_options) below
-      echo "${mount_nfs} ${server_subnet}(rw,sync,no_subtree_check,no_root_squash,no_all_squash)" >>${serve_nfs_exports}
+      # Align with config/pve/etc/exports to prevent write permission issues on Docker/LXC clients
+      echo "${mount_nfs} ${server_subnet}(rw,sync,no_subtree_check,all_squash,anonuid=0,anongid=0)" >>${serve_nfs_exports}
     fi
   done
 
   # Copy all files in /dotfiles/pve/setup/config/pve to host machine's relevant paths
   echo "Copying PVE config files to host..."
-  CONFIG_SRC="$(dirname "$0")/config/pve"
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  CONFIG_SRC="${SCRIPT_DIR}/config/pve"
 
   # etc files
   if [ -d "$CONFIG_SRC/etc" ]; then
@@ -168,15 +169,12 @@ if [ "${mode}" = "pve" ]; then
     done
   fi
 
-  # usr/lib files
-  if [ -d "$CONFIG_SRC/usr/lib" ]; then
-    find "$CONFIG_SRC/usr/lib" -type f | while read -r srcfile; do
-      relpath="${srcfile#$CONFIG_SRC/}" # strip leading config path
-      destfile="/${relpath}"
-      destdir="$(dirname "$destfile")"
-      echo "Copying $srcfile to $destfile"
-      mkdir -p "$destdir"
-      cp -a "$srcfile" "$destfile"
+  # firmware files (HP audio jack retask fix)
+  if [ -d "$CONFIG_SRC/firmware" ]; then
+    mkdir -p /lib/firmware
+    find "$CONFIG_SRC/firmware" -name "*.fw" | while read -r fwfile; do
+      echo "Copying firmware $fwfile to /lib/firmware/"
+      cp -a "$fwfile" /lib/firmware/
     done
   fi
 
@@ -218,7 +216,8 @@ else
 
   # Copy all files in /dotfiles/pve/setup/config/lxc to host machine's relevant paths
   echo "Copying LXC config files to guest..."
-  CONFIG_SRC="$(dirname "$0")/config/lxc"
+  SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+  CONFIG_SRC="${SCRIPT_DIR}/config/lxc"
   if [ -d "$CONFIG_SRC/etc" ]; then
     find "$CONFIG_SRC/etc" -type f | while read -r srcfile; do
       relpath="${srcfile#$CONFIG_SRC/}" # strip leading config path

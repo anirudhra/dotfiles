@@ -21,5 +21,8 @@ if [ ! -d "$1" ]; then
     echo "Source directory '$1' does not exist."
     exit 2
 fi
+if [ ! -d "$2" ]; then
+    mkdir -p "$2"
+fi
 
-rsync -avxHAXW --progress "$DRYRUN" "$1" "$2"
+rsync -avxHAXW --progress ${DRYRUN:+"$DRYRUN"} "$1" "$2"

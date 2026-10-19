@@ -17,25 +17,38 @@
 MOUNTPOINT="zfsdata"
 #backup_dest="/${pvebackup}/${mountpoint}"
 # zfs fs mountpoint does not include zpool anymore
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BACKUP_DEST="/${MOUNTPOINT}"
 BACKUP_DEST_DIR="${BACKUP_DEST}/pve_backup"
 BACKUP_SOURCE_DIR="/mnt/sata-ssd"
-BACKUP_EXCLUDE_LIST="./exclude_pve_zfs_backup.txt"
+BACKUP_EXCLUDE_LIST="${SCRIPT_DIR}/exclude_pve_zfs_backup.txt"
+
+# Verify backup destination is an active mountpoint to prevent writing to rootfs
+if ! mountpoint -q "${BACKUP_DEST}"; then
+  echo "ERROR: Backup destination '${BACKUP_DEST}' is NOT a mounted filesystem!" >&2
+  echo "Aborting backup to prevent filling the PVE host root filesystem." >&2
+  exit 1
+fi
+
+if [ ! -f "${BACKUP_EXCLUDE_LIST}" ]; then
+  echo "ERROR: Exclude list '${BACKUP_EXCLUDE_LIST}' not found!" >&2
+  exit 1
+fi
 
 #confirm backup destination is available and correct
 echo
 echo "==============================================================================="
 echo "Ensure your backup destination is mounted correctly before running this script"
 echo
-echo "Backup desitnation: ${BACKUP_DEST}"
+echo "Backup destination: ${BACKUP_DEST}"
 echo "Backup destination directory: ${BACKUP_DEST_DIR}"
-echo "Backup source diretory: ${BACKUP_SOURCE_DIR}"
+echo "Backup source directory: ${BACKUP_SOURCE_DIR}"
 echo "Backup exclude list: ${BACKUP_EXCLUDE_LIST}"
 echo "==============================================================================="
 echo
 echo "Contents of backup destination - ${BACKUP_DEST}:"
 echo
-ls ${BACKUP_DEST}
+ls -la "${BACKUP_DEST}"
 echo
 echo "==============================================================================="
 echo "Disk space usage of destination: ${BACKUP_DEST}"

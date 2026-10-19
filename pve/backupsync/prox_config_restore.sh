@@ -42,37 +42,42 @@ case "$CHOICE" in
         ;;
 esac
 
-FOLDER_1="./$1_1"
-FOLDER_2="./$1_2"
+BACKUP_ARCHIVE="$1"
+if [ ! -f "$BACKUP_ARCHIVE" ]; then
+    echo "Error: Backup file '$BACKUP_ARCHIVE' not found." >&2
+    exit 1
+fi
 
-mkdir "$FOLDER_1"
-mkdir "$FOLDER_2"
+TEMP_DIR=$(mktemp -d "/tmp/prox_restore.XXXXXX")
+cleanup() {
+    rm -rf "$TEMP_DIR"
+}
+trap cleanup EXIT
 
-tar -zxvf $1 -C "$FOLDER_1"
-find "$FOLDER_1" -name "*tar" -exec tar xvf '{}' -C "$FOLDER_2" \;
+FOLDER_1="$TEMP_DIR/stage1"
+FOLDER_2="$TEMP_DIR/stage2"
+
+mkdir -p "$FOLDER_1" "$FOLDER_2"
+
+tar -zxvf "$BACKUP_ARCHIVE" -C "$FOLDER_1"
+find "$FOLDER_1" -name "*.tar" -exec tar xvf '{}' -C "$FOLDER_2" \;
 
 if [ "$COMMENT_FSTAB" = true ]; then
     echo "Processing /etc/fstab"
     if [[ -f "$FOLDER_2/etc/fstab" ]]; then
-        sed 's/^/# /' "$FOLDER_2/etc/fstab" > /tmp/fstab_RESTORED
+        # Create commented copy in the extracted tree so it gets installed to /etc/fstab_RESTORED
+        sed 's/^/# /' "$FOLDER_2/etc/fstab" > "$FOLDER_2/etc/fstab_RESTORED"
+        # Remove /etc/fstab from the extracted tree so the live /etc/fstab is preserved!
+        rm -f "$FOLDER_2/etc/fstab"
+        echo "Created /etc/fstab_RESTORED. Existing /etc/fstab will NOT be overwritten."
     fi
 fi
 
+echo "Stopping PVE services..."
 for i in pve-cluster pvedaemon vz qemu-server; do systemctl stop $i ; done || true
 
-if [ "$COMMENT_FSTAB" = true ] && [[ -f /tmp/fstab_RESTORED ]]; then
-    mv /tmp/fstab_RESTORED /etc/fstab_RESTORED
-else
-    find "$FOLDER_2" -type f ! -name 'fstab_RESTORED' -exec cp -a '{}' / \;
-fi
-
-cp -avr "$FOLDER_2/" /
-
-rm -r "$FOLDER_1" "$FOLDER_2" || true
-
-if [ "$COMMENT_FSTAB" = true ] && [[ -f /tmp/fstab_RESTORED ]]; then
-    rm /tmp/fstab_RESTORED
-fi
+echo "Restoring configuration files..."
+cp -avr "$FOLDER_2/." /
 
 read -p "Restore complete. Hit 'Enter' to reboot or CTRL+C to cancel."
 reboot

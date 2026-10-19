@@ -14,7 +14,16 @@ fi
 echo "This will unmount and export the ZFS pool '${ZFSPOOL}'."
 read -p "Press Enter to continue or Ctrl+C to abort..."
 
-zfs umount "/${ZFSPOOL}"
+# Unmount all mounted datasets belonging to this pool
+echo "Unmounting datasets in '${ZFSPOOL}'..."
+while IFS= read -r dataset; do
+  if [ -n "$dataset" ]; then
+    zfs unmount "$dataset" 2>/dev/null || true
+  fi
+done < <(zfs list -H -o name -r "${ZFSPOOL}" 2>/dev/null)
+
+# Export the pool
+echo "Exporting pool '${ZFSPOOL}'..."
 zpool export "${ZFSPOOL}"
 
-zpool status
+echo "Pool '${ZFSPOOL}' unmounted and exported successfully. Safe to disconnect."

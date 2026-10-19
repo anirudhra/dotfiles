@@ -57,12 +57,13 @@ function msg_ok() {
   echo -e "${BFR} ${CM} ${GN}${msg}${CL}"
 }
 function PVE_CHECK() {
-  PVE=$(pveversion | grep "pve-manager/7" | wc -l)
-  if [[ $PVE != 1 ]]; then
+  local pve_major
+  pve_major=$(pveversion 2>/dev/null | sed -n 's/^pve-manager\/\([0-9]\+\).*/\1/p')
+  if [[ -z "$pve_major" || "$pve_major" -lt 7 ]]; then
     echo -e "${RD}This script requires Proxmox Virtual Environment 7.0 or greater${CL}"
     echo -e "Exiting..."
     sleep 2
-    exit
+    exit 1
   fi
 }
 function default_settings() {
@@ -260,8 +261,8 @@ export PCT_OPTIONS="
   $PW
 "
 
-# FIXME: Migrate to new proxmox helper repo
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/tteck/Proxmox/main/ct/create_lxc.sh)" || exit
+# Upstream Proxmox helper scripts migrated from tteck to community-scripts
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/community-scripts/ProxmoxVE/main/ct/create_lxc.sh)" || exit
 
 msg_info "Pre-starting LXC Container"
 pct start $CTID

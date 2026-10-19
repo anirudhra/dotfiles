@@ -36,7 +36,7 @@ Installation script:
 6) Provides X11 Intel iGPU config files if GUI is needed/installed
 7) Adds additional /etc/modules for acpi health monitoring and Intel VT-d virtualization
 8) Includes GPU, Keyboard, Audio passthrough in LXC conf for reference: /etc/pve/lxc/lxc-id.conf
-9) Includes scritps for PVE host maintenance, backup-restore and other tweaks: /pve_maintenance (needs to be manually installed/pulled from github)
+9) Includes scripts for PVE host maintenance, backup-restore and other tweaks: pve/maintenance and pve/backupsync (needs to be manually installed/pulled from github)
 10) Includes Coral TPU drivers, runtimes etc. for newer versions of Linux kernels, Python as standard Google repos no longer support any of those are stuck pre-Linux6.2 and Python 3.9
 
 ### LXC:
@@ -73,11 +73,11 @@ wget https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/pve/se
 
 Recursively updates all docker images and prunes if the directory does not have "disabled" in the name anywhere:
 
-```
+```bash
 godocker
-cd `hostname`
-find . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose down && docker compose pull && docker image prune -f && docker compose up -d --remove-orphans" \;
-docker prune -a -f
+cd "$(hostname)"
+find . -maxdepth 1 -mindepth 1 -type d \( ! -name '.*' \) -not -path '*disabled*' -exec bash -c "cd '{}' && pwd && docker compose pull && docker compose up -d --remove-orphans" \;
+docker image prune -a -f
 ```
 
 ## LXC autologin in PVE Console

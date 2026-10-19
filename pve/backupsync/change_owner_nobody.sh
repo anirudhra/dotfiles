@@ -18,6 +18,16 @@ if [ "$(id -u)" -ne 0 ]; then
     echo "Warning: You are not running as root. You may be prompted for your password."
 fi
 
-sudo chown -R nobody:nobody -- "${TARGET_DIR}"
-sudo chmod -R 755 --
+# Determine nobody group name (nogroup on Debian/Ubuntu/PVE, nobody on RHEL/Arch)
+if getent group nogroup >/dev/null 2>&1; then
+    NOBODY_GROUP="nogroup"
+else
+    NOBODY_GROUP="nobody"
+fi
+
+echo "Setting ownership to nobody:${NOBODY_GROUP}..."
+sudo chown -R "nobody:${NOBODY_GROUP}" -- "${TARGET_DIR}"
+
+echo "Setting standard permissions (directories 755, files 644)..."
+sudo chmod -R u=rwX,go=rX -- "${TARGET_DIR}"
 

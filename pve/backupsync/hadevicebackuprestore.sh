@@ -30,7 +30,7 @@ usage() {
   exit 1 # Exit with a non-zero code to indicate an error
 }
 
-# Check if the number of arguments is exactly 2
+# Check if the number of arguments is exactly 3
 if [ "$#" -ne 3 ]; then
   echo "Error: Incorrect number of arguments." >&2 # Output error to standard error
   usage
@@ -41,15 +41,15 @@ SOURCE_FILE="$1"
 OPERATION="$3"
 BACKUP_DIR="$2"
 
-# Check if the source file exists
-if [ ! -f "${SOURCE_FILE}" ]; then
-  echo "Error: Source file '${SOURCE_FILE}' not found." >&2 # Output error to standard error
-  exit 1
-fi
-
 # Perform the requested operation
 case "${OPERATION}" in
 backup)
+  # Check if the source file exists when creating a backup
+  if [ ! -f "${SOURCE_FILE}" ]; then
+    echo "Error: Source file '${SOURCE_FILE}' not found." >&2
+    exit 1
+  fi
+
   # Create backup directory if it doesn't exist
   mkdir -p "${BACKUP_DIR}" || {
     echo "Error: Failed to create backup directory '${BACKUP_DIR}'." >&2

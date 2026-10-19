@@ -44,20 +44,6 @@ while read -r TAG ITEM; do
 done < <(pct list | awk 'NR>1')
 excluded_containers=$(whiptail --backtitle "Additional Proxmox VE Helper Scripts" --title "Containers on $NODE" --checklist "\nSelect containers to skip docker updates:\n" 16 $((MSG_MAX_LENGTH + 23)) 6 "${EXCLUDE_MENU[@]}" 3>&1 1>&2 2>&3 | tr -d '"') || exit
 
-function needs_reboot() {
-  local container=$1
-  local os=$(pct config "$container" | awk '/^ostype/ {print $2}')
-  local reboot_required_file="/var/run/reboot-required.pkgs"
-  if [ -f "$reboot_required_file" ]; then
-    if [[ "$os" == "ubuntu" || "$os" == "debian" ]]; then
-      if pct exec "$container" -- [ -s "$reboot_required_file" ]; then
-        return 0
-      fi
-    fi
-  fi
-  return 1
-}
-
 function update_container() {
 
   container=$1
@@ -66,8 +52,8 @@ function update_container() {
   os=$(pct config "$container" | awk '/^ostype/ {print $2}')
 
   dockercd="cd /mnt/pve-sata-ssd/ssd-data/dockerapps/${name}" 
-  dockerupdate="dockerfind . -maxdepth 1 -type d \( ! -name . \) -not -path '*disabled*' -exec bash -c \"cd '{}' && pwd && docker compose down && docker compose pull && docker compose up -d --remove-orphans\" \;"
-  dockerclean="docker image prune -a -f && docker system prune --volumes -f"
+  dockerupdate="find . -maxdepth 1 -mindepth 1 -type d \( ! -name '.*' \) -not -path '*disabled*' -exec bash -c \"cd '{}' && pwd && docker compose pull && docker compose up -d --remove-orphans\" \;"
+  dockerclean="docker image prune -f"
   
   if [[ "$os" == "ubuntu" || "$os" == "debian" || "$os" == "fedora" ]]; then
     disk_info=$(pct exec "$container" df /boot | awk 'NR==2{gsub("%","",$5); printf "%s %.1fG %.1fG %.1fG", $5, $3/1024/1024, $2/1024/1024, $4/1024/1024 }')
