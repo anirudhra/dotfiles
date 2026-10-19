@@ -8,8 +8,9 @@ BACKUP_HOME_SOURCE_DIR=${HOME}
 BACKUP_ETC_SOURCE_DIR="/etc"
 BACKUP_DST_HOME_DIR="${BACKUP_BASE_DIR}/home"
 BACKUP_DST_ETC_DIR="${BACKUP_BASE_DIR}/etc"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # add all backup exclusion regex to the file below
-BACKUP_EXCLUDE_LIST="./exclude_linux_nfs_backup.txt"
+BACKUP_EXCLUDE_LIST="${SCRIPT_DIR}/exclude_linux_nfs_backup.txt"
 
 # /etc directories to backup/restore
 ETC_DIRS=(
@@ -31,6 +32,12 @@ ETC_FILES=(
 # Function to check if mount point is accessible
 check_mount() {
   local operation=$1
+  if [ ! -d "${BACKUP_BASE_DIR}" ]; then
+    echo "Error: Backup destination directory ${BACKUP_BASE_DIR} does not exist or is not mounted!" >&2
+    echo "Please mount the NFS share before running this script." >&2
+    exit 1
+  fi
+
   echo
   echo "============================================================================================"
   echo "Ensure your backup destination is mounted and accessible before running this script"
@@ -57,7 +64,7 @@ check_mount() {
   echo "If this is not correct, press Ctrl+C to exit, mount and rerun. Else Press Enter to continue"
   echo "============================================================================================"
   echo
-  read answer
+  read -r answer
 }
 
 # Function to create necessary directories
@@ -74,8 +81,12 @@ backup_etc_dirs() {
   echo "Starting /etc directories backup..."
   echo
   for i in "${ETC_DIRS[@]}"; do
-    #don't forget trailing '/' for destination!
-    sudo rsync -avHPA --delete /etc/"${i}" ${BACKUP_DST_ETC_DIR}/
+    if [ -d "/etc/${i}" ]; then
+      #don't forget trailing '/' for destination!
+      sudo rsync -avHPA --delete /etc/"${i}" ${BACKUP_DST_ETC_DIR}/
+    else
+      echo "Notice: /etc/${i} not found, skipping..."
+    fi
   done
 }
 
@@ -85,8 +96,12 @@ backup_etc_files() {
   echo "Starting /etc files backup..."
   echo
   for j in "${ETC_FILES[@]}"; do
-    #don't forget trailing '/' for destination!
-    sudo rsync -avHPA --delete /etc/"${j}" ${BACKUP_DST_ETC_DIR}/
+    if [ -f "/etc/${j}" ]; then
+      #don't forget trailing '/' for destination!
+      sudo rsync -avHPA --delete /etc/"${j}" ${BACKUP_DST_ETC_DIR}/
+    else
+      echo "Notice: /etc/${j} not found, skipping..."
+    fi
   done
 }
 
@@ -199,7 +214,7 @@ do_restore() {
   echo "Type 'RESTORE' (all caps) to confirm and proceed with restore, or anything else to cancel:"
   echo "============================================================================================"
   echo
-  read confirmation
+  read -r confirmation
   if [ "$confirmation" != "RESTORE" ]; then
     echo
     echo "Restore operation cancelled."
@@ -230,7 +245,7 @@ echo "  1) Backup"
 echo "  2) Restore"
 echo
 echo "Enter choice (1 or 2): "
-read operation
+read -r operation
 
 case $operation in
   1)

@@ -12,9 +12,14 @@
 # git config --global user.email "email"
 # gh auth login: for browser based git login instead of token
 
-source "../home/.helperfuncs"
-source "../home/.filefuncs"
-source "../home/.gitfuncs"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+export DOTFILES_DIR
+export ALIASES_HOME="${DOTFILES_DIR}/home"
+
+source "${ALIASES_HOME}/.helperfuncs"
+source "${ALIASES_HOME}/.filefuncs"
+source "${ALIASES_HOME}/.gitfuncs"
 
 OS_TYPE=$(detect_os_type)
 MACHINE_TYPE=$(detect_machine_type)
@@ -32,15 +37,7 @@ info "Starting automated installer..."
 info "===================================================================================="
 echo
 
-# check if running from the right directory, OS and machine type
-INSTALL_DIR=$(pwd)
-if [[ ${INSTALL_DIR} != *"/dotfiles/linux"* ]]; then
-  error "Script invoked from incorrect directory!"
-  error "The current directory is: ${INSTALL_DIR}"
-  error "Please run this script from .../dotfiles/linux directory"
-  echo
-  exit 1
-fi
+INSTALL_DIR="${SCRIPT_DIR}"
 
 if [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "debian" ]]; then
   info "Detected supported OS Type: ${OS_TYPE}"

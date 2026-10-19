@@ -1,51 +1,69 @@
-*gvfs*
-*microsoft-edge*
-*icons*
-*themes*
-*flatpak*
-*Trash*
-*vscode*
-*cache*
-*Cursor*
-*Cache*
-*python3*
-*site-packages*
-*.zoom*
-*vulkan*
-*share/nvim*
-*geary*
-*fonts*
-*evolution*
-*mozilla*
-*npm*
-*var*
-*dotfiles*
-*code/github*
-*packages/install*
-*Templates*
-*Public*
-*Code*
-*google-chrome*
-*chromium*
-*zsh_history*
-*storage.lock*
-*.code*
-*.cursor*
-*Kiro*
-*.local/share/backgrounds*
-*/Applications*
-*.kiro*
-*.log*
-*.swp*
-*.tmp*
-*BraveSoftware*
-*GIMP*
-*gimp*
-*firefox*
-*chrome*
-*backup*
-*git*
-*application_state*
-*local/state*
-*telemetry*
-*wine*
+# rsync exclusion list for Linux NFS Backup and Restore
+# Patterns ending in '/' match directories only.
+# Patterns starting with '/' match paths anchored at the root of the source ($HOME).
+# Unanchored patterns match anywhere in the file hierarchy.
+
+### Version Control & Repositories ###
+.git/
+.svn/
+.hg/
+
+### Flatpak, Sandboxes & Virtualization ###
+/.var/
+/.wine/
+
+### Log Files & Directories ###
+*.log
+*.log.*
+log/
+logs/
+/.local/state/
+
+### System, OS & Desktop Caches ###
+/.cache/
+/.local/share/Trash/
+/.gvfs/
+/.thumbnails/
+/.local/share/backgrounds/
+
+### macOS Metadata & Temporary Files ###
+.DS_Store
+._*
+.Spotlight-V100/
+.Trashes/
+.fseventsd/
+.AppleDouble/
+.TemporaryItems/
+
+### Editor & OS Temporary Files ###
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+*.bak
+*.lock
+storage.lock
+
+### Development, Runtimes & Package Manager Caches ###
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+site-packages/
+node_modules/
+/.npm/
+/.cargo/registry/
+/.cargo/git/
+/.rustup/
+
+### Application Specific Caches & Telemetry ###
+/.zoom/
+/.cursor/
+/.code/
+/.vscode/
+telemetry/
