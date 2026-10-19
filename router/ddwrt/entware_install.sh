@@ -2,24 +2,17 @@
 # This script installs entware on DDWRT/OpenWRT
 # (c) 2025 Anirudh Acharya
 
-# Ensure we are running from dotfiles/router/ddwrt
+# Locate script directory and source helper functions
 SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
-if [ "$PWD" != "$SCRIPT_DIR" ]; then
-  echo "Error: Please run this script from: $SCRIPT_DIR" >&2
-  exit 1
-fi
-if [ "$(basename "$SCRIPT_DIR")" != "ddwrt" ] ||
-  [ "$(basename "$(dirname "$SCRIPT_DIR")")" != "router" ] ||
-  [ "$(basename "$(dirname "$(dirname "$SCRIPT_DIR")")")" != "dotfiles" ]; then
-  echo "Error: Script must be run and reside under .../dotfiles/router/ddwrt" >&2
-  exit 1
-fi
 
-# Source helper functions via relative path
-if [ -f "../../home/.helperfuncs" ]; then
-  . "../../home/.helperfuncs"
+if [ -f "${SCRIPT_DIR}/../../home/.helperfuncs" ]; then
+  . "${SCRIPT_DIR}/../../home/.helperfuncs"
+elif [ -f "${HOME}/dotfiles/home/.helperfuncs" ]; then
+  . "${HOME}/dotfiles/home/.helperfuncs"
+elif [ -f "/opt/root/dotfiles/home/.helperfuncs" ]; then
+  . "/opt/root/dotfiles/home/.helperfuncs"
 else
-  echo "Error: ../../home/.helperfuncs not found" >&2
+  echo "Error: .helperfuncs not found" >&2
   exit 1
 fi
 
@@ -30,22 +23,23 @@ install_entware() {
   OPTWARE_DIR="/opt" # change if optware/entware/USB mount is different
   INSTALLER_FILE="entware_installer.sh"
 
-  if [ ! -n "${ENTWARE_URL}" ]; then
-    error "Entware URL is empty: ${ENTWARE_URL}. Check for errors and fix them."
+  if [ -z "${ENTWARE_URL}" ]; then
+    error "Entware URL is empty. Check for errors and fix them."
+    exit 1
   fi
 
   # download and run installer
-  cd "${OPTWARE_DIR}" || error "Failed to change to ${OPTWARE_DIR}"
-  rm -f "${INSTALLER_FILE}" || error "Failed to remove existing installer"
+  cd "${OPTWARE_DIR}" || { error "Failed to change to ${OPTWARE_DIR}"; exit 1; }
+  rm -f "${INSTALLER_FILE}" || { error "Failed to remove existing installer"; exit 1; }
   info "Downloading installer..."
-  curl -L -o "${INSTALLER_FILE}" "${ENTWARE_URL}"
+  curl -L -o "${INSTALLER_FILE}" "${ENTWARE_URL}" || { error "Failed to download installer"; exit 1; }
 
   # run installer
   info "Running installer..."
-  sh "${INSTALLER_FILE}" || error "Failed to run installer"
+  sh "${INSTALLER_FILE}" || { error "Failed to run installer"; exit 1; }
 
   # remove installer
-  rm "${INSTALLER_FILE}"
+  rm -f "${INSTALLER_FILE}"
 }
 
 # Post-installation menu for package management
@@ -98,7 +92,7 @@ info "Entware installer script"
 echo "###########################################################"
 
 # check if entware is already installed
-if opkg list-installed | grep -q "entware"; then
+if command -v opkg >/dev/null 2>&1 && opkg list-installed 2>/dev/null | grep -q "entware"; then
   info "entware is already installed."
   post_install_menu
   exit 0
@@ -133,6 +127,7 @@ aarch64) # arm64
   ;;
 unsupported | unknown | *)
   error "entware is unsupported for this platform ($CPU_ARCH)."
+  exit 1
   ;;
 esac
 

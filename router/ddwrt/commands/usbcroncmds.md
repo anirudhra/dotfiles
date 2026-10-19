@@ -17,12 +17,12 @@ ln -sf /opt/logs/system /jffs/messages
 ## Cron commands
 
 * Add commands under admin > Management
-* Cleans syslog on every reboot
+* Cleans syslog every Sunday (truncates in-place to preserve syslogd inode)
 * Runs adblock script on every 4 hours
 * Reboots router every 1st and 16th of every month
 
 ```
-0 0 * * 0 root rm /opt/logs/system
+0 0 * * 0 root : > /opt/logs/system
 # enable below for smartDNS
 # 0 4 * * * root /jffs/ddwrt-adblock-s.sh
 0 3 1,16 * * root reboot

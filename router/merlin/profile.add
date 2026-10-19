@@ -8,7 +8,7 @@
 
 alias firewall="sh /jffs/scripts/firewall" # Skynet
 alias backupmon="sh /jffs/scripts/backupmon.sh" # backupmon
-alias jffsbackup="cd /tmp/mnt/USB/router && tar zcvf "./jffs_backup_$(date -I).tar.gz" /jffs"
+alias jffsbackup='cd /tmp/mnt/USB/router && tar zcvf "./jffs_backup_$(date +%Y-%m-%d).tar.gz" /jffs'
 
 ##########################################################################
 
@@ -49,7 +49,7 @@ alias mkdir='mkdir -pv'
 alias md='mkdir'
 alias rd='rmdir'
 
-alias path='echo -e ${PATH//:/\\n}'
+alias path='echo "$PATH" | tr ":" "\n"'
 alias now='date +"%T"'
 alias nowtime=now
 alias nowdate='date +"%d-%m-%Y"'
@@ -125,8 +125,7 @@ alias sshimm='ssh -o MACs=hmac-sha2-256 root@10.100.100.95'
 ##################################
 # Commands to be run on startup
 # gets rid of defaults.vim not found error
-# either install 'sudo' via opkg or remove sudo from command below
-sudo touch ~root/.exrc
+touch /root/.exrc
 
 ##########################################################################
 # End of profile.add

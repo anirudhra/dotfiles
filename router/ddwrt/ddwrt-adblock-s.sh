@@ -97,7 +97,7 @@ rogue_check(){
 smartdns_check(){
 	stopservice smartdns
 	smartdns -c /tmp/smartdns.conf 2>&1
-	[[ ${?} -eq 0 ]] && echo "adblock: SmartDNS check OK " || { echo "adblock: ERROR: SmartDNS check ERROR, cannot run $(basename $0)"; \ 
+	[ $? -eq 0 ] && echo "adblock: SmartDNS check OK " || { echo "adblock: ERROR: SmartDNS check ERROR, cannot run $(basename "$0")"; \
 		killall smartdns; > $SMARTDNS_CONF; restart smartdns; release_lock; exit 1; }
 }
 
@@ -131,7 +131,7 @@ for url in $URL_LIST; do
     # retrieve url as raw blacklist
     $GET_URL $url > $RAW_BLACKLIST || { echo "adblock: ERROR: $url"; continue; }
 	# Clean
-	sed 's/\s*#.*$//; s/^[ \t]*//; s/[ \t]*$//; /^\s*$/d; s/\(^address=\|^server=\|^local=\)//; s/^www.//; s/\///g; \' $RAW_BLACKLIST >> $BLACKLIST
+	sed 's/\s*#.*$//; s/^[ \t]*//; s/[ \t]*$//; /^\s*$/d; s/\(^address=\|^server=\|^local=\)//; s/^www\.//; s/\///g' $RAW_BLACKLIST >> $BLACKLIST
 done
 
 # cleanup
@@ -141,7 +141,7 @@ rm -f $RAW_BLACKLIST
 add_myblacklist
 
 # sort and remove duplicates
-sort $BLACKLIST | uniq -u >/dev/null 2>&1
+sort -u "$BLACKLIST" > "${BLACKLIST}.tmp" && mv -f "${BLACKLIST}.tmp" "$BLACKLIST"
 
 # check for rogue elements and malformed domain names
 rogue_check $BLACKLIST
