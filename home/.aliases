@@ -314,7 +314,7 @@ alias cls='clear'
 alias c='clear'
 alias dir='ls'
 
-alias path='echo -e ${PATH//:/\\n}'
+alias path='echo "$PATH" | tr ":" "\n"'
 alias now='date +"%T"'
 alias nowtime='now'
 alias nowdate='date +"%d-%m-%Y"'
@@ -328,12 +328,18 @@ alias ffile='find . -type f -name'
 ## disk space clean output ##
 if command -v duf >/dev/null 2>&1; then
   alias duf='duf -hide special'
+elif [[ "${OS_TYPE:-}" == "macos" ]]; then
+  alias duf="df -h -P"
 else
   alias duf="df -h -P -T"
 fi
 
 alias dud='du -d 1 -h'
-alias df='df -P -h -T'
+if [[ "${OS_TYPE:-}" == "macos" ]]; then
+  alias df='df -P -h'
+else
+  alias df='df -P -h -T'
+fi
 alias du='du -ch'
 alias dirsize='du -sh'
 alias diskuse="echo 'Device          Size  Used  Free  Mount Point' && df -h --output=source,size,used,avail,target | grep dev/root | sort"
@@ -360,10 +366,16 @@ alias pscpu10='ps aux | sort -nr -k 3 | head -10'
 alias listps='ps aux | grep -v "ps aux" | grep -Ev "\[.+\]" | grep -v grep'
 alias proc='ps aux | grep -i '
 
-# become root #
+# become root / rerun last command as root
 alias root='sudo -i'
 #alias su='sudo -i'
-alias please='sudo $( history -p !! )'
+please() {
+  if [ -n "${ZSH_VERSION:-}" ]; then
+    sudo $(fc -ln -1)
+  else
+    sudo $(history -p '!!')
+  fi
+}
 
 # editor aliases, check in order of preference
 if command -v nvim >/dev/null 2>&1; then
@@ -403,7 +415,7 @@ alias ncdulocal='ncdu --exclude "/mnt/nfs" --exclude "/mnt/pve-sata-ssd" --exclu
 
 # pager and readme aliases
 alias pager="${PAGER}"
-alias readme="find . -maxdepth 1 -iname \"readme*\" -exec \"${pages}\" {} \;"
+alias readme="find . -maxdepth 1 -iname 'readme*' -exec less -R {} \;"
 
 # Tree
 if [ ! -x "$(which tree 2>/dev/null)" ]; then
@@ -418,7 +430,7 @@ alias dotclean='find . -name ._\* -delete'
 alias table='column -t -s'
 
 #dumps directory contents to file, usage dir2file <filename>
-alias dir2file="find \"${PWD}\" -iname \"*\" >"
+dir2file() { find . -mindepth 1 > "$1"; }
 
 #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
 alias refresh='watch --interval=3'

@@ -136,7 +136,7 @@ fi
 servers=(
   "${SSHROOT:-root}@${PVESERVER:-10.100.10.50}"
   "${SSHROOT:-root}@${PVEVENTOY:-10.100.10.71}"
-  "${SSHROOT:-root}@${PVWG:-10.100.10.63}"
+  "${SSHROOT:-root}@${PVEWG:-10.100.10.63}"
   "${SSHROOT:-root}@${PVEVEGA:-10.100.10.61}"
   "${SSHROOT:-root}@${PVEBLANKA:-10.100.10.62}"
   "${SSHROOT:-root}@${PVEHA:-10.100.10.64}"

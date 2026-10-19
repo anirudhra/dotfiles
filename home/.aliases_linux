@@ -92,7 +92,7 @@ wifi-reset() {
     # Ensure root execution
     if [[ $EUID -ne 0 ]]; then
       echo "[!] wifi-reset requires root privileges. Escalating..." >&2
-      sudo -E zsh -c "$(typeset -f wifi-reset); wifi-reset '$target_ssid'"
+      sudo -E "${SHELL:-/bin/bash}" -c "$(typeset -f wifi-reset); wifi-reset '$target_ssid'"
       return $?
     fi
 
@@ -294,7 +294,7 @@ if command -v docker >/dev/null 2>&1; then
       return 1
     fi
 
-    sudo tar -zcvf "${backup_dest}/dockerapps_backup_${HOSTNAME}_$(date -I).tar.gz" "${src_dir}"
+    sudo tar -zcvf "${backup_dest}/dockerapps_backup_${HOSTNAME}_$(date +%Y-%m-%d).tar.gz" "${src_dir}"
   }
 fi
 

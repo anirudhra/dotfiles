@@ -88,7 +88,7 @@ alias sshserver='ssh -o MACs="${SSHMAC}" "${SSHROOT}@${PVESERVER}"' #non-tmux ve
 alias sshsbc='ssh "${SSHROOT}@${SBC}" -t "${SSHTMUX}"'
 alias sshsbcwifi='ssh "${SSHROOT}@${SBCWIFI}" -t "${SSHTMUX}"'
 
-alias sshwg='ssh "${SSHROOT}@${PVWG}" -t "${SSHTMUX}"'
+alias sshwg='ssh "${SSHROOT}@${PVEWG}" -t "${SSHTMUX}"'
 alias sshventoy='ssh "${SSHROOT}@${PVEVENTOY}" -t "${SSHTMUX}"'
 alias sshvega='ssh "${SSHROOT}@${PVEVEGA}" -t "${SSHTMUX}"'
 alias sshblanka='ssh "${SSHROOT}@${PVEBLANKA}" -t "${SSHTMUX}"'

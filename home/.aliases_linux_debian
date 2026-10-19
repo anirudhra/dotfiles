@@ -30,5 +30,5 @@ else
   alias fullupdate='sudo ${pkgmgr} update -y && sudo ${pkgmgr} dist-upgrade -y'
 fi
 
-alias showinstalled="sudo ${pkgmgr} list --installed | less ${lesscolors}"
+alias showinstalled="${pkgmgr} list --installed | less ${lesscolors}"
 alias showkernel="echo Active Kernel && uname -a && echo && echo Installed Kernels && ${pkgmgrdpkg} --list | grep -i -e kernel- -e linux-image"

@@ -24,7 +24,7 @@ cleankernels() {
 
   if [ "${#old_kernels[@]}" -eq 0 ]; then
     info "No old kernels found"
-  elif ! ${pkgmgr} remove "${old_kernels[@]}"; then
+  elif ! sudo ${pkgmgr} remove -y "${old_kernels[@]}"; then
     warn "Failed to remove old kernels"
   fi
 }
