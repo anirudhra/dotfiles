@@ -1,81 +1,75 @@
 # dotfiles
-Repo for dotfiles and other configs and installation scripts (macOS and Linux - client, pve server and pve guests)
 
-* home directory contains universal dotfiles for both Linux and macOS that stow installer will use
-* linux and macos directories contain other specific OS files and scripts
-* pve directory contains installation and maintenance scripts for PVE server and guest OS, migrated from: https://github.com/anirudhra/pve_server
-* sbc directory scripts for single board computer, installation for debian and arch distros
-* common directory contains ansible and other general scripts
+Repository for cross-platform dotfiles, system configurations, and automation scripts (macOS, Linux client, Proxmox VE server & guests, OpenMediaVault, SBC, and custom router firmwares).
 
-## How to
-Clone this repo and:
+---
 
-* For Linux (Debian/Fedora and derivatives)
-** change directory to .../dotfiles/linux and run linux_install.sh and linux_post_install.sh in order
-* For macOS
-** change directory to .../dotfiles/mac and run macos_install.sh and macos_post_install.sh in order
+## Directory Overview
 
-## Client Linux
+* **[`home/`](home/)**: Universal dotfiles for both Linux and macOS managed via GNU Stow or [`dotsync.sh`](common/scripts/dotsync.sh) (`.zshrc`, `.bashrc`, `.profile`, `.aliases`, `.vimrc`, `.config/`).
+* **[`linux/`](linux/)**: Provisioning, post-install tweaks, and theme configurations for Linux desktop clients (Debian, Fedora, Arch).
+* **[`macos/`](macos/README.md)**: Bootstrapping scripts, Homebrew manifests, Karabiner keybindings, iTerm2 themes, and GPU telemetry for macOS.
+* **[`pve/`](pve/README.md)**: Automated maintenance, container/VM backups, and configuration templates for Proxmox VE hosts and LXC guests.
+* **[`omv/`](omv/README.md)**: Configuration backup, selective state restore, and recycle bin sanitation for OpenMediaVault.
+* **[`sbc/`](sbc/README.md)**: Bootstrapping tools, kernel module installer, and hardware configurations for the Inforce IFC6410 Single Board Computer.
+* **[`router/`](router/README.md)**: Configurations, Entware installers, and automation runbooks for Asuswrt-Merlin, OpenWrt, and DD-WRT.
+* **[`common/`](common/README.md)**: Cross-system Ansible playbooks, inventory, and shared utility scripts (`btrfsrsyncbackup.sh`, `sshkeygen.sh`, `nerdfonts_install.sh`).
 
-Installation script:
+---
 
-```
-cd $HOME
+## Quickstart
+
+### 1. Client Linux (Debian / Fedora / Arch)
+
+```bash
+cd "$HOME"
 git clone https://github.com/anirudhra/dotfiles
-cd $HOME/dotfiles/linux
+cd "$HOME/dotfiles/linux"
 ./linux_install.sh
-```
-
-Post installation script:
-
-```
-cd $HOME/dotfiles/linux
 ./linux_post_install.sh
 ```
 
-A note about "throttled": In order to apply undervolt settings, secure boot must be disabled.
+> [!NOTE]
+> In order to apply undervolt settings via `throttled`, secure boot must be disabled in UEFI.
 
-## macOS
+---
 
-Installation script:
+### 2. macOS (Apple Silicon & Intel)
 
-```
-cd $HOME
+```bash
+cd "$HOME"
 git clone https://github.com/anirudhra/dotfiles
-cd $HOME/dotfiles/macos
+cd "$HOME/dotfiles/macos"
 ./macos_install.sh
-```
-
-Post installation script:
-
-```
-cd $HOME/dotfiles/macos
 ./macos_post_install.sh
 ```
 
-## PVE Server and Guests
+---
 
-```
-cd $HOME
+### 3. PVE Server and Guests
+
+```bash
+cd "$HOME"
 git clone https://github.com/anirudhra/dotfiles
-cd $HOME/dotfiles/pve/setup
+cd "$HOME/dotfiles/pve/setup"
 ./install.sh
 ```
 
-## tmux config (on remote machines)
+---
 
-Install Catppuccin theme:
-```
+### 4. Remote Tmux Configuration
+
+Install the Catppuccin theme:
+```bash
 mkdir -p ~/.config/tmux/plugins/catppuccin
 git clone -b v2.1.3 https://github.com/catppuccin/tmux.git ~/.config/tmux/plugins/catppuccin/tmux
 ```
 
-Add the following to ~/.config/tmux/tmux.conf to enable mouse scrolling/up and invoke theme
-```
+Add the following to `~/.config/tmux/tmux.conf` to enable mouse scrolling and the Catppuccin theme:
+```tmux
 set -g mouse on
 run ~/.config/tmux/plugins/catppuccin/tmux/catppuccin.tmux
 set -g default-terminal "xterm-256color"
 set-option -ga terminal-overrides ",xterm-256color:Tc"
 ```
-
-Relogin to enable/reload settings.
+Re-login or run `tmux source ~/.config/tmux/tmux.conf` to reload settings.

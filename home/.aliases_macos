@@ -26,17 +26,17 @@ alias hidehidden='defaults write com.apple.finder AppleShowAllFiles NO && killal
 alias finder='open'
 alias shuf='gshuf'
 
-# replace cat with bat+syntax highlighting
-alias cat='bat --color=always'
+# replace cat with bat+syntax highlighting if bat is installed
+command -v bat >/dev/null 2>&1 && alias cat='bat --color=always'
 
 # Desktop Programs
 alias preview="open -a '$PREVIEW'"
-alias xcode="open -a '/Applications/XCode.app'"
-alias edge="open -a '/Applications/Microsoft\ Edge.app'"
+alias xcode="open -a 'Xcode'"
+alias edge="open -a 'Microsoft Edge'"
 alias filemerge="open -a '/Developer/Applications/Utilities/FileMerge.app'"
 alias safari="open -a safari"
 alias firefox="open -a firefox"
-alias chrome="open -a google\ chrome"
+alias chrome="open -a 'Google Chrome'"
 alias textedit='open -a TextEdit'
 
 # uart connection with picocom

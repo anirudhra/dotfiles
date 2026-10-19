@@ -44,7 +44,7 @@ endif
 "set guifont=Menlo\ Regular:h15
 "set guifont=Monospace\ Regular:h12
 "colorscheme lucario
-colorscheme catppuccin_macchiato
+silent! colorscheme catppuccin_macchiato
 set guioptions-=T
 
 "set diffexpr=MyDiff()

@@ -176,11 +176,11 @@ alias gitpush="git pull && git add * && git commit -a && git push"
 alias gitpullall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull\" \;"
 alias gitpushall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull && git add * && git commit -a && git push\" \;"
 
-# change ownership to nobdoy:nogroup, primarily for shares
+# change ownership to nobody:nogroup, primarily for shares
 alias nobodyown='chown -R nobody:nogroup *'
 
 # Create m3u playlist from file listing in current directory recursively
-alias createplaylist="find . -type f -iname \"*.mp3\" -or -iname \"*.flac\" -or -iname \"*.alac\" -or -iname \"*.m4a\" > Playlist.m3u"
+alias createplaylist="find . -type f \( -iname '*.mp3' -o -iname '*.flac' -o -iname '*.alac' -o -iname '*.m4a' \) > Playlist.m3u"
 
 # gemini-cli alias
 alias geminicli="npx https://github.com/google-gemini/gemini-cli"

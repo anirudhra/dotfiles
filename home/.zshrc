@@ -88,7 +88,7 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 #plugins=(git)
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting vscode ssh nmap rsync cp sudo systemd tmux urltools)
+plugins=(git zsh-autosuggestions fast-syntax-highlighting vscode ssh nmap rsync cp sudo systemd tmux urltools)
 
 [[ ! -f $ZSH/oh-my-zsh.sh ]] || source $ZSH/oh-my-zsh.sh
 
@@ -148,6 +148,3 @@ export NVM_DIR="$HOME/.config/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-
-# Added by Antigravity CLI installer
-export PATH="/Users/anirudh/.local/bin:$PATH"

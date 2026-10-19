@@ -40,7 +40,13 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
   # /usr/local/bin/brew on Intel Macs and /opt/homebrew/bin/brew on Apple Silicon
-  eval "$(brew shellenv)"
+  if [ -x "/opt/homebrew/bin/brew" ]; then
+    eval "$(/opt/homebrew/bin/brew shellenv)"
+  elif [ -x "/usr/local/bin/brew" ]; then
+    eval "$(/usr/local/bin/brew shellenv)"
+  elif command -v brew >/dev/null 2>&1; then
+    eval "$(brew shellenv)"
+  fi
 
   export XDG_CONFIG_HOME=${HOME}/.config
   export ITERM_ENABLE_SHELL_INTEGRATION_WITH_TMUX=YES
@@ -51,9 +57,10 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 
   export PATH="/opt/local/bin:/usr/local/sbin:${HOME}/.local/bin:${PATH}"
 
-  LESSPIPE=$(which src-hilite-lesspipe.sh)
-  export LESSOPEN="| ${LESSPIPE} %s"
-  export LESS=' -R -X -F '
+  if command -v src-hilite-lesspipe.sh >/dev/null 2>&1; then
+    export LESSOPEN="| $(command -v src-hilite-lesspipe.sh) %s"
+    export LESS=' -R -X -F '
+  fi
 
 else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
