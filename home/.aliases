@@ -101,8 +101,8 @@ dotinfo() {
     printf "  %bServer Type%b    : %b%-16s%b\n" "$c_blue" "$c_nc" "$c_yellow" "$server_type" "$c_nc"
   fi
   printf "  %bShell Type%b     : %b%-16s%b (Version: %s)\n" "$c_blue" "$c_nc" "$c_green" "$shell_type" "$c_nc" "$sh_ver"
-  printf "  %bVirtualization%b : %-16s\n" "$c_blue" "$c_nc" "$virt"
-  printf "  %bPackage Mgr%b    : %-16s  (Sync: %s)\n" "$c_blue" "$c_nc" "$pkg_mgr" "$stow_mode"
+  printf "  %bVirtualization%b : %b%-16s%b\n" "$c_blue" "$c_nc" "$c_green" "$virt" "$c_nc"
+  printf "  %bPackage Mgr%b    : %b%-16s%b (Sync: %s)\n" "$c_blue" "$c_nc" "$c_green" "$pkg_mgr" "$c_nc" "$stow_mode"
   printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
   printf "  %bDOTFILES_HOME%b  : %s\n" "$c_blue" "$c_nc" "${DOTFILES_HOME:-$HOME}"
   printf "  %bALIASES_HOME%b   : %s\n" "$c_blue" "$c_nc" "${ALIASES_HOME:-$HOME}"
