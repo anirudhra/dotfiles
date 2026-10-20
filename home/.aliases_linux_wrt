@@ -1,0 +1,113 @@
+#!/bin/sh
+## (c) Anirudh Acharya 2024, 2025, 2026
+## Useful aliases and helpers for OpenWrt, DD-WRT, and Asuswrt router firmwares.
+## Sourced by parent .aliases_linux when OS_TYPE is openwrt, ddwrt, or asuswrt.
+
+# Guard variable to ensure sourcing only once
+if [ -n "${SOURCED_ALIASES_LINUX_WRT}" ]; then
+  return 0
+fi
+
+SOURCED_ALIASES_LINUX_WRT=1
+
+. "${ALIASES_HOME}/.helperfuncs"
+
+debuglog "WRT router aliases sourced"
+
+# ==============================================================================
+# Firewall & Traffic Inspection
+# ==============================================================================
+# DD-WRT dual-subnet bridging isolation rule
+alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT && iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
+
+# Quick iptables viewing
+alias fwlist='iptables -L -n -v --line-numbers'
+alias fwnat='iptables -t nat -L -n -v --line-numbers'
+alias fwmangle='iptables -t mangle -L -n -v --line-numbers'
+alias fwcheck='iptables -S'
+
+# Modern OpenWrt nftables inspection (if present)
+if command -v nft >/dev/null 2>&1; then
+  alias nftlist='nft list ruleset'
+fi
+
+# Active connections & top connection origins
+alias conntrack_count='wc -l < /proc/net/nf_conntrack 2>/dev/null || wc -l < /proc/net/ip_conntrack 2>/dev/null || echo "N/A"'
+alias conntrack_top="sed -n 's/.*src=\([0-9.]*\).*/\1/p' /proc/net/nf_conntrack 2>/dev/null | sort | uniq -c | sort -nr | head -n 15"
+
+# ==============================================================================
+# Network Interfaces & Bridges
+# ==============================================================================
+alias bridgestatus='brctl show 2>/dev/null || ip link show type bridge 2>/dev/null'
+alias brlist='bridge link show 2>/dev/null || brctl show 2>/dev/null'
+alias ifstatus='ip -br addr show 2>/dev/null || ifconfig'
+alias ifsummary='ip -s link 2>/dev/null || ifconfig'
+alias routes='ip route show 2>/dev/null || route -n'
+alias leases='cat /tmp/dhcp.leases 2>/dev/null || cat /var/lib/misc/dnsmasq.leases 2>/dev/null || cat /tmp/dnsmasq.leases 2>/dev/null'
+alias dnsrestart='/etc/init.d/dnsmasq restart 2>/dev/null || restart_dns 2>/dev/null || killall -HUP dnsmasq 2>/dev/null'
+
+# ==============================================================================
+# OpenWrt (UCI & Wireless)
+# ==============================================================================
+if command -v uci >/dev/null 2>&1; then
+  alias uciget='uci get'
+  alias uciset='uci set'
+  alias ucicommit='uci commit'
+  alias ucirevert='uci revert'
+  alias ucishow='uci show'
+  alias ucidiff='uci changes'
+  alias ucinet='uci show network'
+  alias uciwifi='uci show wireless'
+  alias ucifw='uci show firewall'
+  alias ucidhcp='uci show dhcp'
+fi
+
+if command -v wifi >/dev/null 2>&1; then
+  alias wifireload='wifi reload'
+  alias wifistatus='wifi status'
+  alias wifioff='wifi down'
+  alias wifion='wifi up'
+fi
+
+# ==============================================================================
+# DD-WRT & Asuswrt (NVRAM & JFFS)
+# ==============================================================================
+if command -v nvram >/dev/null 2>&1; then
+  alias nvget='nvram get'
+  alias nvset='nvram set'
+  alias nvcommit='nvram commit'
+  alias nvsearch='nvram show 2>/dev/null | grep -i'
+  alias nvshow='nvram show 2>/dev/null | sort | less'
+fi
+
+if [ -d /jffs ]; then
+  alias jffsusage='df -h /jffs'
+  alias jffscd='cd /jffs'
+  alias jffsbackup='tar zcvf "/tmp/jffs_backup_$(date +%Y-%m-%d).tar.gz" /jffs'
+fi
+
+# ==============================================================================
+# Wireless Status & Associated Stations
+# ==============================================================================
+alias wlist='iw dev 2>/dev/null || wl status 2>/dev/null || iwconfig 2>/dev/null'
+
+# Show connected wireless stations across nl80211 (OpenWrt) or Broadcom wl (DD-WRT/Asus)
+wclients() {
+  if command -v iw >/dev/null 2>&1; then
+    for iface in $(iw dev 2>/dev/null | awk '$1=="Interface"{print $2}'); do
+      printf '=== Station dump for %s ===\n' "$iface"
+      iw dev "$iface" station dump 2>/dev/null
+    done
+  elif command -v wl >/dev/null 2>&1; then
+    wl assoclist 2>/dev/null
+  else
+    cat /proc/net/arp 2>/dev/null
+  fi
+}
+
+# ==============================================================================
+# System & Log Inspection
+# ==============================================================================
+alias logreadf='logread -f 2>/dev/null || tail -f /var/log/messages 2>/dev/null'
+alias dmesgtail='dmesg | tail -n 30'
+alias meminfo='cat /proc/meminfo | head -n 15'

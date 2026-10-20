@@ -25,6 +25,8 @@ debuglog "Linux aliases sourced"
 
 if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]]; then
   source "${ALIASES_HOME}/.aliases_linux_${OS_TYPE}"
+elif [[ "${OS_TYPE}" == "openwrt" ]] || [[ "${OS_TYPE}" == "ddwrt" ]] || [[ "${OS_TYPE}" == "asuswrt" ]]; then
+  source "${ALIASES_HOME}/.aliases_linux_wrt"
 fi
 
 ######## functions ######################
@@ -401,8 +403,8 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
 
   alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
 
-# DD-WRT / Router aliases
-elif [[ "${MACHINE_TYPE}" == "router" ]]; then
+# Embedded / Router aliases
+elif [[ "${MACHINE_TYPE}" == "embedded" ]] || [[ "${MACHINE_TYPE}" == "router" ]]; then
   PKG_MGR=""
   if command -v apk >/dev/null 2>&1 || [ -x /sbin/apk ] || [ -x /usr/bin/apk ]; then
     PKG_MGR="apk"
@@ -419,8 +421,6 @@ elif [[ "${MACHINE_TYPE}" == "router" ]]; then
   fi
 
   alias fullclean="warn \"fullclean not supported on this platform\""
-  # Note: Corrected '&7' typo to '&&'
-  alias firewallrules="iptables -A FORWARD -i br0 -o br1 -s 10.10.0.0/16 -d 192.168.0.0/16 -j ACCEPT && iptables -A FORWARD -m state --state ESTABLISHED,RELATED -j ACCEPT && iptables -A FORWARD -i br1 -o br0 -s 192.168.0.0/16 -d 10.10.0.0/16 -j DROP"
 else
   alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
 fi

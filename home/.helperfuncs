@@ -57,6 +57,11 @@ debuglog "Helper functions sourced"
 #   - "arch" for Arch-based systems
 #   - "gentoo" for Gentoo-based systems
 #   - "slackware" for Slackware-based systems
+#   - "openwrt" for OpenWrt router firmware
+#   - "ddwrt" for DD-WRT router firmware
+#   - "asuswrt" for Asuswrt / Asuswrt-Merlin router firmware
+#   - "alpine" for Alpine Linux
+#   - "buildroot" for Buildroot Linux
 #   - "linux" for other Linux distributions
 #   - "freebsd" for FreeBSD
 #   - "openbsd" for OpenBSD
@@ -70,8 +75,22 @@ detect_os_type() {
   if [[ "${uname_os}" == "Darwin" ]]; then
     echo "macos"
   elif [[ "${uname_os}" == "Linux" ]]; then
-    # If it's Linux, check for specific distribution by sourcing /etc/os-release
-    if [[ -f /etc/os-release ]]; then
+    # 1. Router OS checks (OpenWrt, DD-WRT, Asuswrt/Merlin) and embedded distros without /etc/os-release
+    if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ]; then
+      echo "openwrt"
+    elif [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] ||
+         { [ -f /etc/version ] && grep -qi 'DD-WRT' /etc/version 2>/dev/null; } ||
+         { command -v nvram >/dev/null 2>&1 && nvram get os_name 2>/dev/null | grep -qi 'dd-wrt'; }; then
+      echo "ddwrt"
+    elif [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || [ -f /etc/merlin.version ] ||
+         { command -v nvram >/dev/null 2>&1 && [ -n "$(nvram get firmver 2>/dev/null)" ] && [ -n "$(nvram get buildinfo 2>/dev/null)" ]; }; then
+      echo "asuswrt"
+    elif [ -f /etc/alpine-release ]; then
+      echo "alpine"
+    elif [ -f /etc/buildroot-version ]; then
+      echo "buildroot"
+    # 2. Check for distribution by sourcing /etc/os-release
+    elif [[ -f /etc/os-release ]]; then
       . /etc/os-release
       case "$ID" in
       debian | ubuntu | linuxmint | pop | elementary | kali | raspbian | zorin)
@@ -89,6 +108,15 @@ detect_os_type() {
       slackware | salix)
         echo "slackware"
         ;;
+      openwrt)
+        echo "openwrt"
+        ;;
+      alpine)
+        echo "alpine"
+        ;;
+      buildroot)
+        echo "buildroot"
+        ;;
       *)
         # Fallback to ID_LIKE for derivative distributions
         if [[ "$ID_LIKE" == *debian* ]]; then
@@ -101,6 +129,10 @@ detect_os_type() {
           echo "gentoo"
         elif [[ "$ID_LIKE" == *slackware* ]]; then
           echo "slackware"
+        elif [[ "$ID_LIKE" == *openwrt* ]]; then
+          echo "openwrt"
+        elif [[ "$ID_LIKE" == *alpine* ]]; then
+          echo "alpine"
         else
           # It's a Linux system, but we don't recognize the specific distribution
           echo "linux"
@@ -351,19 +383,21 @@ detect_server_type() {
 # Returns:
 #   - "pveserver" for PVE Server, OpenMediaVault, or TrueNAS SCALE
 #   - "pveguest" for PVE Guest
-#   - "router" for ASUS/OpenWRT/DDWRT router
+#   - "embedded" for embedded/constrained Linux devices (OpenWrt, DD-WRT, Asuswrt, Buildroot, etc.)
 #   - "sbc" for linux on SBC
 #   - "client" for Client
 detect_machine_type() {
   #debuglog "Detecting machine type"
   host_name=$(hostname 2>/dev/null)
 
-  # 1. Router OS check (OpenWrt, DD-WRT, Asuswrt/Merlin)
+  # 1. Embedded / Router / Constrained OS check
   if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] ||
     [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] ||
-    [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ]; then
-    #debuglog "Detected Router"
-    echo "router"
+    [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] ||
+    [ -f /etc/merlin.version ] || [ -f /etc/buildroot-version ] ||
+    [ -f /etc/embedded_device ] || [ -n "${EMBEDDED_DEVICE:-}" ]; then
+    #debuglog "Detected Embedded device"
+    echo "embedded"
 
   # 2. SBC detection (portable case conversion via tr)
   elif [ "$(echo "$host_name" | tr '[:upper:]' '[:lower:]')" = "ifc6410" ]; then
@@ -384,7 +418,12 @@ detect_machine_type() {
         echo "pveguest"
       fi
     else
-      echo "unknown linux"
+      # Check for BusyBox-based minimal init on non-systemd Linux
+      if [ -f /bin/busybox ] && { [ "$(cat /proc/1/comm 2>/dev/null)" = "busybox" ] || { [ "$(cat /proc/1/comm 2>/dev/null)" = "init" ] && [ ! -d /run/systemd/system ]; }; }; then
+        echo "embedded"
+      else
+        echo "unknown linux"
+      fi
     fi
   else
     #debuglog "Detected client"

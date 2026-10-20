@@ -172,7 +172,7 @@ mkcd() {
 
 # for machines without gnu stow
 manualstow() {
-  if [[ "${MACHINE_TYPE}" == "router" ]]; then
+  if [[ "${MACHINE_TYPE}" == "embedded" ]] || [[ "${MACHINE_TYPE}" == "router" ]]; then
     echo "Manual stow not available on ${MACHINE_TYPE}"
   else
     # manually copy all dot files and directories
@@ -452,8 +452,8 @@ elif [[ "${SHELL_TYPE}" == "zsh" ]]; then
   alias zshrc.='${EDITOR} ${HOME}/.zshrc.local'
 fi
 
-# not available for routers
-if [[ "${MACHINE_TYPE}" == "router" ]]; then
+# not available for embedded devices / routers
+if [[ "${MACHINE_TYPE}" == "embedded" ]] || [[ "${MACHINE_TYPE}" == "router" ]]; then
   #alias stow="echo Stow not available on type: \"${MACHINE_TYPE}"\"
   alias stow='${DOTFILES_HOME}/dotfiles/common/scripts/dotsync.sh'
   alias restow='stow'
@@ -509,7 +509,9 @@ debuglog "Architecture Detected: ${ARCH_TYPE}"
 debuglog "OS Detected: ${OS_TYPE}"
 debuglog "Shell Detected: ${SHELL_TYPE}"
 
-if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || \
+   [[ "${OS_TYPE}" == "openwrt" ]] || [[ "${OS_TYPE}" == "ddwrt" ]] || [[ "${OS_TYPE}" == "asuswrt" ]] || \
+   [[ "${OS_TYPE}" == "alpine" ]] || [[ "${OS_TYPE}" == "buildroot" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
   source "${ALIASES_HOME}/.aliases_linux"
 elif [[ "${OS_TYPE}" == "macos" ]]; then
   source "${ALIASES_HOME}/.aliases_macos"
