@@ -25,7 +25,7 @@ Repository for cross-platform dotfiles, system configurations, and automation sc
 
 ```bash
 cd "$HOME"
-git clone https://github.com/anirudhra/dotfiles
+git clone --depth=1 https://github.com/anirudhra/dotfiles
 cd "$HOME/dotfiles/client/linux"
 ./linux_install.sh
 ./linux_post_install.sh
@@ -40,7 +40,7 @@ cd "$HOME/dotfiles/client/linux"
 
 ```bash
 cd "$HOME"
-git clone https://github.com/anirudhra/dotfiles
+git clone --depth=1 https://github.com/anirudhra/dotfiles
 cd "$HOME/dotfiles/client/macos"
 ./macos_install.sh
 ./macos_post_install.sh
@@ -52,7 +52,7 @@ cd "$HOME/dotfiles/client/macos"
 
 ```bash
 cd "$HOME"
-git clone https://github.com/anirudhra/dotfiles
+git clone --depth=1 https://github.com/anirudhra/dotfiles
 cd "$HOME/dotfiles/server/pve/setup"
 ./install.sh
 ```
@@ -64,7 +64,7 @@ cd "$HOME/dotfiles/server/pve/setup"
 Install the Catppuccin theme:
 ```bash
 mkdir -p ~/.config/tmux/plugins/catppuccin
-git clone -b v2.1.3 https://github.com/catppuccin/tmux.git ~/.config/tmux/plugins/catppuccin/tmux
+git clone --depth=1 -b v2.1.3 https://github.com/catppuccin/tmux.git ~/.config/tmux/plugins/catppuccin/tmux
 ```
 
 Add the following to `~/.config/tmux/tmux.conf` to enable mouse scrolling and the Catppuccin theme:

@@ -146,6 +146,14 @@ dotinfo() {
   printf "  %bALIASES_HOME%b   : %s\n" "$c_blue" "$c_nc" "${ALIASES_HOME:-$HOME}"
   printf "  %bDEBUG Status%b   : DOTFILES_DEBUG=%s\n" "$c_blue" "$c_nc" "${DOTFILES_DEBUG:-0}"
 
+  local df_info_dir="${DOTFILES_HOME:-$HOME}/dotfiles"
+  if [ -d "${df_info_dir}/.git" ]; then
+    local git_sz="$(du -sh "${df_info_dir}/.git" 2>/dev/null | awk '{print $1}')"
+    local is_shallow="full"
+    [ -f "${df_info_dir}/.git/shallow" ] && is_shallow="shallow"
+    printf "  %bRepo Storage%b   : %s (%s)\n" "$c_blue" "$c_nc" "${git_sz:-unknown}" "$is_shallow"
+  fi
+
   if [ -n "${MEDIADIR:-}" ] || [ -n "${DATADIR:-}" ] || [ -n "${DOCKERDIR:-}" ] || [ -n "${CLIENTDIR:-}" ] || [ -n "${SERVERDIR:-}" ]; then
     printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
     [ -n "${MEDIADIR:-}" ]   && printf "  %bMEDIADIR%b       : %s\n" "$c_blue" "$c_nc" "$MEDIADIR"
@@ -310,6 +318,7 @@ manualstow() {
 
 alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
 alias gitclone="git clone --depth=1"
+alias gitpack="git reflog expire --expire=now --all 2>/dev/null && git prune --expire=now 2>/dev/null && git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true"
 
 # Update dotfiles repository with automatic recovery for diverged branches
 redot() {
