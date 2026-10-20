@@ -389,46 +389,69 @@ detect_server_type() {
 #   - "sbc" for linux on SBC
 #   - "client" for Client
 detect_machine_type() {
-  #debuglog "Detecting machine type"
-  host_name=$(hostname 2>/dev/null)
-
-  # 1. Embedded / Router / Constrained OS check
+  # 1. Embedded / Router / Constrained OS check (evaluated first)
   if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] ||
     [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] ||
     [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] ||
     [ -f /etc/merlin.version ] || [ -f /etc/buildroot-version ] ||
     [ -f /etc/embedded_device ] || [ -n "${EMBEDDED_DEVICE:-}" ]; then
-    #debuglog "Detected Embedded device"
     echo "embedded"
-
-  # 2. SBC detection (portable case conversion via tr)
-  elif [ "$(echo "$host_name" | tr '[:upper:]' '[:lower:]')" = "ifc6410" ]; then
-    #debuglog "Detected SBC"
-    echo "sbc"
-
-  # 3. Virtualization and server/NAS detection
-  elif [ -f /proc/1/environ ]; then
-    local server_type
-    server_type=$(detect_server_type)
-    if [[ "${server_type}" != "unknown" ]]; then
-      echo "server"
-    elif command -v systemd-detect-virt >/dev/null 2>&1; then
-      # Virtualized Linux guest
-      if [ "$(systemd-detect-virt)" = "none" ]; then
-        echo "client"
-      else
-        echo "guest"
-      fi
-    else
-      # Check for BusyBox-based minimal init on non-systemd Linux
-      if [ -f /bin/busybox ] && { [ "$(cat /proc/1/comm 2>/dev/null)" = "busybox" ] || { [ "$(cat /proc/1/comm 2>/dev/null)" = "init" ] && [ ! -d /run/systemd/system ]; }; }; then
-        echo "embedded"
-      else
-        echo "unknown linux"
-      fi
-    fi
-  else
-    #debuglog "Detected client"
-    echo "unknown"
+    return 0
   fi
+
+  # Check for BusyBox-based minimal router init without standard distro releases
+  if [ ! -f /etc/os-release ] && [ ! -f /etc/alpine-release ] && [ -f /bin/busybox ] && \
+     { [ "$(cat /proc/1/comm 2>/dev/null)" = "busybox" ] || { [ "$(cat /proc/1/comm 2>/dev/null)" = "init" ] && [ ! -d /run/systemd/system ]; }; }; then
+    echo "embedded"
+    return 0
+  fi
+
+  # 2. Virtualization check (guests can never be SBCs)
+  local virt="none"
+  if command -v systemd-detect-virt >/dev/null 2>&1; then
+    virt="$(systemd-detect-virt 2>/dev/null || echo "none")"
+  fi
+  if [ -n "$virt" ] && [ "$virt" != "none" ]; then
+    echo "guest"
+    return 0
+  fi
+
+  # 3. Dedicated Server platforms (PVE, OMV, TrueNAS, unRAID)
+  local server_type
+  server_type=$(detect_server_type)
+  if [ "${server_type}" != "unknown" ]; then
+    echo "server"
+    return 0
+  fi
+
+  # 4. SBC Detection (Works on stock Debian, Alpine, Arch ARM, etc.)
+  # 4a. Explicit hardware marker file or environment variable
+  if [ -f /etc/sbc_device ] || [ -f "${DOTFILES_HOME:-$HOME}/.sbc_device" ] || [ -n "${SBC_DEVICE:-}" ]; then
+    echo "sbc"
+    return 0
+  fi
+
+  # 4b. Known SBC Distro releases (Armbian, Raspberry Pi OS, DietPi)
+  if [ -f /etc/armbian-release ] || [ -f /etc/rpi-issue ] || [ -f /boot/dietpi/.version ]; then
+    echo "sbc"
+    return 0
+  fi
+
+  # 4c. Hardware Device Tree Model & Compatible (kernel/bootloader level, survives wipes)
+  if [ -f /proc/device-tree/model ] || [ -f /proc/device-tree/compatible ]; then
+    local dt_info=""
+    [ -f /proc/device-tree/model ] && dt_info="${dt_info} $(tr -d '\0' < /proc/device-tree/model 2>/dev/null)"
+    [ -f /proc/device-tree/compatible ] && dt_info="${dt_info} $(tr -d '\0' < /proc/device-tree/compatible 2>/dev/null)"
+    dt_info="$(echo "$dt_info" | tr '[:upper:]' '[:lower:]')"
+
+    case "$dt_info" in
+      *inforce*|*ifc6410*|*apq8064*|*raspberry*|*orangepi*|*orange\ pi*|*radxa*|*rock\ pi*|*rockchip*|*odroid*|*beaglebone*|*jetson*|*banana\ pi*|*khadas*|*libre\ computer*|*allwinner*)
+        echo "sbc"
+        return 0
+        ;;
+    esac
+  fi
+
+  # 5. Default fallback for standard PC/laptop/workstation
+  echo "client"
 }
