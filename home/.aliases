@@ -309,6 +309,7 @@ manualstow() {
 #########################################
 
 alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
+alias gitclone="git clone --depth=1"
 
 # Update dotfiles repository with automatic recovery for diverged branches
 redot() {

@@ -76,18 +76,29 @@ updaterepo_latestcommit() {
       echo "Failed to enter $gitdir"
       return 1
     }
-    local syncstatus
-    syncstatus=$(
-      #git rebase
-      git pull --rebase --depth=1
-    )
-    if [[ "$syncstatus" != "Already up to date." ]]; then
+    local cur_branch
+    cur_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")"
+    if [ "$cur_branch" = "HEAD" ] || [ -z "$cur_branch" ]; then
+      cur_branch="main"
+    fi
+    local old_head
+    old_head="$(git rev-parse HEAD 2>/dev/null || true)"
+
+    git fetch --depth=1 origin "$cur_branch" 2>/dev/null || git fetch origin "$cur_branch" 2>/dev/null
+    git reset --hard "origin/$cur_branch" 2>/dev/null || git reset --hard origin/HEAD 2>/dev/null
+    local new_head
+    new_head="$(git rev-parse HEAD 2>/dev/null || true)"
+
+    git reflog expire --expire=now --all 2>/dev/null || true
+    git prune --expire=now 2>/dev/null || true
+    git repack -a -d -f --depth=250 --window=250 2>/dev/null || true
+    cd - >/dev/null 2>&1
+
+    if [ -n "$old_head" ] && [ "$old_head" != "$new_head" ]; then
       info "Repo updated: $giturl"
-      cd - >/dev/null 2>&1
       return 0
     else
       info "No new updates."
-      cd - >/dev/null 2>&1
       return 1
     fi
   else
