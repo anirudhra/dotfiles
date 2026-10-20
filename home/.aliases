@@ -321,7 +321,7 @@ alias gitclone="git clone --depth=1"
 alias gitpack="git reflog expire --expire=now --all 2>/dev/null && git prune --expire=now 2>/dev/null && git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true"
 
 # Update dotfiles repository with automatic recovery for diverged branches
-redot() {
+dotupdate() {
   local df_dir="${DOTFILES_HOME:-${HOME}}/dotfiles"
   if [ -d "$df_dir" ]; then
     (
@@ -360,7 +360,6 @@ redot() {
     return 1
   fi
 }
-alias dotupdate='redot'
 alias getdot='
   cd "$DOTFILES_HOME" &&
   wget -O main.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" &&

@@ -50,6 +50,11 @@ server:
     pve:
       ansible_host: 10.100.10.50
 
+nas:
+  hosts:
+    omv:
+      ansible_host: 10.100.10.10
+
 router:
   hosts:
     linksys:
@@ -139,6 +144,7 @@ allactive:
     activevm:
     #router:
     server:
+    nas:
 
 upgradepveactive:
   children:
@@ -154,6 +160,7 @@ updatedfall:
   children:
     alllxc:
     server:
+    nas:
 
 # Remote Machines
 remotelxc:
