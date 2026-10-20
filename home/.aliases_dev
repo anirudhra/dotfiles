@@ -177,9 +177,9 @@ alias goscripts='cd "${DOTFILES_HOME}/dotfiles/common/scripts"'
 alias goans='cd "${DOTFILES_HOME}/dotfiles/common/ansible/scripts"'
 
 #git
-alias gitpush="git pull && git add * && git commit -a && git push"
-alias gitpullall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull\" \;"
-alias gitpushall="find . -type d -name .git -exec sh -c \"cd \"{}\"/../ && pwd && git pull && git add * && git commit -a && git push\" \;"
+alias gitpush="git pull && git add * && git commit -a && git push && git reflog expire --expire=now --all 2>/dev/null && git prune --expire=now 2>/dev/null && git repack -a -d -f --depth=250 --window=250 2>/dev/null"
+alias gitpullall="find . -type d -name .git -prune -exec sh -c 'cd \"\$1\"/../ && pwd && git pull && git reflog expire --expire=now --all 2>/dev/null && git prune --expire=now 2>/dev/null && git repack -a -d -f --depth=250 --window=250 2>/dev/null' _ {} \;"
+alias gitpushall="find . -type d -name .git -prune -exec sh -c 'cd \"\$1\"/../ && pwd && git pull && git add * && git commit -a && git push && git reflog expire --expire=now --all 2>/dev/null && git prune --expire=now 2>/dev/null && git repack -a -d -f --depth=250 --window=250 2>/dev/null' _ {} \;"
 
 # change ownership to nobody:nogroup, primarily for shares
 alias nobodyown='chown -R nobody:nogroup *'

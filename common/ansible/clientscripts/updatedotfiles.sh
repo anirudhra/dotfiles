@@ -13,12 +13,12 @@ fi
 echo "==> Updating dotfiles repository..."
 cd "$DOTFILES_DIR"
 
-git fetch origin
-
 current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")"
 if [ "$current_branch" = "HEAD" ] || [ -z "$current_branch" ]; then
   current_branch="main"
 fi
+
+git fetch --depth=1 origin "$current_branch" 2>/dev/null || git fetch origin "$current_branch"
 
 if ! git pull --ff-only 2>/dev/null; then
   echo "Notice: Fast-forward pull not possible on '$current_branch'. Resetting to origin/$current_branch..."
