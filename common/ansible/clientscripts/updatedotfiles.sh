@@ -3,7 +3,7 @@
 # Update dotfiles repository and synchronize symlinks to user home
 set -euo pipefail
 
-DOTFILES_DIR="${HOME}/dotfiles"
+DOTFILES_DIR="${DOTFILES_HOME:-$HOME}/dotfiles"
 
 if [ ! -d "$DOTFILES_DIR" ]; then
   echo "Error: Dotfiles repository not found at '$DOTFILES_DIR'." >&2

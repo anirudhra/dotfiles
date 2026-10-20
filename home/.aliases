@@ -184,8 +184,38 @@ manualstow() {
 #########################################
 
 alias clonedot="git clone --depth=1 --single-branch --branch main https://github.com/anirudhra/dotfiles"
-alias redot='cd "${HOME}/dotfiles" && git pull && restow'
-alias dotupdate='cd "${DOTFILES_HOME}/dotfiles" && gitpullall && cd -'
+
+# Update dotfiles repository with automatic recovery for diverged branches
+redot() {
+  local df_dir="${DOTFILES_HOME:-${HOME}}/dotfiles"
+  if [ -d "$df_dir" ]; then
+    (
+      cd "$df_dir" || return 1
+      echo "==> Updating dotfiles in $df_dir..."
+      git fetch origin
+      local cur_branch
+      cur_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")"
+      if [ "$cur_branch" = "HEAD" ] || [ -z "$cur_branch" ]; then
+        cur_branch="main"
+      fi
+      if ! git pull --ff-only 2>/dev/null; then
+        echo "Notice: Fast-forward pull not possible on '$cur_branch'. Resetting to origin/$cur_branch..."
+        git reset --hard "origin/$cur_branch"
+      fi
+    )
+    if [ -x "${df_dir}/common/scripts/dotsync.sh" ] && { [ "${MACHINE_TYPE:-}" = "embedded" ] || [ "${MACHINE_TYPE:-}" = "router" ] || ! command -v stow >/dev/null 2>&1; }; then
+      "${df_dir}/common/scripts/dotsync.sh"
+    elif command -v stow >/dev/null 2>&1; then
+      (cd "${df_dir}/home" && stow --verbose=1 --target="${HOME}" --stow --adopt .)
+    else
+      manualstow
+    fi
+  else
+    echo "Error: Dotfiles directory not found: $df_dir" >&2
+    return 1
+  fi
+}
+alias dotupdate='redot'
 alias getdot='
   cd "$DOTFILES_HOME" &&
   wget -O main.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" &&
