@@ -327,6 +327,9 @@ redot() {
         echo "Notice: Fast-forward pull not possible on '$cur_branch'. Resetting to origin/$cur_branch..."
         git reset --hard "origin/$cur_branch"
       fi
+      git reflog expire --expire=now --all 2>/dev/null || true
+      git prune --expire=now 2>/dev/null || true
+      git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true
     )
     if [ -x "${df_dir}/common/scripts/dotsync.sh" ] && { [ "${MACHINE_TYPE:-}" = "embedded" ] || [ "${MACHINE_TYPE:-}" = "router" ] || ! command -v stow >/dev/null 2>&1; }; then
       "${df_dir}/common/scripts/dotsync.sh"

@@ -25,10 +25,15 @@ if ! git pull --ff-only 2>/dev/null; then
   git reset --hard "origin/$current_branch"
 fi
 
+echo "==> Optimizing git repository storage..."
+git reflog expire --expire=now --all 2>/dev/null || true
+git prune --expire=now 2>/dev/null || true
+git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true
+
 if command -v stow >/dev/null 2>&1; then
   echo "==> Stowing dotfiles using GNU Stow..."
   cd "$DOTFILES_DIR/home"
-  stow --verbose=1 --stow --target="${HOME}" .
+  stow --verbose=1 --target="${HOME}" --stow --adopt . && git restore . && stow --verbose=1 --target="${HOME}" --restow .
 elif [ -x "$DOTFILES_DIR/common/scripts/dotsync.sh" ]; then
   echo "==> GNU Stow not found; synchronizing via dotsync.sh..."
   "$DOTFILES_DIR/common/scripts/dotsync.sh"
