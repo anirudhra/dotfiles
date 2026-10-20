@@ -12,7 +12,6 @@ client/macos/
 ├── macos_post_install.sh   # Post-install: Dotfiles stow, zsh plugins, Karabiner, iTerm2 schemes
 ├── macos_usb_backup.sh     # External USB backup utility with modern rsync & dry-run support
 ├── gpu.sh                  # GPU metrics query and live watch monitor
-├── gpumon.sh               # Symlink to gpu.sh (launches in watch mode)
 ├── karabiner/              # Karabiner-Elements complex modifications & keyboard mapping
 │   └── karabiner.json
 └── iterm2-colors/          # Curated iTerm2 color presets (Catppuccin, Cobalt, Chester, etc.)
@@ -76,7 +75,7 @@ Performs an incremental, verified backup of home directories (`Downloads`, `Docu
 - Verifies that the destination volume is mounted and writable before executing.
 - Preserves exclusions for temporary files (`.DS_Store`, `._*`, `*.tmp`, `.Trash/`, `.Spotlight-V100/`).
 
-### 2. GPU Performance Statistics (`gpu.sh` & `gpumon.sh`)
+### 2. GPU Performance Statistics (`gpu.sh`)
 
 Queries Apple IORegistry performance statistics (utilization, clock speeds, temperatures, power, and fan RPM).
 
@@ -89,9 +88,6 @@ Queries Apple IORegistry performance statistics (utilization, clock speeds, temp
 
 # Custom refresh interval (e.g., 1 second)
 ./gpu.sh -w 1
-
-# Alias wrapper
-./gpumon.sh
 ```
 
 *(Convenient aliases `gpu` and `gpumon` are pre-configured in `~/.aliases_macos`.)*

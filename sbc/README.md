@@ -16,7 +16,7 @@ Originally migrated from the [`ifc6410/linux`](https://github.com/anirudhra/ifc6
   * `ifc6410.CoolTermSettings`: Serial console connection settings for CoolTerm (115200 8N1).
 * **[`debian/`](debian/)**: Debian-specific APT configurations (`apt/sources.list`, preferences) and manual `debootstrap` notes.
 * **[`arch/`](arch/)**: Arch Linux ARM bootstrap instructions and pre-built package dependencies:
-  * `ifc6410-arch-pkg-files/gnutls/`: Cached `gnutls-3.7.8-1-armv7h.pkg.tar.xz` package required for Arch Linux ARM bootstrapping.
+  * `ifc6410-arch-pkg-files/gnutls/`: `PKGBUILD` definition for building GnuTLS 3.7.8 on armhf (`armv7h`) to resolve 64-bit time_t issues during Arch Linux ARM bootstrapping.
 * **[`scripts/`](scripts/)**: Automation scripts for provisioning and maintenance:
   * [`bootstrap_rootfs.sh`](scripts/bootstrap_rootfs.sh): Bootstraps and stages a fresh Linux rootfs to a target disk, automatically applying IFC6410 hardware rules and distro configs.
   * [`installkmod.sh`](scripts/installkmod.sh): Installs kernel modules from Yocto/Poky build artifacts into `/lib/modules`.
