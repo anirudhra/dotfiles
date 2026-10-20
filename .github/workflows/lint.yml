@@ -8,10 +8,10 @@ on:
 
 jobs:
   validate-scripts:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Shell Syntax Validation (bash -n & sh -n)
         run: |
