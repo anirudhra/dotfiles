@@ -43,7 +43,7 @@ window-height=640
 window-width=800
 
 [TextEditor]
-last-save-directory='file:///home/anirudh/dotfiles/linux'
+last-save-directory='file:///home/anirudh/dotfiles/client/linux'
 
 [Totem]
 active-plugins=['variable-rate', 'skipto', 'screenshot', 'screensaver', 'save-file', 'rotation', 'recent', 'movie-properties', 'open-directory', 'mpris', 'autoload-subtitles']
@@ -315,7 +315,7 @@ last-folder-path='/mnt/nfs/nvme-ssd/nvme-data/backup/ifc6410'
 last-folder-path='/home/anirudh/Pictures/wallpapers/ArtAbstract'
 
 [portal/filechooser/org.gnome.TextEditor]
-last-folder-path='/home/anirudh/dotfiles/linux'
+last-folder-path='/home/anirudh/dotfiles/client/linux'
 
 [portal/filechooser/org.gnome.tweaks]
 last-folder-path='/home/anirudh/Pictures/wallpapers/OS/Linux'

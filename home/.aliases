@@ -146,12 +146,13 @@ dotinfo() {
   printf "  %bALIASES_HOME%b   : %s\n" "$c_blue" "$c_nc" "${ALIASES_HOME:-$HOME}"
   printf "  %bDEBUG Status%b   : DOTFILES_DEBUG=%s\n" "$c_blue" "$c_nc" "${DOTFILES_DEBUG:-0}"
 
-  if [ -n "${MEDIADIR:-}" ] || [ -n "${DATADIR:-}" ] || [ -n "${DOCKERDIR:-}" ] || [ -n "${SERVERDIR:-}" ]; then
+  if [ -n "${MEDIADIR:-}" ] || [ -n "${DATADIR:-}" ] || [ -n "${DOCKERDIR:-}" ] || [ -n "${CLIENTDIR:-}" ] || [ -n "${SERVERDIR:-}" ]; then
     printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
     [ -n "${MEDIADIR:-}" ]   && printf "  %bMEDIADIR%b       : %s\n" "$c_blue" "$c_nc" "$MEDIADIR"
     [ -n "${DATADIR:-}" ]    && printf "  %bDATADIR%b        : %s\n" "$c_blue" "$c_nc" "$DATADIR"
     [ -n "${NVMEDIR:-}" ]    && printf "  %bNVMEDIR%b        : %s\n" "$c_blue" "$c_nc" "$NVMEDIR"
     [ -n "${DOCKERDIR:-}" ]  && printf "  %bDOCKERDIR%b      : %s\n" "$c_blue" "$c_nc" "$DOCKERDIR"
+    [ -n "${CLIENTDIR:-}" ]  && printf "  %bCLIENTDIR%b      : %s\n" "$c_blue" "$c_nc" "$CLIENTDIR"
     [ -n "${SERVERDIR:-}" ]  && printf "  %bSERVERDIR%b      : %s\n" "$c_blue" "$c_nc" "$SERVERDIR"
   fi
 

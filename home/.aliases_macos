@@ -67,8 +67,8 @@ alias sethc="defaults write com.apple.dock wvous-tl-corner -int 2 && \
 
 # monitor cpu clock and gpu stats
 alias cpufreq="sudo powermetrics | grep \"CPU Average frequency as fraction of nominal\""
-alias gpu='${DOTFILES_HOME:-$HOME/dotfiles}/macos/gpu.sh'
-alias gpumon='${DOTFILES_HOME:-$HOME/dotfiles}/macos/gpu.sh --watch'
+alias gpu='${DOTFILES_HOME:-$HOME/dotfiles}/client/macos/gpu.sh'
+alias gpumon='${DOTFILES_HOME:-$HOME/dotfiles}/client/macos/gpu.sh --watch'
 
 # jupyterlab aliases
 alias ipy="jupyter lab ~/code/github/jupyternb"

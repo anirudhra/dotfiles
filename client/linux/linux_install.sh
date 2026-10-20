@@ -13,7 +13,7 @@
 # gh auth login: for browser based git login instead of token
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 export DOTFILES_DIR
 export ALIASES_HOME="${DOTFILES_DIR}/home"
 

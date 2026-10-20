@@ -14,7 +14,7 @@ desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 #Xsessiontype=${XDG_SESSION_TYPE} #X11, wayland
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 export DOTFILES_DIR
 export ALIASES_HOME="${DOTFILES_DIR}/home"
 
@@ -190,7 +190,7 @@ info "Backup pre-stow completed"
 
 # activate stow
 info "Stowing dotfiles..."
-cd "${INSTALL_DIR}/../home" || exit 1
+cd "${DOTFILES_DIR}/home" || exit 1
 stow --verbose=1 --target="${HOME}" --stow --adopt .
 # above will overwrite git repo if files already exist in $HOME,
 # git restore . will restore with the correct versions, this is a trick to overwrite with repo files, then stow again

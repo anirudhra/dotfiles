@@ -7,8 +7,9 @@ Repository for cross-platform dotfiles, system configurations, and automation sc
 ## Directory Overview
 
 * **[`home/`](home/)**: Universal dotfiles for both Linux and macOS managed via GNU Stow or [`dotsync.sh`](common/scripts/dotsync.sh) (`.zshrc`, `.bashrc`, `.profile`, `.aliases`, `.vimrc`, `.config/`).
-* **[`linux/`](linux/)**: Provisioning, post-install tweaks, and theme configurations for Linux desktop clients (Debian, Fedora, Arch).
-* **[`macos/`](macos/README.md)**: Bootstrapping scripts, Homebrew manifests, Karabiner keybindings, iTerm2 themes, and GPU telemetry for macOS.
+* **[`client/`](client/README.md)**: Workstation setup, package provisioning, desktop themes, and utilities:
+  * **[`client/linux/`](client/linux/README.md)**: Linux desktop clients (Debian, Fedora, Arch) and GNOME customizations.
+  * **[`client/macos/`](client/macos/README.md)**: macOS workstations (Apple Silicon & Intel), Homebrew, Karabiner, and GPU telemetry.
 * **[`server/`](server/README.md)**: Maintenance, disaster recovery, and configuration templates for homelab servers:
   * **[`server/pve/`](server/pve/README.md)**: Proxmox VE host maintenance, container/VM backups, and LXC templates.
   * **[`server/omv/`](server/omv/README.md)**: OpenMediaVault configuration archiver, selective state restore, and recycle bin sanitation.
@@ -25,7 +26,7 @@ Repository for cross-platform dotfiles, system configurations, and automation sc
 ```bash
 cd "$HOME"
 git clone https://github.com/anirudhra/dotfiles
-cd "$HOME/dotfiles/linux"
+cd "$HOME/dotfiles/client/linux"
 ./linux_install.sh
 ./linux_post_install.sh
 ```
@@ -40,7 +41,7 @@ cd "$HOME/dotfiles/linux"
 ```bash
 cd "$HOME"
 git clone https://github.com/anirudhra/dotfiles
-cd "$HOME/dotfiles/macos"
+cd "$HOME/dotfiles/client/macos"
 ./macos_install.sh
 ./macos_post_install.sh
 ```

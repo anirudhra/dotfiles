@@ -12,6 +12,11 @@ set -euo pipefail
 WATCH=false
 INTERVAL=3
 
+# If invoked as gpumon or via a gpumon symlink, default to watch mode
+if [[ "$(basename "$0")" == gpumon* ]]; then
+  WATCH=true
+fi
+
 show_help() {
   cat <<EOF
 Usage: $(basename "$0") [OPTIONS]

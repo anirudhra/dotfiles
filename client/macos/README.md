@@ -7,12 +7,12 @@ Automated provisioning, package installation, desktop utilities, and configurati
 ## Directory Overview
 
 ```
-macos/
+client/macos/
 ├── macos_install.sh        # Initial installer: Homebrew, CLI tools, GUI casks, fonts, oh-my-zsh
 ├── macos_post_install.sh   # Post-install: Dotfiles stow, zsh plugins, Karabiner, iTerm2 schemes
 ├── macos_usb_backup.sh     # External USB backup utility with modern rsync & dry-run support
 ├── gpu.sh                  # GPU metrics query and live watch monitor
-├── gpumon.sh               # Continuous GPU monitor wrapper
+├── gpumon.sh               # Symlink to gpu.sh (launches in watch mode)
 ├── karabiner/              # Karabiner-Elements complex modifications & keyboard mapping
 │   └── karabiner.json
 └── iterm2-colors/          # Curated iTerm2 color presets (Catppuccin, Cobalt, Chester, etc.)
@@ -26,7 +26,7 @@ macos/
 ### 1. Run Initial Installation
 
 ```bash
-cd ~/dotfiles/macos
+cd ~/dotfiles/client/macos
 ./macos_install.sh
 ```
 
@@ -48,7 +48,7 @@ cd ~/dotfiles/macos
 **What it does:**
 - Checks and prompts for GitHub CLI (`gh auth login`) if not authenticated.
 - Installs Oh-My-Zsh plugins (`powerlevel10k`, `zsh-autosuggestions`, `zsh-syntax-highlighting`, `fast-syntax-highlighting`, `zsh-autocomplete`) idempotently using shallow clones.
-- Symlinks `macos/karabiner/karabiner.json` into `~/.config/karabiner/karabiner.json`.
+- Symlinks `client/macos/karabiner/karabiner.json` into `~/.config/karabiner/karabiner.json`.
 - Automatically imports all `.itermcolors` color schemes into iTerm2.
 - Backs up conflicting configuration files and deploys dotfiles using GNU Stow.
 

@@ -7,7 +7,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-DOTFILES_DIR="$(cd "${SCRIPT_DIR}/../.." && pwd)"
+DOTFILES_DIR="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 THEMES_SRC_DIR="${SCRIPT_DIR}/themes"
 
 export DOTFILES_DIR

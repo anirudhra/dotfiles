@@ -305,7 +305,7 @@ alias updateboot='sudo update-grub && sudo update-initramfs -u -k all'
 alias reservice='sudo systemctl daemon-reload'
 alias serialnum='sudo dmidecode -t system'
 alias showlog='sudo tail -f /var/log/messages'
-alias gtkupdate="cd \"${HOME}/dotfiles/linux\" && ./gtk/gtkthemes.sh && cd -"
+alias gtkupdate="cd \"${DOTFILES_HOME:-$HOME}/dotfiles/client/linux\" && ./gtk/gtkthemes.sh && cd -"
 
 # pkgmgr is defined in aliases_linux_<distro>
 alias pkgadd="sudo ${pkgmgr} install -y"
@@ -333,6 +333,7 @@ fi
 #docker and other homelab specific aliases
 if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
 
+  export CLIENTDIR="${DOTFILES_HOME:-$HOME}/dotfiles/client"
   export SERVERDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server"
   export PVEDIR="${SERVERDIR}/pve/maintenance"
   export OMVDIR="${SERVERDIR}/omv"
@@ -365,6 +366,7 @@ elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]]
     export DOCKERDIR="/opt/dockerapps"
     export DOCKERDATADIR="${DOCKERDIR}"
     export DOCKERBACKUPDIR="${DATADIR}/dockerapps"
+    export CLIENTDIR="${DOTFILES_HOME:-$HOME}/dotfiles/client"
     export SERVERDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server"
     export PVEDIR="${SERVERDIR}/pve/maintenance"
     export OMVDIR="${SERVERDIR}/omv"
@@ -379,6 +381,7 @@ elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]]
     export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
     export DOCKERDATADIR="${DOCKERDIR}"
     export DOCKERBACKUPDIR="${HOME}"
+    export CLIENTDIR="${DOTFILES_HOME:-$HOME}/dotfiles/client"
     export SERVERDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server"
     export PVEDIR="${SERVERDIR}/pve/maintenance"
     export OMVDIR="${SERVERDIR}/omv"
@@ -405,6 +408,7 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
   export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
   export DOCKERDIR="${DATADIR}/dockerapps"
   export DOCKERDATADIR="${DOCKERDIR}"
+  export CLIENTDIR="${DOTFILES_HOME:-$HOME}/dotfiles/client"
   export SERVERDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server"
   export PVEDIR="${SERVERDIR}/pve/maintenance"
   export OMVDIR="${SERVERDIR}/omv"
@@ -439,6 +443,7 @@ if [[ -n "${DATADIR:-}" ]]; then alias godata='cd "${DATADIR}"'; fi
 if [[ -n "${NVMEDIR:-}" ]]; then alias gonvme='cd "${NVMEDIR}"'; fi
 if [[ -n "${DOCKERDIR:-}" ]]; then alias godocker='cd "${DOCKERDIR}"'; fi
 if [[ -n "${DOCKERDATADIR:-}" ]]; then alias godockerdata='cd "${DOCKERDATADIR}"'; fi
+if [[ -n "${CLIENTDIR:-}" ]]; then alias goclient='cd "${CLIENTDIR}"'; fi
 if [[ -n "${SERVERDIR:-}" ]]; then alias goserver='cd "${SERVERDIR}"'; fi
 if [[ -n "${PVEDIR:-}" ]]; then alias gopve='cd "${PVEDIR}"'; fi
 if [[ -n "${OMVDIR:-}" ]]; then alias goomv='cd "${OMVDIR}"'; fi
