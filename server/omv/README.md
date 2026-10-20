@@ -7,7 +7,7 @@ Production-grade utilities for automated configuration backups, selective disast
 ## Directory Overview
 
 ```
-omv/
+server/omv/
 ├── backup-omv-config.sh     # Daily/weekly configuration archiver with automated retention
 ├── restore-omv-config.sh    # Disaster recovery tool with safety rollback and selective restoration
 ├── clean-recycle-bins.sh    # Samba .recycle pruner for files older than 30 days
@@ -127,8 +127,8 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 # Daily configuration backup at 3:00 AM (retains last 5 backups)
-0 3 * * * root /root/dotfiles/omv/backup-omv-config.sh >/var/log/omv_backup.log 2>&1
+0 3 * * * root /root/dotfiles/server/omv/backup-omv-config.sh >/var/log/omv_backup.log 2>&1
 
 # Monthly Samba recycle bin cleanup (files >30 days old) on the 1st of every month at 4:00 AM
-0 4 1 * * root /root/dotfiles/omv/clean-recycle-bins.sh >/var/log/omv_recycle_clean.log 2>&1
+0 4 1 * * root /root/dotfiles/server/omv/clean-recycle-bins.sh >/var/log/omv_recycle_clean.log 2>&1
 ```

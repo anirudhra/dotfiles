@@ -152,7 +152,7 @@ if [ "${mode}" = "pve" ]; then
     fi
   done
 
-  # Copy all files in /dotfiles/pve/setup/config/pve to host machine's relevant paths
+  # Copy all files in /dotfiles/server/pve/setup/config/pve to host machine's relevant paths
   echo "Copying PVE config files to host..."
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   CONFIG_SRC="${SCRIPT_DIR}/config/pve"
@@ -214,7 +214,7 @@ else
     fi
   done
 
-  # Copy all files in /dotfiles/pve/setup/config/lxc to host machine's relevant paths
+  # Copy all files in /dotfiles/server/pve/setup/config/lxc to host machine's relevant paths
   echo "Copying LXC config files to guest..."
   SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
   CONFIG_SRC="${SCRIPT_DIR}/config/lxc"

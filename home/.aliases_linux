@@ -333,7 +333,7 @@ fi
 #docker and other homelab specific aliases
 if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
 
-  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+  export PVEDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server/pve/maintenance"
 
   if [[ "${SERVER_TYPE}" == "pve" ]]; then
     # PVE go shortcuts
@@ -363,7 +363,7 @@ elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]]
     export DOCKERDIR="/opt/dockerapps"
     export DOCKERDATADIR="${DOCKERDIR}"
     export DOCKERBACKUPDIR="${DATADIR}/dockerapps"
-    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+    export PVEDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server/pve/maintenance"
 
     # script to copy compiled kernel modules from PVE LXC to SBC
     alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
@@ -375,7 +375,7 @@ elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]]
     export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
     export DOCKERDATADIR="${DOCKERDIR}"
     export DOCKERBACKUPDIR="${HOME}"
-    export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+    export PVEDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server/pve/maintenance"
 
     alias guestupgrade="update && upgrade"
 
@@ -399,7 +399,7 @@ elif [[ "${MACHINE_TYPE}" == "client" ]]; then
   export NVMEDIR="/mnt/nfs/nvme-ssd/nvme-data"
   export DOCKERDIR="${DATADIR}/dockerapps"
   export DOCKERDATADIR="${DOCKERDIR}"
-  export PVEDIR="${HOME}/dotfiles/pve/maintenance"
+  export PVEDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server/pve/maintenance"
 
   alias upgrade='fullupdate && fullclean && flatpakupdate && fwupdate && dockerupdateall'
 

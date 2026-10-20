@@ -36,7 +36,7 @@ Installation script:
 6) Provides X11 Intel iGPU config files if GUI is needed/installed
 7) Adds additional /etc/modules for acpi health monitoring and Intel VT-d virtualization
 8) Includes GPU, Keyboard, Audio passthrough in LXC conf for reference: /etc/pve/lxc/lxc-id.conf
-9) Includes scripts for PVE host maintenance, backup-restore and other tweaks: pve/maintenance and pve/backupsync (needs to be manually installed/pulled from github)
+9) Includes scripts for PVE host maintenance, backup-restore and other tweaks: server/pve/maintenance and server/pve/backupsync (needs to be manually installed/pulled from github)
 10) Includes Coral TPU drivers, runtimes etc. for newer versions of Linux kernels, Python as standard Google repos no longer support any of those are stuck pre-Linux6.2 and Python 3.9
 
 ### LXC:
@@ -60,12 +60,12 @@ Proxmenux is a useful suite of scripts in TUI for managing various aspects of PV
 
 Use this command to run off github:
 ```
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/pve/setup/install.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/server/pve/setup/install.sh)"
 ```
 
 Use this command to download locally:
 ```
-wget https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/pve/setup/install.sh
+wget https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/server/pve/setup/install.sh
 ```
 <br><br>
 
@@ -131,7 +131,7 @@ drivetemp
 
 Run the following script to add detected CPU/HDD/NVMe sensors to PVE web page (may need after proxmox updates):
 ```
-bash -c "$(wget -qLO - https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/pve/maintenance/pve-mod-gui-sensors.sh)"
+bash -c "$(wget -qLO - https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/server/pve/maintenance/pve-mod-gui-sensors.sh)"
 ```
 These scripts come from Meliox's excellent PVE mods repo: https://github.com/Meliox/PVE-mods
 <br><br>

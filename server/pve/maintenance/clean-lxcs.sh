@@ -50,7 +50,7 @@ function clean_container() {
   if [ -f "${SCRIPT_DIR}/cleancache.sh" ]; then
     pct exec "$container" -- bash < "${SCRIPT_DIR}/cleancache.sh"
   else
-    pct exec "$container" -- bash <(curl -fsSL https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/pve/maintenance/cleancache.sh)
+    pct exec "$container" -- bash <(curl -fsSL https://raw.githubusercontent.com/anirudhra/dotfiles/refs/heads/main/server/pve/maintenance/cleancache.sh)
   fi
 }
 for container in $(pct list | awk '{if(NR>1) print $1}'); do

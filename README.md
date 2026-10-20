@@ -9,8 +9,9 @@ Repository for cross-platform dotfiles, system configurations, and automation sc
 * **[`home/`](home/)**: Universal dotfiles for both Linux and macOS managed via GNU Stow or [`dotsync.sh`](common/scripts/dotsync.sh) (`.zshrc`, `.bashrc`, `.profile`, `.aliases`, `.vimrc`, `.config/`).
 * **[`linux/`](linux/)**: Provisioning, post-install tweaks, and theme configurations for Linux desktop clients (Debian, Fedora, Arch).
 * **[`macos/`](macos/README.md)**: Bootstrapping scripts, Homebrew manifests, Karabiner keybindings, iTerm2 themes, and GPU telemetry for macOS.
-* **[`pve/`](pve/README.md)**: Automated maintenance, container/VM backups, and configuration templates for Proxmox VE hosts and LXC guests.
-* **[`omv/`](omv/README.md)**: Configuration backup, selective state restore, and recycle bin sanitation for OpenMediaVault.
+* **[`server/`](server/README.md)**: Maintenance, disaster recovery, and configuration templates for homelab servers:
+  * **[`server/pve/`](server/pve/README.md)**: Proxmox VE host maintenance, container/VM backups, and LXC templates.
+  * **[`server/omv/`](server/omv/README.md)**: OpenMediaVault configuration archiver, selective state restore, and recycle bin sanitation.
 * **[`sbc/`](sbc/README.md)**: Bootstrapping tools, kernel module installer, and hardware configurations for the Inforce IFC6410 Single Board Computer.
 * **[`router/`](router/README.md)**: Configurations, Entware installers, and automation runbooks for Asuswrt-Merlin, OpenWrt, and DD-WRT.
 * **[`common/`](common/README.md)**: Cross-system Ansible playbooks, inventory, and shared utility scripts (`btrfsrsyncbackup.sh`, `sshkeygen.sh`, `nerdfonts_install.sh`).
@@ -51,7 +52,7 @@ cd "$HOME/dotfiles/macos"
 ```bash
 cd "$HOME"
 git clone https://github.com/anirudhra/dotfiles
-cd "$HOME/dotfiles/pve/setup"
+cd "$HOME/dotfiles/server/pve/setup"
 ./install.sh
 ```
 
