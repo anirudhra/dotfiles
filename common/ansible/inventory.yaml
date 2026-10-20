@@ -168,8 +168,3 @@ remotepvelxc:
 remotepve:
   children:
     rserver:
-
-updatedfeverywhere:
-  children:
-    updatedfall:
-    remotepvelxc:
