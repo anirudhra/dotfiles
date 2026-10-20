@@ -4,7 +4,7 @@
 ## Sourced by parent .aliases_linux when OS_TYPE is openwrt, ddwrt, or asuswrt.
 
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_ALIASES_LINUX_WRT}" ]; then
+if [ -n "${SOURCED_ALIASES_LINUX_WRT:-}" ]; then
   return 0
 fi
 

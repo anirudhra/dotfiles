@@ -331,7 +331,7 @@ redot() {
     if [ -x "${df_dir}/common/scripts/dotsync.sh" ] && { [ "${MACHINE_TYPE:-}" = "embedded" ] || [ "${MACHINE_TYPE:-}" = "router" ] || ! command -v stow >/dev/null 2>&1; }; then
       "${df_dir}/common/scripts/dotsync.sh"
     elif command -v stow >/dev/null 2>&1; then
-      (cd "${df_dir}/home" && stow --verbose=1 --target="${HOME}" --stow --adopt .)
+      (cd "${df_dir}/home" && stow --verbose=1 --target="${HOME}" --stow --adopt . && git restore . && stow --verbose=1 --target="${HOME}" --restow .)
     else
       manualstow
     fi

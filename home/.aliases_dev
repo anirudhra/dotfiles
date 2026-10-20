@@ -6,7 +6,7 @@
 # by both macOS and Linux based on machine type
 
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_ALIASES_DEV}" ]; then
+if [ -n "${SOURCED_ALIASES_DEV:-}" ]; then
   return 0 # Exit the script if already sourced
 fi
 

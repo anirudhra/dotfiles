@@ -16,6 +16,7 @@ SOURCED_PROFILE_WRT=1
 # Skip existing files, directories, and even dangling symlinks.
 # This prevents ln from creating nested links inside directory destinations.
 create_symlink_if_missing() {
+  [ "$1" = "$2" ] && return 0
   if [ ! -e "$2" ] && [ ! -L "$2" ]; then
     ln -s "$1" "$2" >/dev/null 2>&1
   fi

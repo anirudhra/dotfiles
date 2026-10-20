@@ -1,5 +1,5 @@
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_PROFILE_PVE}" ]; then
+if [ -n "${SOURCED_PROFILE_PVE:-}" ]; then
   return 0 # Exit the script if already sourced
 fi
 

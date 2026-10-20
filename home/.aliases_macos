@@ -3,7 +3,7 @@
 ## useful aliases for macos; will be sourced by parent aliases
 
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_ALIASES_MACOS}" ]; then
+if [ -n "${SOURCED_ALIASES_MACOS:-}" ]; then
   return 0 # Exit the script if already sourced
 fi
 

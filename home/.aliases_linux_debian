@@ -4,7 +4,7 @@
 ## This should work for SBC, LXC/VM and Client Debian installs
 
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_ALIASES_LINUX_DEBIAN}" ]; then
+if [ -n "${SOURCED_ALIASES_LINUX_DEBIAN:-}" ]; then
   return 0 # Exit the script if already sourced
 fi
 

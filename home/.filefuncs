@@ -3,7 +3,7 @@
 # Helper functions for file operations
 
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_FILEFUNCS}" ]; then
+if [ -n "${SOURCED_FILEFUNCS:-}" ]; then
   return 0 # Exit the script if already sourced
 fi
 

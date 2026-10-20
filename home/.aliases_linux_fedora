@@ -4,7 +4,7 @@
 ## Assumption is this is for Client only, not SBC or PVE Server or Guests
 
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_ALIASES_LINUX_FEDORA}" ]; then
+if [ -n "${SOURCED_ALIASES_LINUX_FEDORA:-}" ]; then
   return 0 # Exit the script if already sourced
 fi
 

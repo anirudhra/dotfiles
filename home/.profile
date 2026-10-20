@@ -10,7 +10,7 @@ case "$-" in
 esac
 
 # Guard variable to ensure sourcing only once
-if [ -n "${SOURCED_PROFILE}" ]; then
+if [ -n "${SOURCED_PROFILE:-}" ]; then
   return 0 # Exit the script if already sourced
 fi
 
@@ -63,7 +63,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   fi
 
 else
-  export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share:${XDG_DATA_DIRS}"
+  export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
 fi
 
 if command -v cowsay >/dev/null 2>&1 &&
@@ -72,19 +72,17 @@ if command -v cowsay >/dev/null 2>&1 &&
 fi
 
 # force fix for kitty terminals, tmux won't work otherwise for ssh
-if [ "${TERM}" = "xterm-kitty" ]; then
+if [ "${TERM:-}" = "xterm-kitty" ]; then
   export TERM="xterm-256color"
 fi
 
-HOST_PROFILE_ZSH="${ALIASES_HOME}/.profile.${HOST%%.*}"
-HOST_PROFILE_BASH="${ALIASES_HOME}/.profile.${HOSTNAME%%.*}"
-
 # hostname specific commands (source once)
-if [ -n "${HOST_PROFILE_BASH}" ] && [ -f "${HOST_PROFILE_BASH}" ]; then
-  . "${HOST_PROFILE_BASH}"
-elif [ -n "${HOST_PROFILE_ZSH}" ] && [ -f "${HOST_PROFILE_ZSH}" ]; then
-  . "${HOST_PROFILE_ZSH}"
+local_host="${HOSTNAME:-${HOST:-$(hostname 2>/dev/null || echo "unknown")}}"
+host_short="${local_host%%.*}"
+if [ -n "${host_short}" ] && [ -f "${ALIASES_HOME}/.profile.${host_short}" ]; then
+  . "${ALIASES_HOME}/.profile.${host_short}"
 fi
+unset local_host host_short
 
 # Ensure ~/.local/bin is in PATH portably
 if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then

@@ -8,6 +8,8 @@ btop.log
 *vifminfo.json
 # don't save tmux git repos
 home/.config/tmux/plugins/
+# easyeffects runtime cache
+home/.config/easyeffects/.ld.so/
 
 # OS generated files #
 ######################
