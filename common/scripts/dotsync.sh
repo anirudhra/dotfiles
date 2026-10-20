@@ -46,7 +46,7 @@ if [ "$is_router" -eq 1 ]; then
 
   # 1. Core symlinks into router home (resolving directly to DOTFILES_BASE)
   link_router_target "${DOTFILES_BASE}/dotfiles" "${TARGET_DIR}/dotfiles"
-  link_router_target "${SRC_DIR}/.vimrc" "${TARGET_DIR}/.vimrc"
+  link_router_target "${SRC_DIR}/.vimrc.entware" "${TARGET_DIR}/.vimrc"
   link_router_target "${SRC_DIR}/.vim" "${TARGET_DIR}/.vim"
   link_router_target "${SRC_DIR}/.config" "${TARGET_DIR}/.config"
 
