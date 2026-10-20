@@ -41,6 +41,92 @@ source "${ALIASES_HOME}/.aliases_dev"
 
 ######## functions ######################
 
+# Print dotfiles environment, detected platform variables, and paths on demand
+dotinfo() {
+  if [ "${1:-}" = "-r" ] || [ "${1:-}" = "--refresh" ]; then
+    command -v detect_os_type >/dev/null 2>&1 && export OS_TYPE="$(detect_os_type 2>/dev/null)"
+    command -v detect_machine_type >/dev/null 2>&1 && export MACHINE_TYPE="$(detect_machine_type 2>/dev/null)"
+    command -v detect_server_type >/dev/null 2>&1 && export SERVER_TYPE="$(detect_server_type 2>/dev/null)"
+    command -v detect_arch_type >/dev/null 2>&1 && export ARCH_TYPE="$(detect_arch_type 2>/dev/null)"
+    command -v detect_shell_type >/dev/null 2>&1 && export SHELL_TYPE="$(detect_shell_type 2>/dev/null)"
+  fi
+
+  local os_type="${OS_TYPE:-unknown}"
+  local machine_type="${MACHINE_TYPE:-unknown}"
+  local server_type="${SERVER_TYPE:-unknown}"
+  local arch_type="${ARCH_TYPE:-unknown}"
+  local shell_type="${SHELL_TYPE:-unknown}"
+  local hname="$(hostname 2>/dev/null || echo "${HOSTNAME:-unknown}")"
+  local virt="$(systemd-detect-virt 2>/dev/null || true)"
+  virt="${virt:-none}"
+  virt="$(echo "$virt" | tr -d '\r\n')"
+
+  local stow_mode="GNU Stow"
+  if [ "${machine_type}" = "embedded" ] || [ "${machine_type}" = "router" ] || ! command -v stow >/dev/null 2>&1; then
+    stow_mode="dotsync.sh"
+  fi
+
+  local pkg_mgr="unknown"
+  for pm in apk opkg apt dnf pacman yay brew; do
+    if command -v "$pm" >/dev/null 2>&1; then
+      pkg_mgr="$pm"
+      break
+    fi
+  done
+
+  local sh_ver=""
+  if [ -n "${BASH_VERSION:-}" ]; then
+    sh_ver="bash ${BASH_VERSION%%(*}"
+  elif [ -n "${ZSH_VERSION:-}" ]; then
+    sh_ver="zsh ${ZSH_VERSION}"
+  elif command -v busybox >/dev/null 2>&1; then
+    sh_ver="$(busybox 2>&1 | head -n 1)"
+  else
+    sh_ver="${SHELL##*/}"
+  fi
+
+  local c_cyan='\033[1;36m'
+  local c_blue='\033[1;34m'
+  local c_green='\033[1;32m'
+  local c_yellow='\033[1;33m'
+  local c_gray='\033[0;90m'
+  local c_nc='\033[0m'
+
+  printf "%b================================================================%b\n" "$c_blue" "$c_nc"
+  printf " %bDotfiles Environment Inspection%b (%s)\n" "$c_cyan" "$c_nc" "$hname"
+  printf "%b================================================================%b\n" "$c_blue" "$c_nc"
+  printf "  %bMachine Type%b   : %b%-16s%b (Arch: %s)\n" "$c_blue" "$c_nc" "$c_green" "$machine_type" "$c_nc" "$arch_type"
+  printf "  %bOS Type%b        : %b%-16s%b (Kernel: %s)\n" "$c_blue" "$c_nc" "$c_green" "$os_type" "$c_nc" "$(uname -r 2>/dev/null)"
+  if [ "$machine_type" = "server" ] || [ "$machine_type" = "pveserver" ] || [ "$server_type" != "unknown" ]; then
+    printf "  %bServer Type%b    : %b%-16s%b\n" "$c_blue" "$c_nc" "$c_yellow" "$server_type" "$c_nc"
+  fi
+  printf "  %bShell Type%b     : %b%-16s%b (Version: %s)\n" "$c_blue" "$c_nc" "$c_green" "$shell_type" "$c_nc" "$sh_ver"
+  printf "  %bVirtualization%b : %-16s\n" "$c_blue" "$c_nc" "$virt"
+  printf "  %bPackage Mgr%b    : %-16s  (Sync: %s)\n" "$c_blue" "$c_nc" "$pkg_mgr" "$stow_mode"
+  printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
+  printf "  %bDOTFILES_HOME%b  : %s\n" "$c_blue" "$c_nc" "${DOTFILES_HOME:-$HOME}"
+  printf "  %bALIASES_HOME%b   : %s\n" "$c_blue" "$c_nc" "${ALIASES_HOME:-$HOME}"
+  printf "  %bDEBUG Status%b   : DOTFILES_DEBUG=%s\n" "$c_blue" "$c_nc" "${DOTFILES_DEBUG:-0}"
+
+  if [ -n "${MEDIADIR:-}" ] || [ -n "${DATADIR:-}" ] || [ -n "${DOCKERDIR:-}" ] || [ -n "${PVEDIR:-}" ]; then
+    printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
+    [ -n "${MEDIADIR:-}" ] && printf "  %bMEDIADIR%b       : %s\n" "$c_blue" "$c_nc" "$MEDIADIR"
+    [ -n "${DATADIR:-}" ]  && printf "  %bDATADIR%b        : %s\n" "$c_blue" "$c_nc" "$DATADIR"
+    [ -n "${NVMEDIR:-}" ]  && printf "  %bNVMEDIR%b        : %s\n" "$c_blue" "$c_nc" "$NVMEDIR"
+    [ -n "${DOCKERDIR:-}" ] && printf "  %bDOCKERDIR%b      : %s\n" "$c_blue" "$c_nc" "$DOCKERDIR"
+    [ -n "${PVEDIR:-}" ]   && printf "  %bPVEDIR%b         : %s\n" "$c_blue" "$c_nc" "$PVEDIR"
+  fi
+
+  local host_stem="${hname%%.*}"
+  local host_prof="${ALIASES_HOME}/.profile.${host_stem}"
+  if [ -f "$host_prof" ]; then
+    printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
+    printf "  %bHost Profile%b   : %s\n" "$c_blue" "$c_nc" "$host_prof"
+  fi
+  printf "%b================================================================%b\n" "$c_blue" "$c_nc"
+}
+dotdebug() { dotinfo "$@"; }
+
 # batch copy to recursively copy from a list of directories or files
 batch_copy() {
   local list_file="$1"
