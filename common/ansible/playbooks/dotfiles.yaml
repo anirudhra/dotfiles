@@ -2,9 +2,7 @@
   hosts: "{{ target | default('updatedfall') }}"
   tasks:
     - name: Execute updatedotfiles script
-      ansible.builtin.command: ./updatedotfiles.sh
-      args:
-        chdir: "{{ ansible_facts['env']['HOME'] }}/dotfiles/common/ansible/clientscripts"
+      ansible.builtin.script: "{{ playbook_dir }}/../clientscripts/updatedotfiles.sh"
       register: out
 
     - ansible.builtin.debug:

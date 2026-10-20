@@ -10,11 +10,20 @@ if [ ! -d "$DOTFILES_DIR" ]; then
   exit 1
 fi
 
-echo "==> Pulling latest changes from git repository..."
+echo "==> Updating dotfiles repository..."
 cd "$DOTFILES_DIR"
-git pull --ff-only || {
-  echo "Warning: git pull failed or fast-forward was not possible." >&2
-}
+
+git fetch origin
+
+current_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")"
+if [ "$current_branch" = "HEAD" ] || [ -z "$current_branch" ]; then
+  current_branch="main"
+fi
+
+if ! git pull --ff-only 2>/dev/null; then
+  echo "Notice: Fast-forward pull not possible on '$current_branch'. Resetting to origin/$current_branch..."
+  git reset --hard "origin/$current_branch"
+fi
 
 if command -v stow >/dev/null 2>&1; then
   echo "==> Stowing dotfiles using GNU Stow..."
