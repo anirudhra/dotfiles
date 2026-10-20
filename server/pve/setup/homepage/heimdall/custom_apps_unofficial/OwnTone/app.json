@@ -1,0 +1,10 @@
+{
+    "appid": "ff68f5a8067e10d57389789cf4dce660b9e02014",
+    "name": "OwnTone",
+    "website": "https://owntone.github.io/owntone-server/",
+    "license": "GNU General Public License v2.0 only",
+    "description": "OwnTone is an open source (audio) media server for GNU/Linux, FreeBSD and MacOS.\r\n\r\nIt allows sharing and streaming your media library to iTunes (DAAP1), Roku (RSP), AirPlay devices (multiroom), Chromecast and also supports local playback.",
+    "enhanced": true,
+    "tile_background": "dark",
+    "icon": "owntone.svg"
+}

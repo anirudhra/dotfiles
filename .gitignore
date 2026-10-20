@@ -10,6 +10,8 @@ btop.log
 home/.config/tmux/plugins/
 # easyeffects runtime cache
 home/.config/easyeffects/.ld.so/
+# vim doc tags index
+home/.vim/doc/tags
 
 # OS generated files #
 ######################
