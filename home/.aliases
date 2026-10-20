@@ -57,9 +57,31 @@ dotinfo() {
   local arch_type="${ARCH_TYPE:-unknown}"
   local shell_type="${SHELL_TYPE:-unknown}"
   local hname="$(hostname 2>/dev/null || echo "${HOSTNAME:-unknown}")"
-  local virt="$(systemd-detect-virt 2>/dev/null || true)"
-  virt="${virt:-none}"
-  virt="$(echo "$virt" | tr -d '\r\n')"
+  local raw_virt="$(systemd-detect-virt 2>/dev/null || true)"
+  raw_virt="$(echo "$raw_virt" | tr -d '\r\n')"
+
+  local virt="bare-metal"
+  local virt_role=""
+
+  if [ -n "$raw_virt" ] && [ "$raw_virt" != "none" ]; then
+    virt="$raw_virt"
+    if [ "$server_type" = "pve" ]; then
+      virt_role="(Role: Nested Hypervisor)"
+    else
+      virt_role="(Role: Guest)"
+    fi
+  elif [ "$(uname -s 2>/dev/null)" = "Darwin" ] && sysctl -n machdep.cpu.features 2>/dev/null | grep -qi VMM; then
+    virt="vm"
+    virt_role="(Role: Guest)"
+  elif [ "$machine_type" = "guest" ] || [ "$machine_type" = "pveguest" ]; then
+    virt="container"
+    virt_role="(Role: Guest)"
+  else
+    virt="bare-metal"
+    if [ "$server_type" = "pve" ]; then
+      virt_role="(Role: Hypervisor)"
+    fi
+  fi
 
   local stow_mode="GNU Stow"
   if [ "${machine_type}" = "embedded" ] || [ "${machine_type}" = "router" ] || ! command -v stow >/dev/null 2>&1; then
@@ -101,7 +123,11 @@ dotinfo() {
     printf "  %bServer Type%b    : %b%-16s%b\n" "$c_blue" "$c_nc" "$c_yellow" "$server_type" "$c_nc"
   fi
   printf "  %bShell Type%b     : %b%-16s%b (Version: %s)\n" "$c_blue" "$c_nc" "$c_green" "$shell_type" "$c_nc" "$sh_ver"
-  printf "  %bVirtualization%b : %b%-16s%b\n" "$c_blue" "$c_nc" "$c_green" "$virt" "$c_nc"
+  if [ -n "$virt_role" ]; then
+    printf "  %bVirtualization%b : %b%-16s%b %s\n" "$c_blue" "$c_nc" "$c_green" "$virt" "$c_nc" "$virt_role"
+  else
+    printf "  %bVirtualization%b : %b%-16s%b\n" "$c_blue" "$c_nc" "$c_green" "$virt" "$c_nc"
+  fi
   printf "  %bPackage Mgr%b    : %b%-16s%b (Sync: %s)\n" "$c_blue" "$c_nc" "$c_green" "$pkg_mgr" "$c_nc" "$stow_mode"
   printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
   printf "  %bDOTFILES_HOME%b  : %s\n" "$c_blue" "$c_nc" "${DOTFILES_HOME:-$HOME}"
