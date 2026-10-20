@@ -18,7 +18,7 @@ source "${ALIASES_HOME}/.helperfuncs"
 desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 
 debuglog "Machine Type: ${MACHINE_TYPE}"
-if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
   debuglog "Server Type: ${SERVER_TYPE}"
 fi
 debuglog "Linux aliases sourced"
@@ -31,12 +31,12 @@ fi
 
 ######## functions ######################
 
-#intended to be run on PVE guests/SBC only
+#intended to be run on guests/SBC/NAS only
 # Note: Syntax error fixed on conditional check (removed stray extra '; };' before 'then')
 dockerupdateall() {
   local docker_host=false
-  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] ||
-    { [[ "${MACHINE_TYPE}" == "pveserver" ]] && { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; }; then
+  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] ||
+    { { [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; } && { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; }; then
     docker_host=true
   fi
 
@@ -62,9 +62,9 @@ dockerupdateall() {
   cd "${original_dir}" || return 1
 }
 
-#intended to be run on PVE guests/SBC/Client only
+#intended to be run on guests/SBC/Client only
 movemovie() {
-  if [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] || [[ "${MACHINE_TYPE}" == "client" ]]; then
+  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] || [[ "${MACHINE_TYPE}" == "client" ]]; then
     case $# in
     1)
       chmod 777 "$1"
@@ -185,7 +185,7 @@ copyrockboxthemes() {
 # and creates 3 versions of the kernel image to boot from: sda1, emmc and sdcard
 # Run this on the host that builds the Linux kernel
 getsbckernels() {
-  if [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
+  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
     local TARGET_USER="${SBC_USER:-nonroot}"
     local TARGET_GROUP="${SBC_GROUP:-${TARGET_USER}}"
 
@@ -331,7 +331,7 @@ if [[ "${desktopEnv}" == "GNOME" ]]; then
 fi
 
 #docker and other homelab specific aliases
-if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
 
   export PVEDIR="${HOME}/dotfiles/pve/maintenance"
 
@@ -354,7 +354,7 @@ if [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
     alias upgrade='fullupdate && fullclean'
   fi
 
-elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
   # LXC/VM and SBC shortcuts
   if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
     export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
@@ -368,7 +368,7 @@ elif [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; 
     # script to copy compiled kernel modules from PVE LXC to SBC
     alias installkmod='/bin/bash ~/dotfiles/sbc/scripts/installkmod.sh'
   else
-    # pve-guest: LXC/VM debian
+    # guest: LXC/VM debian
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
     export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"

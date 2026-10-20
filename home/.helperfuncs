@@ -363,7 +363,7 @@ detect_busybox_alias() {
 }
 
 # Detect the server subtype
-# Returns "pve", "openmediavault", "truenas", or "unknown".
+# Returns "pve", "openmediavault", "truenas", "unraid", or "unknown".
 detect_server_type() {
   if command -v pveversion >/dev/null 2>&1; then
     echo "pve"
@@ -374,6 +374,8 @@ detect_server_type() {
   elif command -v midclt >/dev/null 2>&1 ||
        [ -f /etc/truenas.conf ]; then
     echo "truenas"
+  elif [ -f /etc/unraid-version ]; then
+    echo "unraid"
   else
     echo "unknown"
   fi
@@ -381,8 +383,8 @@ detect_server_type() {
 
 # Detect the machine type
 # Returns:
-#   - "pveserver" for PVE Server, OpenMediaVault, or TrueNAS SCALE
-#   - "pveguest" for PVE Guest
+#   - "server" for PVE Server, OpenMediaVault, TrueNAS SCALE, or generic servers
+#   - "guest" for PVE Guest, LXC, or VM
 #   - "embedded" for embedded/constrained Linux devices (OpenWrt, DD-WRT, Asuswrt, Buildroot, etc.)
 #   - "sbc" for linux on SBC
 #   - "client" for Client
@@ -409,13 +411,13 @@ detect_machine_type() {
     local server_type
     server_type=$(detect_server_type)
     if [[ "${server_type}" != "unknown" ]]; then
-      echo "pveserver"
+      echo "server"
     elif command -v systemd-detect-virt >/dev/null 2>&1; then
       # Virtualized Linux guest
       if [ "$(systemd-detect-virt)" = "none" ]; then
         echo "client"
       else
-        echo "pveguest"
+        echo "guest"
       fi
     else
       # Check for BusyBox-based minimal init on non-systemd Linux
