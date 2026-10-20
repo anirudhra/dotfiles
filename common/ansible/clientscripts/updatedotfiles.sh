@@ -31,9 +31,12 @@ git prune --expire=now 2>/dev/null || true
 git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true
 
 if command -v stow >/dev/null 2>&1; then
-  echo "==> Stowing dotfiles using GNU Stow..."
+  echo "==> Stowing dotfiles using GNU Stow (with --no-folding)..."
+  if [ -f "${HOME}/.gitconfig" ] && [ ! -L "${HOME}/.gitconfig" ] && [ ! -f "${HOME}/.gitconfig.local" ]; then
+    cp -p "${HOME}/.gitconfig" "${HOME}/.gitconfig.local" 2>/dev/null || true
+  fi
   cd "$DOTFILES_DIR/home"
-  stow --verbose=1 --target="${HOME}" --stow --adopt . && git restore . && stow --verbose=1 --target="${HOME}" --restow .
+  stow --verbose=1 --no-folding --target="${HOME}" --stow --adopt . && git restore . && stow --verbose=1 --no-folding --target="${HOME}" --restow .
 elif [ -x "$DOTFILES_DIR/common/scripts/dotsync.sh" ]; then
   echo "==> GNU Stow not found; synchronizing via dotsync.sh..."
   "$DOTFILES_DIR/common/scripts/dotsync.sh"

@@ -12,6 +12,11 @@ home/.config/tmux/plugins/
 home/.config/easyeffects/.ld.so/
 # vim doc tags index
 home/.vim/doc/tags
+# Machine-specific overrides & secrets (never committed)
+*.local
+*.local.*
+.local.*
+*.env
 
 # OS generated files #
 ######################

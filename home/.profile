@@ -66,9 +66,11 @@ else
   export XDG_DATA_DIRS="/var/lib/flatpak/exports/share:${HOME}/.local/share/flatpak/exports/share${XDG_DATA_DIRS:+:$XDG_DATA_DIRS}"
 fi
 
-if command -v cowsay >/dev/null 2>&1 &&
-  command -v fortune >/dev/null 2>&1; then
-  cowsay "$(fortune -s)"
+if [ "${DOTFILES_FAST_START:-0}" != "1" ]; then
+  if command -v cowsay >/dev/null 2>&1 &&
+    command -v fortune >/dev/null 2>&1; then
+    cowsay "$(fortune -s)"
+  fi
 fi
 
 # force fix for kitty terminals, tmux won't work otherwise for ssh
@@ -87,4 +89,9 @@ unset local_host host_short
 # Ensure ~/.local/bin is in PATH portably
 if [[ ":$PATH:" != *":${HOME}/.local/bin:"* ]]; then
   export PATH="${HOME}/.local/bin:${PATH}"
+fi
+
+# Local machine-specific profile (unversioned, never committed)
+if [ -r "${HOME}/.profile.local" ]; then
+  . "${HOME}/.profile.local"
 fi

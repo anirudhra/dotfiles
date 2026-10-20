@@ -1,0 +1,32 @@
+name: Lint & Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-scripts:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Shell Syntax Validation (bash -n & sh -n)
+        run: |
+          echo "==> Checking shell scripts..."
+          for f in $(git ls-files '*.sh'); do
+            bash -n "$f"
+          done
+          echo "==> Checking dotfiles aliases and profiles..."
+          for f in $(git ls-files 'home/.aliases*' 'home/.profile*' 'home/.helperfuncs' 'home/.filefuncs' 'home/.gitfuncs'); do
+            bash -n "$f"
+          done
+
+      - name: Ansible Playbook Syntax Validation
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq ansible
+          for pb in common/ansible/playbooks/*.yaml; do
+            ansible-playbook -i common/ansible/inventory.yaml "$pb" --syntax-check
+          done

@@ -1,0 +1,33 @@
+[include]
+	path = ~/.gitconfig.local
+
+[init]
+	defaultBranch = main
+
+[core]
+	autocrlf = input
+	excludesfile = ~/.gitignore_global
+	whitespace = trailing-space,space-before-tab
+
+[pull]
+	rebase = false
+
+[fetch]
+	prune = true
+
+[diff]
+	colorMoved = zebra
+
+[merge]
+	conflictstyle = zdiff3
+
+[push]
+	autoSetupRemote = true
+
+[alias]
+	st = status -sb
+	co = checkout
+	br = branch
+	ci = commit
+	lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+	undo = reset --soft HEAD~1

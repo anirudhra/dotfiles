@@ -1,0 +1,17 @@
+# Compiled & editor artifacts
+*~
+*.swp
+*.swo
+*.bak
+
+# OS generated artifacts
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# Machine-specific overrides & secrets
+*.local
+*.local.*
+.local.*
+*.env
