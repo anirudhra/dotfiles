@@ -27,8 +27,9 @@ source "${ALIASES_HOME}/.filefuncs"
 [[ -z "${OS_TYPE:-}" ]] && export OS_TYPE="$(detect_os_type)"
 [[ -z "${ARCH_TYPE:-}" ]] && export ARCH_TYPE="$(detect_arch_type)"
 [[ -z "${SHELL_TYPE:-}" ]] && export SHELL_TYPE="$(detect_shell_type)"
-[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
 [[ -z "${SERVER_TYPE:-}" ]] && export SERVER_TYPE="$(detect_server_type)"
+[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
+[[ -z "${HOSTNAME:-}" ]] && export HOSTNAME="${HOST:-$(hostname 2>/dev/null || echo "unknown")}"
 
 ################################################################################################
 #   OS agnostic aliases
@@ -45,8 +46,8 @@ source "${ALIASES_HOME}/.aliases_dev"
 dotinfo() {
   if [ "${1:-}" = "-r" ] || [ "${1:-}" = "--refresh" ]; then
     command -v detect_os_type >/dev/null 2>&1 && export OS_TYPE="$(detect_os_type 2>/dev/null)"
-    command -v detect_machine_type >/dev/null 2>&1 && export MACHINE_TYPE="$(detect_machine_type 2>/dev/null)"
     command -v detect_server_type >/dev/null 2>&1 && export SERVER_TYPE="$(detect_server_type 2>/dev/null)"
+    command -v detect_machine_type >/dev/null 2>&1 && export MACHINE_TYPE="$(detect_machine_type 2>/dev/null)"
     command -v detect_arch_type >/dev/null 2>&1 && export ARCH_TYPE="$(detect_arch_type 2>/dev/null)"
     command -v detect_shell_type >/dev/null 2>&1 && export SHELL_TYPE="$(detect_shell_type 2>/dev/null)"
   fi
@@ -85,7 +86,7 @@ dotinfo() {
   elif [ "$(uname -s 2>/dev/null)" = "Darwin" ] && sysctl -n machdep.cpu.features 2>/dev/null | grep -qi VMM; then
     virt="vm"
     virt_role="(Role: Guest)"
-  elif [ "$machine_type" = "guest" ] || [ "$machine_type" = "pveguest" ]; then
+  elif [ "$machine_type" = "guest" ]; then
     virt="container"
     virt_role="(Role: Guest)"
   elif [ "$is_hypervisor" = "1" ]; then
@@ -131,7 +132,7 @@ dotinfo() {
   printf "%b================================================================%b\n" "$c_blue" "$c_nc"
   printf "  %bMachine Type%b   : %b%-16s%b (Arch: %s)\n" "$c_blue" "$c_nc" "$c_green" "$machine_type" "$c_nc" "$arch_type"
   printf "  %bOS Type%b        : %b%-16s%b (Kernel: %s)\n" "$c_blue" "$c_nc" "$c_green" "$os_type" "$c_nc" "$(uname -r 2>/dev/null)"
-  if [ "$machine_type" = "server" ] || [ "$machine_type" = "pveserver" ] || [ "$server_type" != "unknown" ]; then
+  if [ "$machine_type" = "server" ] || [ "$server_type" != "unknown" ]; then
     printf "  %bServer Type%b    : %b%-16s%b\n" "$c_blue" "$c_nc" "$c_yellow" "$server_type" "$c_nc"
   fi
   printf "  %bShell Type%b     : %b%-16s%b (Version: %s)\n" "$c_blue" "$c_nc" "$c_green" "$shell_type" "$c_nc" "$sh_ver"

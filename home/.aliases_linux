@@ -13,12 +13,13 @@ SOURCED_ALIASES_LINUX=1
 source "${ALIASES_HOME}/.helperfuncs"
 
 [[ -z "${OS_TYPE:-}" ]] && export OS_TYPE="$(detect_os_type)"
-[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
 [[ -z "${SERVER_TYPE:-}" ]] && export SERVER_TYPE="$(detect_server_type)"
+[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
+[[ -z "${HOSTNAME:-}" ]] && export HOSTNAME="${HOST:-$(hostname 2>/dev/null || echo "unknown")}"
 desktopEnv=${XDG_CURRENT_DESKTOP} #gnome, cinnamon, kde...
 
 debuglog "Machine Type: ${MACHINE_TYPE}"
-if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+if [[ "${MACHINE_TYPE}" == "server" ]]; then
   debuglog "Server Type: ${SERVER_TYPE}"
 fi
 debuglog "Linux aliases sourced"
@@ -35,8 +36,8 @@ fi
 # Note: Syntax error fixed on conditional check (removed stray extra '; };' before 'then')
 dockerupdateall() {
   local docker_host=false
-  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] ||
-    { { [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; } && { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; }; then
+  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] ||
+    { [[ "${MACHINE_TYPE}" == "server" ]] && { [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "omv" ]] || [[ "${SERVER_TYPE}" == "truenas" ]]; }; }; then
     docker_host=true
   fi
 
@@ -64,7 +65,7 @@ dockerupdateall() {
 
 #intended to be run on guests/SBC/Client only
 movemovie() {
-  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] || [[ "${MACHINE_TYPE}" == "client" ]]; then
+  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]] || [[ "${MACHINE_TYPE}" == "client" ]]; then
     case $# in
     1)
       chmod 777 "$1"
@@ -185,7 +186,7 @@ copyrockboxthemes() {
 # and creates 3 versions of the kernel image to boot from: sda1, emmc and sdcard
 # Run this on the host that builds the Linux kernel
 getsbckernels() {
-  if [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]]; then
+  if [[ "${MACHINE_TYPE}" == "guest" ]]; then
     local TARGET_USER="${SBC_USER:-nonroot}"
     local TARGET_GROUP="${SBC_GROUP:-${TARGET_USER}}"
 
@@ -296,7 +297,7 @@ if command -v docker >/dev/null 2>&1; then
       return 1
     fi
 
-    sudo tar -zcvf "${backup_dest}/dockerapps_backup_${HOSTNAME}_$(date +%Y-%m-%d).tar.gz" "${src_dir}"
+    sudo tar -zcvf "${backup_dest}/dockerapps_backup_${HOSTNAME:-$(hostname 2>/dev/null || echo "${HOST:-unknown}")}_$(date +%Y-%m-%d).tar.gz" "${src_dir}"
   }
 fi
 
@@ -331,7 +332,7 @@ if [[ "${desktopEnv}" == "GNOME" ]]; then
 fi
 
 #docker and other homelab specific aliases
-if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]; then
+if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${SERVER_TYPE}" == "pve" ]] || [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "omv" ]] || [[ "${SERVER_TYPE}" == "truenas" ]] || [[ "${SERVER_TYPE}" == "unraid" ]]; then
 
   export CLIENTDIR="${DOTFILES_HOME:-$HOME}/dotfiles/client"
   export SERVERDIR="${DOTFILES_HOME:-$HOME}/dotfiles/server"
@@ -346,7 +347,7 @@ if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]
     export DOCKERDIR="/mnt/sata-ssd/ssd-data/dockerapps"
     export DOCKERDATADIR="${DOCKERDIR}"
     alias upgrade='fullupdate && fullclean'
-  # OMV and TrueNAS
+  # OMV, TrueNAS, and generic storage servers
   else
     export MEDIADIR="/mnt/storage/media"
     export DATADIR="/mnt/storage/data"
@@ -357,7 +358,7 @@ if [[ "${MACHINE_TYPE}" == "server" ]] || [[ "${MACHINE_TYPE}" == "pveserver" ]]
     alias upgrade='fullupdate && fullclean'
   fi
 
-elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
+elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "sbc" ]]; then
   # LXC/VM and SBC shortcuts
   if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
     export MEDIADIR="/mnt/nfs/sata-ssd/ssd-media/media"
@@ -378,7 +379,7 @@ elif [[ "${MACHINE_TYPE}" == "guest" ]] || [[ "${MACHINE_TYPE}" == "pveguest" ]]
     export MEDIADIR="/mnt/pve-sata-ssd/ssd-media/media"
     export DATADIR="/mnt/pve-sata-ssd/ssd-data"
     export NVMEDIR="/mnt/pve-nvme-ssd/nvme-data"
-    export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME}"
+    export DOCKERDIR="/mnt/pve-sata-ssd/ssd-data/dockerapps/${HOSTNAME:-$(hostname 2>/dev/null || echo "${HOST:-unknown}")}"
     export DOCKERDATADIR="${DOCKERDIR}"
     export DOCKERBACKUPDIR="${HOME}"
     export CLIENTDIR="${DOTFILES_HOME:-$HOME}/dotfiles/client"

@@ -368,8 +368,10 @@ detect_server_type() {
   if command -v pveversion >/dev/null 2>&1; then
     echo "pve"
   elif command -v omv-salt >/dev/null 2>&1 ||
+       command -v omv-confdbadm >/dev/null 2>&1 ||
        [ -d /usr/share/openmediavault ] ||
-       [ -f /etc/openmediavault/config.xml ]; then
+       [ -f /etc/openmediavault/config.xml ] ||
+       [ -f /etc/default/openmediavault ]; then
     echo "openmediavault"
   elif command -v midclt >/dev/null 2>&1 ||
        [ -f /etc/truenas.conf ]; then
@@ -383,8 +385,8 @@ detect_server_type() {
 
 # Detect the machine type
 # Returns:
-#   - "server" for PVE Server, OpenMediaVault, TrueNAS SCALE, or generic servers
-#   - "guest" for PVE Guest, LXC, or VM
+#   - "server" for dedicated servers (PVE, OpenMediaVault, TrueNAS SCALE, unRAID, or generic servers)
+#   - "guest" for generic guest LXC or VM
 #   - "embedded" for embedded/constrained Linux devices (OpenWrt, DD-WRT, Asuswrt, Buildroot, etc.)
 #   - "sbc" for linux on SBC
 #   - "client" for Client
@@ -406,21 +408,23 @@ detect_machine_type() {
     return 0
   fi
 
-  # 2. Virtualization check (guests can never be SBCs)
+  # 2. Dedicated Server platforms (PVE, OMV, TrueNAS, unRAID)
+  # Evaluated before virtualization: dedicated hypervisor or NAS appliances (e.g. OMV VM, TrueNAS VM, nested PVE)
+  # must be classified as "server" so they get server storage paths, maintenance aliases, etc.
+  local server_type
+  server_type="${SERVER_TYPE:-$(detect_server_type)}"
+  if [ -n "${server_type}" ] && [ "${server_type}" != "unknown" ]; then
+    echo "server"
+    return 0
+  fi
+
+  # 3. Virtualization check (guests can never be SBCs)
   local virt="none"
   if command -v systemd-detect-virt >/dev/null 2>&1; then
     virt="$(systemd-detect-virt 2>/dev/null || echo "none")"
   fi
   if [ -n "$virt" ] && [ "$virt" != "none" ]; then
     echo "guest"
-    return 0
-  fi
-
-  # 3. Dedicated Server platforms (PVE, OMV, TrueNAS, unRAID)
-  local server_type
-  server_type=$(detect_server_type)
-  if [ "${server_type}" != "unknown" ]; then
-    echo "server"
     return 0
   fi
 

@@ -13,8 +13,8 @@ SOURCED_ALIASES_LINUX_DEBIAN=1
 
 source "${ALIASES_HOME}/.helperfuncs"
 
-[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
 [[ -z "${SERVER_TYPE:-}" ]] && export SERVER_TYPE="$(detect_server_type)"
+[[ -z "${MACHINE_TYPE:-}" ]] && export MACHINE_TYPE="$(detect_machine_type)"
 
 debuglog "Debian aliases sourced"
 
@@ -24,7 +24,7 @@ export pkgmgr="apt"
 export pkgmgrdpkg="dpkg"
 
 alias fullclean='sudo ${pkgmgr} clean -y && sudo ${pkgmgr} autoclean -y && sudo ${pkgmgr} --purge autoremove -y'
-if [[ "${SERVER_TYPE}" == "openmediavault" ]]; then
+if [[ "${SERVER_TYPE}" == "openmediavault" ]] || [[ "${SERVER_TYPE}" == "omv" ]]; then
   alias fullupdate='sudo omv-upgrade && fullclean && sudo omv-salt deploy run apt'
 else
   alias fullupdate='sudo ${pkgmgr} update -y && sudo ${pkgmgr} dist-upgrade -y'
