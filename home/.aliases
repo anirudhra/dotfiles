@@ -64,8 +64,8 @@ dotinfo() {
   local is_hypervisor=0
   if [ "$server_type" = "pve" ] || command -v pveversion >/dev/null 2>&1; then
     is_hypervisor=1
-  elif command -v systemctl >/dev/null 2>&1 && \
-       systemctl is-active --quiet libvirtd virtqemud pvedaemon 2>/dev/null; then
+  elif command -v systemctl >/dev/null 2>&1 &&
+    systemctl is-active --quiet libvirtd virtqemud pvedaemon 2>/dev/null; then
     is_hypervisor=1
   elif [ -d /sys/class/net/virbr0 ] || [ -d /sys/class/net/vmbr0 ]; then
     is_hypervisor=1
@@ -157,12 +157,12 @@ dotinfo() {
 
   if [ -n "${MEDIADIR:-}" ] || [ -n "${DATADIR:-}" ] || [ -n "${DOCKERDIR:-}" ] || [ -n "${CLIENTDIR:-}" ] || [ -n "${SERVERDIR:-}" ]; then
     printf "%b----------------------------------------------------------------%b\n" "$c_gray" "$c_nc"
-    [ -n "${MEDIADIR:-}" ]   && printf "  %bMEDIADIR%b       : %s\n" "$c_blue" "$c_nc" "$MEDIADIR"
-    [ -n "${DATADIR:-}" ]    && printf "  %bDATADIR%b        : %s\n" "$c_blue" "$c_nc" "$DATADIR"
-    [ -n "${NVMEDIR:-}" ]    && printf "  %bNVMEDIR%b        : %s\n" "$c_blue" "$c_nc" "$NVMEDIR"
-    [ -n "${DOCKERDIR:-}" ]  && printf "  %bDOCKERDIR%b      : %s\n" "$c_blue" "$c_nc" "$DOCKERDIR"
-    [ -n "${CLIENTDIR:-}" ]  && printf "  %bCLIENTDIR%b      : %s\n" "$c_blue" "$c_nc" "$CLIENTDIR"
-    [ -n "${SERVERDIR:-}" ]  && printf "  %bSERVERDIR%b      : %s\n" "$c_blue" "$c_nc" "$SERVERDIR"
+    [ -n "${MEDIADIR:-}" ] && printf "  %bMEDIADIR%b       : %s\n" "$c_blue" "$c_nc" "$MEDIADIR"
+    [ -n "${DATADIR:-}" ] && printf "  %bDATADIR%b        : %s\n" "$c_blue" "$c_nc" "$DATADIR"
+    [ -n "${NVMEDIR:-}" ] && printf "  %bNVMEDIR%b        : %s\n" "$c_blue" "$c_nc" "$NVMEDIR"
+    [ -n "${DOCKERDIR:-}" ] && printf "  %bDOCKERDIR%b      : %s\n" "$c_blue" "$c_nc" "$DOCKERDIR"
+    [ -n "${CLIENTDIR:-}" ] && printf "  %bCLIENTDIR%b      : %s\n" "$c_blue" "$c_nc" "$CLIENTDIR"
+    [ -n "${SERVERDIR:-}" ] && printf "  %bSERVERDIR%b      : %s\n" "$c_blue" "$c_nc" "$SERVERDIR"
   fi
 
   local host_stem="${hname%%.*}"
@@ -374,7 +374,9 @@ alias getdot='
 alias u='upgrade'
 
 # google agy harness
-alias sudoagy="agy --dangerously-skip-permissions"
+if command -v agy >/dev/null 2>&1; then
+  alias sudoagy="agy --dangerously-skip-permissions"
+fi
 
 # ansible aliases
 alias dfupdateall="goans && ./ans.sh dfupdateall && cd -"
@@ -605,7 +607,7 @@ alias dotclean='find . -name ._\* -delete'
 alias table='column -t -s'
 
 #dumps directory contents to file, usage dir2file <filename>
-dir2file() { find . -mindepth 1 > "$1"; }
+dir2file() { find . -mindepth 1 >"$1"; }
 
 #use "refresh" followed by any command you want to constantly refresh on screen, Ctrl+C to quit
 alias refresh='watch --interval=3'
@@ -684,9 +686,9 @@ debuglog "Architecture Detected: ${ARCH_TYPE}"
 debuglog "OS Detected: ${OS_TYPE}"
 debuglog "Shell Detected: ${SHELL_TYPE}"
 
-if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] || \
-   [[ "${OS_TYPE}" == "openwrt" ]] || [[ "${OS_TYPE}" == "ddwrt" ]] || [[ "${OS_TYPE}" == "asuswrt" ]] || \
-   [[ "${OS_TYPE}" == "alpine" ]] || [[ "${OS_TYPE}" == "buildroot" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
+if [[ "${OS_TYPE}" == "debian" ]] || [[ "${OS_TYPE}" == "fedora" ]] || [[ "${OS_TYPE}" == "arch" ]] ||
+  [[ "${OS_TYPE}" == "openwrt" ]] || [[ "${OS_TYPE}" == "ddwrt" ]] || [[ "${OS_TYPE}" == "asuswrt" ]] ||
+  [[ "${OS_TYPE}" == "alpine" ]] || [[ "${OS_TYPE}" == "buildroot" ]] || [[ "${OS_TYPE}" == "linux" ]]; then
   source "${ALIASES_HOME}/.aliases_linux"
 elif [[ "${OS_TYPE}" == "macos" ]]; then
   source "${ALIASES_HOME}/.aliases_macos"
