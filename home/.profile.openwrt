@@ -36,6 +36,9 @@ if [ -z "${LAN_IP}" ]; then
   LAN_IP=$(uci -q get network.lan.ipaddr 2>/dev/null || echo "router")
 fi
 export LAN_IP
-export PS1="\u@\h:${LAN_IP}:\w\$ "
+# simple prompt
+#export PS1="\u@\h:${LAN_IP}:\w\$ "
+# DDWRT-like prompt
+export PS1='\[\e]0;\u@\h: \w\a\]\n\[\e[0;37m\]┌─[$(if [ "$?" -eq 0 ]; then printf "\033[1;32m+"; else printf "\033[1;31mX"; fi)\[\e[0;37m\]]─[\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]${LAN_IP}\[\e[0;37m\]]─[\[\e[0;32m\]\w\[\e[0;37m\]]\n└─ \[\e[0m\]'
 
 . "${DOTFILES_HOME}/dotfiles/home/.profile.wrt"

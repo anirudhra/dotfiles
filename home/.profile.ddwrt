@@ -29,7 +29,10 @@ if [ ! -r "${DOTFILES_HOME}/dotfiles/home/.profile.wrt" ]; then
 fi
 
 # Preserve the original USB-based adblock source, independent of overrides.
-[ ! -f "${JFFS_HOME}/ddwrt-adblock-s.sh" ] && \
+[ ! -f "${JFFS_HOME}/ddwrt-adblock-s.sh" ] &&
   cp "${ROOT_HOME}/dotfiles/router/ddwrt/ddwrt-adblock-s.sh" "${JFFS_HOME}/ddwrt-adblock-s.sh"
+
+# fixes for prompt to uses ascii x/check mark instead (+)
+export PS1='\[\e]0;\u@\h: \w\a\]\n\[\e[0;37m\]┌─[$(if [ "$?" -eq 0 ]; then printf "\033[1;32m+"; else printf "\033[1;31mX"; fi)\[\e[0;37m\]]─[\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]$(get_lanip)\[\e[0;37m\]]─[\[\e[0;32m\]\w\[\e[0;37m\]]\n└─ \[\e[0m\]'
 
 . "${DOTFILES_HOME}/dotfiles/home/.profile.wrt"
