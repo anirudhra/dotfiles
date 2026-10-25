@@ -425,12 +425,18 @@ elif [[ "${MACHINE_TYPE}" == "embedded" ]] || [[ "${MACHINE_TYPE}" == "router" ]
     PKG_MGR="opkg"
   fi
 
-  if [ -n "${PKG_MGR}" ]; then
-    alias fullupdate="${PKG_MGR} update && ${PKG_MGR} upgrade"
-    alias upgrade="fullupdate"
-  else
-    alias fullupdate="warn \"No supported package manager (apk/opkg) found\""
-    alias upgrade="fullupdate"
+  # Global toggle: set to "true" or "1" to enable aliases
+  # ENABLE_UPDATE_ALIASES="${ENABLE_UPDATE_ALIASES:-false}"
+  if { [ "${ENABLE_UPDATE_ALIASES:-false}" = "true" ] || [ "${ENABLE_UPDATE_ALIASES:-0}" = "1" ]; }; then
+    if [ -n "${PKG_MGR}" ]; then
+      alias fullupdate='${PKG_MGR} update && ${PKG_MGR} upgrade'
+      alias upgrade="fullupdate"
+    else
+      alias fullupdate='warn "No supported package manager (apk/opkg) found"'
+      alias upgrade="fullupdate"
+    fi
+  elif [ -n "${PKG_MGR}" ]; then
+    warn "Package manager (${PKG_MGR}) detected, but upgrade aliases are disabled"
   fi
 
   alias fullclean="warn \"fullclean not supported on this platform\""
