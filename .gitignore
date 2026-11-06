@@ -10,8 +10,9 @@ btop.log
 home/.config/tmux/plugins/
 # easyeffects runtime cache
 home/.config/easyeffects/.ld.so/
-# vim doc tags index
+# vim doc tags index and persistent undo history
 home/.vim/doc/tags
+home/.vim/undo/
 # Machine-specific overrides & secrets (never committed)
 *.local
 *.local.*

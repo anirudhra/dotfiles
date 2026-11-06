@@ -1,9 +1,10 @@
 # ~/.prompt -- universal prompt. Works in bash, zsh, ash/dash and ksh.
 # No Nerd Font needed. Ultra-clean two-line layout everywhere:
 # user@host  [13:04:56]
-# ~/dir (branch) $
+# ~/dir (branch*) $
 # (On routers/embedded, LAN IP is shown as user@host:IP; on non-zero exit,
-# [✘ code] is appended to line 1.)
+# [✘ code] is appended to line 1; prompt symbol is green $ for user, red # for
+# root or after a failed command.)
 # Source it from your shell rc; it detects the machine type and the shell
 # and installs the right prompt. Colours switch off when TERM is dumb/unset.
 
@@ -11,11 +12,16 @@
 [ -n "${_SP_LOADED:-}" ] && return 0 2>/dev/null
 _SP_LOADED=1
 
-# --- shared: git branch, prints " (branch)" or nothing ----------------------
+# --- shared: git branch, prints " (branch)" or " (branch*)" or nothing -------
 _sp_git_branch() {
     [ "$_DOTFILES_MACHINE" = "embedded" ] && return 0
     _sp_b=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) || return 0
-    [ -n "$_sp_b" ] && printf ' (%s)' "$_sp_b"
+    [ -z "$_sp_b" ] && return 0
+    _sp_dirty=""
+    if [ -n "$(git status --porcelain 2>/dev/null | head -n 1)" ]; then
+        _sp_dirty="*"
+    fi
+    printf ' (%s%s)' "$_sp_b" "$_sp_dirty"
 }
 
 # --- standard LAN IP for routers (replaces DD-WRT's internal get_lanip) -----
@@ -92,16 +98,24 @@ if [ "$_DOTFILES_MACHINE" = "client" ] && [ -n "${ZSH_VERSION:-}" ]; then
 fi
 
 if [ "$_sp_install" = "1" ]; then
+    _sp_uid=$(id -u 2>/dev/null || printf '1000')
+
     # --- router variant (embedded / BusyBox ash) ------------------------------
     if [ "$_DOTFILES_MACHINE" = "embedded" ]; then
         _SP_LAN_IP=$(_sp_lan_ip)
+        if [ "$_sp_uid" = "0" ]; then
+            _sp_sym_col='\[\e[1;31m\]'
+        else
+            _sp_sym_col='\[\e[1;32m\]'
+        fi
         # Line 1: user@host:IP  [HH:MM:SS]  [✘ code] (on error)
-        # Line 2: ~/dir $
-        PS1='\[\e]0;\u@\h: \w\a\]\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[0;37m\]  [\t]\[\e[1;31m\]$(_sp_rc=$?; [ "$_sp_rc" -ne 0 ] && printf "  [✘ %s]" "$_sp_rc")\[\e[0;37m\]\n\[\e[1;32m\]\w\[\e[0;37m\] \$ \[\e[0m\]'
+        # Line 2: ~/dir $ (green $ for user, red # for root)
+        PS1='\[\e]0;\u@\h: \w\a\]\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[0;37m\]  [\t]\[\e[1;31m\]$(_sp_rc=$?; [ "$_sp_rc" -ne 0 ] && printf "  [✘ %s]" "$_sp_rc")\[\e[0;37m\]\n\[\e[1;32m\]\w '"${_sp_sym_col}"'\$\[\e[0m\] '
     # --- zsh (server) ---------------------------------------------------------
     elif [ -n "${ZSH_VERSION:-}" ]; then
         _sp_white='%F{white}'
         _sp_dir_col='%B%F{green}'
+        _sp_ok='%B%F{green}'
         _sp_err='%B%F{red}'
         _sp_yellow='%F{yellow}'
         _sp_cyan='%F{cyan}'
@@ -113,11 +127,17 @@ if [ "$_sp_install" = "1" ]; then
             _sp_git=$(printf '%s' "$_sp_git" | sed 's/%/%%/g')
             if [ "$_sp_code" -eq 0 ]; then
                 _sp_status=""
+                if [ "$_sp_uid" = "0" ]; then
+                    _sp_sym_col="$_sp_err"
+                else
+                    _sp_sym_col="$_sp_ok"
+                fi
             else
                 _sp_status="  ${_sp_err}[✘ $_sp_code]${_sp_reset}"
+                _sp_sym_col="$_sp_err"
             fi
             PROMPT="${_sp_yellow}%n${_sp_white}@${_sp_cyan}%m${_sp_white}  [%D{%H:%M:%S}]${_sp_status}
-${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_reset} "
+${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git} ${_sp_sym_col}%(!.#.\$)${_sp_reset} "
         }
         autoload -Uz add-zsh-hook
         add-zsh-hook precmd _sp_zsh_precmd
@@ -125,6 +145,7 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_r
     elif [ -n "${BASH_VERSION:-}" ]; then
         _sp_white=$(printf '\033[0;37m')
         _sp_dir_col=$(printf '\033[1;32m')
+        _sp_ok=$(printf '\033[1;32m')
         _sp_err=$(printf '\033[1;31m')
         _sp_yellow=$(printf '\033[0;33m')
         _sp_cyan=$(printf '\033[0;96m')
@@ -137,11 +158,17 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_r
             _sp_git=$(printf '%s' "$_sp_git" | sed -e 's/\$/\\044/g' -e 's/`/\\140/g')
             if [ "$_sp_code" -eq 0 ]; then
                 _sp_status=""
+                if [ "$_sp_uid" = "0" ]; then
+                    _sp_sym_col="\[${_sp_err}\]"
+                else
+                    _sp_sym_col="\[${_sp_ok}\]"
+                fi
             else
                 _sp_status="  \[${_sp_err}\][✘ $_sp_code]\[${_sp_reset}\]"
+                _sp_sym_col="\[${_sp_err}\]"
             fi
             PS1="\[${_sp_yellow}\]\u\[${_sp_white}\]@\[${_sp_cyan}\]\h\[${_sp_white}\]  [\t]${_sp_status}
-\[${_sp_dir_col}\]\w\[${_sp_reset}\]\[${_sp_yellow}\]${_sp_git}\[${_sp_white}\] \\\$ \[${_sp_reset}\]"
+\[${_sp_dir_col}\]\w\[${_sp_reset}\]\[${_sp_yellow}\]${_sp_git} ${_sp_sym_col}\\\$\[${_sp_reset}\] "
         }
         _sp_pc=${PROMPT_COMMAND:-}
         while [ "${_sp_pc#;}" != "$_sp_pc" ]; do _sp_pc=${_sp_pc#;}; done
@@ -152,6 +179,7 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_r
     else
         _sp_white=$(printf '\033[0;37m')
         _sp_dir_col=$(printf '\033[1;32m')
+        _sp_ok=$(printf '\033[1;32m')
         _sp_err=$(printf '\033[1;31m')
         _sp_yellow=$(printf '\033[0;33m')
         _sp_cyan=$(printf '\033[0;96m')
@@ -170,17 +198,23 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_r
             _sp_time=$(date +%H:%M:%S 2>/dev/null)
             if [ "$_sp_code" -eq 0 ]; then
                 _sp_status=""
+                if [ "$_sp_uid" = "0" ]; then
+                    _sp_sym_col="$_sp_err"
+                else
+                    _sp_sym_col="$_sp_ok"
+                fi
             else
                 _sp_status="  ${_sp_err}[✘ $_sp_code]${_sp_reset}"
+                _sp_sym_col="$_sp_err"
             fi
-            if [ "$(id -u 2>/dev/null)" = "0" ]; then _sp_mark='#'; else _sp_mark='$'; fi
-            printf '%s%s%s@%s%s%s  [%s]%s\n%s%s%s%s%s%s %s%s ' \
+            if [ "$_sp_uid" = "0" ]; then _sp_mark='#'; else _sp_mark='$'; fi
+            printf '%s%s%s@%s%s%s  [%s]%s\n%s%s%s%s%s %s%s%s ' \
                 "$_sp_yellow" "$_sp_user" "$_sp_white" \
                 "$_sp_cyan" "$_sp_host" "$_sp_white" \
                 "$_sp_time" "$_sp_status" \
                 "$_sp_dir_col" "$_sp_dir" "$_sp_reset" \
-                "$_sp_yellow" "$_sp_git" "$_sp_white" \
-                "$_sp_mark" "$_sp_reset"
+                "$_sp_yellow" "$_sp_git" \
+                "$_sp_sym_col" "$_sp_mark" "$_sp_reset"
         }
         PS1='$(_sp_ash_print)'
     fi
@@ -188,5 +222,5 @@ fi # _sp_install
 
 # --- no colours on dumb terminals ---------------------------------------------
 if [ "$_sp_color_ok" = "0" ]; then
-    _sp_white=; _sp_dir_col=; _sp_err=; _sp_yellow=; _sp_cyan=; _sp_reset=
+    _sp_white=; _sp_dir_col=; _sp_ok=; _sp_err=; _sp_yellow=; _sp_cyan=; _sp_reset=
 fi
