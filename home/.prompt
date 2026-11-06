@@ -1,6 +1,6 @@
 # ~/.prompt -- universal prompt. Works in bash, zsh, ash/dash and ksh.
 # No Nerd Font needed. Ultra-clean two-line layout everywhere:
-# [13:04:56]  user@host
+# user@host  [13:04:56]
 # ~/dir (branch) $
 # (On routers/embedded, LAN IP is shown as user@host:IP; on non-zero exit,
 # [✘ code] is appended to line 1.)
@@ -95,9 +95,9 @@ if [ "$_sp_install" = "1" ]; then
     # --- router variant (embedded / BusyBox ash) ------------------------------
     if [ "$_DOTFILES_MACHINE" = "embedded" ]; then
         _SP_LAN_IP=$(_sp_lan_ip)
-        # Line 1: [HH:MM:SS]  user@host:IP  [✘ code] (on error)
+        # Line 1: user@host:IP  [HH:MM:SS]  [✘ code] (on error)
         # Line 2: ~/dir $
-        PS1='\[\e]0;\u@\h: \w\a\]\[\e[0;37m\][\t]  \[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[1;31m\]$(_sp_rc=$?; [ "$_sp_rc" -ne 0 ] && printf "  [✘ %s]" "$_sp_rc")\[\e[0;37m\]\n\[\e[1;32m\]\w\[\e[0;37m\] \$ \[\e[0m\]'
+        PS1='\[\e]0;\u@\h: \w\a\]\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[0;37m\]  [\t]\[\e[1;31m\]$(_sp_rc=$?; [ "$_sp_rc" -ne 0 ] && printf "  [✘ %s]" "$_sp_rc")\[\e[0;37m\]\n\[\e[1;32m\]\w\[\e[0;37m\] \$ \[\e[0m\]'
     # --- zsh (server) ---------------------------------------------------------
     elif [ -n "${ZSH_VERSION:-}" ]; then
         _sp_white='%F{white}'
@@ -116,7 +116,7 @@ if [ "$_sp_install" = "1" ]; then
             else
                 _sp_status="  ${_sp_err}[✘ $_sp_code]${_sp_reset}"
             fi
-            PROMPT="${_sp_white}[%D{%H:%M:%S}]  ${_sp_yellow}%n${_sp_white}@${_sp_cyan}%m${_sp_status}
+            PROMPT="${_sp_yellow}%n${_sp_white}@${_sp_cyan}%m${_sp_white}  [%D{%H:%M:%S}]${_sp_status}
 ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_reset} "
         }
         autoload -Uz add-zsh-hook
@@ -140,7 +140,7 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_r
             else
                 _sp_status="  \[${_sp_err}\][✘ $_sp_code]\[${_sp_reset}\]"
             fi
-            PS1="\[${_sp_white}\][\t]  \[${_sp_yellow}\]\u\[${_sp_white}\]@\[${_sp_cyan}\]\h${_sp_status}
+            PS1="\[${_sp_yellow}\]\u\[${_sp_white}\]@\[${_sp_cyan}\]\h\[${_sp_white}\]  [\t]${_sp_status}
 \[${_sp_dir_col}\]\w\[${_sp_reset}\]\[${_sp_yellow}\]${_sp_git}\[${_sp_white}\] \\\$ \[${_sp_reset}\]"
         }
         _sp_pc=${PROMPT_COMMAND:-}
@@ -174,10 +174,10 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_white} %(!.#.\$)${_sp_r
                 _sp_status="  ${_sp_err}[✘ $_sp_code]${_sp_reset}"
             fi
             if [ "$(id -u 2>/dev/null)" = "0" ]; then _sp_mark='#'; else _sp_mark='$'; fi
-            printf '%s[%s]  %s%s%s@%s%s%s\n%s%s%s%s%s%s %s%s ' \
-                "$_sp_white" "$_sp_time" \
+            printf '%s%s%s@%s%s%s  [%s]%s\n%s%s%s%s%s%s %s%s ' \
                 "$_sp_yellow" "$_sp_user" "$_sp_white" \
-                "$_sp_cyan" "$_sp_host" "$_sp_status" \
+                "$_sp_cyan" "$_sp_host" "$_sp_white" \
+                "$_sp_time" "$_sp_status" \
                 "$_sp_dir_col" "$_sp_dir" "$_sp_reset" \
                 "$_sp_yellow" "$_sp_git" "$_sp_white" \
                 "$_sp_mark" "$_sp_reset"
