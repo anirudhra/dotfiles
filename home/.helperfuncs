@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 # (c) 2025 Anirudh Acharya
 # Helper functions for dotfiles
 # detects various system types, OS and architectures
 
 # Guard variable to ensure sourcing only once.
 # Safe when the caller enables set -u.
-if [[ -n "${SOURCED_HELPERFUNCS:-}" ]]; then
+if [ -n "${SOURCED_HELPERFUNCS:-}" ]; then
     return 0
 fi
 
@@ -24,7 +24,7 @@ info() {
 }
 
 debuglog() {
-  if [[ -n "${DOTFILES_DEBUG:-}" && "${DOTFILES_DEBUG}" != "0" ]] || [[ -n "${DEBUG:-}" && "${DEBUG}" != "0" ]]; then
+  if { [ -n "${DOTFILES_DEBUG:-}" ] && [ "${DOTFILES_DEBUG}" != "0" ]; } || { [ -n "${DEBUG:-}" ] && [ "${DEBUG}" != "0" ]; }; then
     echo -e "${CYAN}[DEBUG: $(date +'%Y-%m-%d %H:%M:%S')]${NC} $1"
   fi
 }
@@ -72,9 +72,9 @@ debuglog "Helper functions sourced"
 detect_os_type() {
   uname_os="$(uname -s)"
 
-  if [[ "${uname_os}" == "Darwin" ]]; then
+  if [ "${uname_os}" = "Darwin" ]; then
     echo "macos"
-  elif [[ "${uname_os}" == "Linux" ]]; then
+  elif [ "${uname_os}" = "Linux" ]; then
     # 1. Router OS checks (OpenWrt, DD-WRT, Asuswrt/Merlin) and embedded distros without /etc/os-release
     if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ]; then
       echo "openwrt"
@@ -90,7 +90,7 @@ detect_os_type() {
     elif [ -f /etc/buildroot-version ]; then
       echo "buildroot"
     # 2. Check for distribution by sourcing /etc/os-release
-    elif [[ -f /etc/os-release ]]; then
+    elif [ -f /etc/os-release ]; then
       . /etc/os-release
       case "$ID" in
       debian | ubuntu | linuxmint | pop | elementary | kali | raspbian | zorin)
@@ -119,24 +119,33 @@ detect_os_type() {
         ;;
       *)
         # Fallback to ID_LIKE for derivative distributions
-        if [[ "$ID_LIKE" == *debian* ]]; then
+        case "${ID_LIKE:-}" in
+        *debian*)
           echo "debian"
-        elif [[ "$ID_LIKE" == *rhel* || "$ID_LIKE" == *fedora* ]]; then
+          ;;
+        *rhel* | *fedora*)
           echo "fedora"
-        elif [[ "$ID_LIKE" == *arch* ]]; then
+          ;;
+        *arch*)
           echo "arch"
-        elif [[ "$ID_LIKE" == *gentoo* ]]; then
+          ;;
+        *gentoo*)
           echo "gentoo"
-        elif [[ "$ID_LIKE" == *slackware* ]]; then
+          ;;
+        *slackware*)
           echo "slackware"
-        elif [[ "$ID_LIKE" == *openwrt* ]]; then
+          ;;
+        *openwrt*)
           echo "openwrt"
-        elif [[ "$ID_LIKE" == *alpine* ]]; then
+          ;;
+        *alpine*)
           echo "alpine"
-        else
+          ;;
+        *)
           # It's a Linux system, but we don't recognize the specific distribution
           echo "linux"
-        fi
+          ;;
+        esac
         ;;
       esac
     else
@@ -308,39 +317,58 @@ detect_shell_type() {
   exe=$(readlink "/proc/$$/exe" 2>/dev/null)
 
   #debuglog "Detecting shell type"
-  if [[ "$SHELL" == *"/bash" ]]; then
+  case "${SHELL:-}" in
+  */bash)
     #debuglog "Detected bash shell"
     echo "bash" # combination of echo and return used to return strings in functions
-  elif [[ "$SHELL" == *"/zsh" ]]; then
+    ;;
+  */zsh)
     #debuglog "Detected zsh shell"
     echo "zsh" # combination of echo and return used to return strings in functions
-  elif [[ "$SHELL" == *"/sh" ]]; then
+    ;;
+  */sh)
     #debuglog "Detected sh shell"
-    if [[ "$exe" == *"/busybox" ]]; then
+    case "$exe" in
+    */busybox)
       echo "busybox"
-    else
+      ;;
+    *)
       echo "sh"
-    fi
-  elif [[ "$SHELL" == *"/fish" ]]; then
+      ;;
+    esac
+    ;;
+  */fish)
     #debuglog "Detected fish shell"
     echo "fish"
-  elif [[ "$SHELL" == *"/tcsh" ]]; then
+    ;;
+  */tcsh)
     #debuglog "Detected tcsh shell"
     echo "tcsh"
-  elif [[ "$SHELL" == *"/ash" ]]; then
+    ;;
+  */ash)
     #debuglog "Detected ash shell"
-    if [[ "$exe" == *"/busybox" ]]; then
+    case "$exe" in
+    */busybox)
       echo "busybox"
-    else
+      ;;
+    *)
       echo "ash"
-    fi
-  elif [[ "$exe" == *"/busybox" ]]; then
-    #debuglog "Detected busybox shell via executable path"
-    echo "busybox"
-  else
-    #debuglog "Unknown shell"
-    echo "unknown" # combination of echo and return used to return strings in functions
-  fi
+      ;;
+    esac
+    ;;
+  *)
+    case "$exe" in
+    */busybox)
+      #debuglog "Detected busybox shell via executable path"
+      echo "busybox"
+      ;;
+    *)
+      #debuglog "Unknown shell"
+      echo "unknown" # combination of echo and return used to return strings in functions
+      ;;
+    esac
+    ;;
+  esac
 }
 
 # check if any shell command is aliases to busybox
@@ -355,11 +383,14 @@ detect_busybox_alias() {
   alias_info=$(${SHELL} -ic "type $command_name" 2>/dev/null)
 
   # Check if the command is an alias and if its definition contains "busybox".
-  if [[ "$alias_info" == *'BusyBox'* && "$alias_info" == *'multi-call binary'* ]]; then
+  case "$alias_info" in
+  *'BusyBox'*'multi-call binary'* | *'multi-call binary'*'BusyBox'*)
     echo "busybox_true" # Success: It's an alias to busybox
-  else
+    ;;
+  *)
     echo "busybox_false" # Failure: It's not an alias to busybox
-  fi
+    ;;
+  esac
 }
 
 # Detect the server subtype

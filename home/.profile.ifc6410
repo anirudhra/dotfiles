@@ -6,8 +6,6 @@ fi
 # Set the guard variable
 SOURCED_PROFILE_IFC6410=1
 
-PROMPT='%n@%m:%~%# '
-
 echo
 lsb_release -a
 echo

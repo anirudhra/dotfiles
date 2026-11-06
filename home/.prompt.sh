@@ -1,0 +1,179 @@
+# ~/.prompt.sh -- universal prompt. Works in bash, zsh, ash/dash and ksh.
+# No Nerd Font needed. Same two-line layout everywhere.
+# ┌─ user@host ~/dir (branch) 13:04:56
+# └─ $
+# Source it from your shell rc; it detects the machine type and the shell
+# and installs the right prompt. Colours switch off when TERM is dumb/unset.
+
+# Guard against double-sourcing.
+[ -n "${_SP_LOADED:-}" ] && return 0 2>/dev/null
+_SP_LOADED=1
+
+# --- shared: git branch, prints " (branch)" or nothing ----------------------
+_sp_git_branch() {
+    _sp_b=$(git symbolic-ref --quiet --short HEAD 2>/dev/null) || return 0
+    [ -n "$_sp_b" ] && printf ' (%s)' "$_sp_b"
+}
+
+# --- standard LAN IP for routers (replaces DD-WRT's internal get_lanip) -----
+# OpenWrt bridge is br-lan, DD-WRT's is br0; uci is OpenWrt-only,
+# nvram is DD-WRT/Asuswrt-only. Call once at install time, not per prompt.
+_sp_lan_ip() {
+    for _sp_if in br-lan br0; do
+        _sp_ip=$(ip -4 addr show "$_sp_if" 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)
+        if [ -n "$_sp_ip" ]; then
+            printf '%s' "$_sp_ip"
+            return 0
+        fi
+    done
+    _sp_ip=$(uci -q get network.lan.ipaddr 2>/dev/null)
+    if [ -n "$_sp_ip" ]; then
+        printf '%s' "$_sp_ip"
+        return 0
+    fi
+    _sp_ip=$(nvram get lan_ipaddr 2>/dev/null)
+    if [ -n "$_sp_ip" ]; then
+        printf '%s' "$_sp_ip"
+        return 0
+    fi
+    printf 'router'
+}
+
+# --- machine detection --------------------------------------------------------
+# Honour $MACHINE_TYPE if .aliases already exported it; otherwise use the
+# same marker list as detect_machine_type in .helperfuncs (kept inline here
+# so this file never depends on sourcing another file). SSH_CONNECTION set
+# means a server. ~/.p10k-nerd forces client behaviour (p10k) on any machine.
+_sp_detect_machine() {
+    if [ -n "${MACHINE_TYPE:-}" ]; then
+        _DOTFILES_MACHINE="$MACHINE_TYPE"
+    elif [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] || \
+         [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] || \
+         [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || \
+         [ -f /etc/merlin.version ] || [ -f /etc/buildroot-version ] || \
+         [ -f /etc/embedded_device ] || [ -n "${EMBEDDED_DEVICE:-}" ]; then
+        _DOTFILES_MACHINE="embedded"
+    elif [ -n "${SSH_CONNECTION:-}" ]; then
+        _DOTFILES_MACHINE="server"
+    else
+        _DOTFILES_MACHINE="client"
+    fi
+    # Map the finer taxonomy onto the prompt's three classes.
+    case "$_DOTFILES_MACHINE" in
+        embedded|router) _DOTFILES_MACHINE="embedded" ;;
+        server|guest|sbc) _DOTFILES_MACHINE="server" ;;
+        *) _DOTFILES_MACHINE="client" ;;
+    esac
+    if [ -f ~/.p10k-nerd ]; then
+        _DOTFILES_MACHINE="client"
+    fi
+    export _DOTFILES_MACHINE
+    if [ "$_DOTFILES_MACHINE" != "client" ]; then
+        _DOTFILES_SIMPLE_PROMPT=1
+    fi
+    export _DOTFILES_SIMPLE_PROMPT
+}
+_sp_detect_machine
+
+# --- colours: off when the terminal cannot use them -------------------------
+_sp_color_ok=1
+case ${TERM:-dumb} in
+    dumb|'') _sp_color_ok=0 ;;
+esac
+
+# --- install rule: client + zsh does nothing (p10k owns it) -----------------
+# Every other combination installs the prompt for the current shell.
+_sp_install=1
+if [ "$_DOTFILES_MACHINE" = "client" ] && [ -n "${ZSH_VERSION:-}" ]; then
+    _sp_install=0
+fi
+
+if [ "$_sp_install" = "1" ]; then
+    # --- router variant (embedded / ash): preserves the existing router look -----
+    if [ "$_DOTFILES_MACHINE" = "embedded" ]; then
+        _SP_LAN_IP=$(_sp_lan_ip)
+        # + green on success, X red on failure; LAN IP; terminal title.
+        # Colours wrapped in \[...\] as the current router prompt already does.
+        PS1='\[\e]0;\u@\h: \w\a\]\n\[\e[0;37m\]┌─[$(if [ "$?" -eq 0 ]; then printf "\033[1;32m+"; else printf "\033[1;31mX"; fi)\[\e[0;37m\]]─[\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[0;37m\]]─[\[\e[0;32m\]\w\[\e[0;37m\]]\n└─ \[\e[0m\]'
+    # --- zsh (server) --------------------------------------------------------------
+    elif [ -n "${ZSH_VERSION:-}" ]; then
+        _sp_green='%F{green}'
+        _sp_blue='%F{blue}'
+        _sp_yellow='%F{yellow}'
+        _sp_red='%F{red}'
+        _sp_reset='%f'
+        _sp_zsh_precmd() {
+            _sp_code=$?
+            _sp_git=$(_sp_git_branch)
+            # A % in a branch name would be read as a prompt escape; neutralise it.
+            _sp_git=$(printf '%s' "$_sp_git" | sed 's/%/%%/g')
+            if [ "$_sp_code" -ne 0 ]; then
+                _sp_status="${_sp_red}✘ $_sp_code${_sp_reset} "
+            else
+                _sp_status=''
+            fi
+            PROMPT="┌─ ${_sp_green}%n@%m${_sp_reset} ${_sp_blue}%~${_sp_reset}${_sp_yellow}${_sp_git}${_sp_reset} %*
+└─ ${_sp_status}%# "
+        }
+        autoload -Uz add-zsh-hook
+        add-zsh-hook precmd _sp_zsh_precmd
+    # --- bash (server) --------------------------------------------------------------
+    elif [ -n "${BASH_VERSION:-}" ]; then
+        _sp_green=$(printf '\033[32m')
+        _sp_blue=$(printf '\033[34m')
+        _sp_yellow=$(printf '\033[33m')
+        _sp_red=$(printf '\033[31m')
+        _sp_reset=$(printf '\033[0m')
+        _sp_bash_precmd() {
+            _sp_code=$?
+            _sp_git=$(_sp_git_branch)
+            # A $ or backtick in a branch name would expand/execute in PS1;
+            # hide them as octal escapes, which bash decodes when displaying.
+            _sp_git=$(printf '%s' "$_sp_git" | sed -e 's/\$/\\044/g' -e 's/`/\\140/g')
+            if [ "$_sp_code" -ne 0 ]; then
+                _sp_status="\[${_sp_red}\]✘ $_sp_code\[${_sp_reset}\] "
+            else
+                _sp_status=''
+            fi
+            PS1="┌─ \[${_sp_green}\]\u@\h\[${_sp_reset}\] \[${_sp_blue}\]\w\[${_sp_reset}\]\[${_sp_yellow}\]${_sp_git}\[${_sp_reset}\] \t
+└─ ${_sp_status}\\\$ "
+        }
+        PROMPT_COMMAND=${PROMPT_COMMAND:+$PROMPT_COMMAND;}_sp_bash_precmd
+    # --- ash / dash / ksh / anything else POSIX (server) ---------------------------
+    else
+        _sp_green=$(printf '\033[32m')
+        _sp_blue=$(printf '\033[34m')
+        _sp_yellow=$(printf '\033[33m')
+        _sp_red=$(printf '\033[31m')
+        _sp_reset=$(printf '\033[0m')
+        _sp_ash_print() {
+            _sp_code=$?
+            _sp_user=${USER:-$(id -un 2>/dev/null || printf '?')}
+            _sp_host=$(hostname -s 2>/dev/null || hostname 2>/dev/null || cat /proc/sys/kernel/hostname 2>/dev/null || printf '?')
+            _sp_host=${_sp_host%%.*}
+            case $PWD in
+                "$HOME") _sp_dir='~' ;;
+                "$HOME"/*) _sp_dir="~${PWD#"$HOME"}" ;;
+                *) _sp_dir=$PWD ;;
+            esac
+            _sp_git=$(_sp_git_branch)
+            _sp_time=$(date +%H:%M 2>/dev/null)
+            if [ "$_sp_code" -ne 0 ]; then
+                _sp_status="${_sp_red}✘ $_sp_code${_sp_reset} "
+            else
+                _sp_status=''
+            fi
+            if [ "$(id -u 2>/dev/null)" = "0" ]; then _sp_mark='#'; else _sp_mark='$'; fi
+            printf '┌─ %s%s@%s%s %s%s%s%s%s %s\n└─ %s%s ' \
+                "$_sp_green" "$_sp_user" "$_sp_host" "$_sp_reset" \
+                "$_sp_blue" "$_sp_dir" "$_sp_yellow" "$_sp_git" "$_sp_reset" \
+                "$_sp_time" "$_sp_status" "$_sp_mark"
+        }
+        PS1='$(_sp_ash_print)'
+    fi
+fi # _sp_install
+
+# --- no colours on dumb terminals ---------------------------------------------
+if [ "$_sp_color_ok" = "0" ]; then
+    _sp_green=; _sp_blue=; _sp_yellow=; _sp_red=; _sp_reset=
+fi
