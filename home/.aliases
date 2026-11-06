@@ -325,6 +325,10 @@ alias gitpack="git reflog expire --expire=now --all 2>/dev/null && git prune --e
 dotupdate() {
   local df_dir="${DOTFILES_HOME:-${HOME}}/dotfiles"
   if [ -d "$df_dir" ]; then
+    local git_summary=""
+    local old_head=""
+    local new_head=""
+    old_head="$(git -C "$df_dir" rev-parse --short HEAD 2>/dev/null || true)"
     (
       cd "$df_dir" || return 1
       echo "==> Updating dotfiles in $df_dir..."
@@ -342,6 +346,19 @@ dotupdate() {
         echo "Notice: Fast-forward pull not possible on '$cur_branch'. Resetting to origin/$cur_branch..."
         git reset --hard "origin/$cur_branch"
       fi
+    )
+    new_head="$(git -C "$df_dir" rev-parse --short HEAD 2>/dev/null || true)"
+    if [ -n "$old_head" ] && [ -n "$new_head" ] && [ "$old_head" != "$new_head" ]; then
+      if git -C "$df_dir" cat-file -e "${old_head}^{commit}" 2>/dev/null; then
+        git_summary="$(printf 'Updated %s -> %s:\n' "$old_head" "$new_head"; git -C "$df_dir" log --oneline --color=always "${old_head}..${new_head}" 2>/dev/null; git -C "$df_dir" diff --stat --color=always "${old_head}..${new_head}" 2>/dev/null)"
+      else
+        git_summary="$(printf 'Updated %s -> %s:\n' "$old_head" "$new_head"; git -C "$df_dir" show --stat --oneline --color=always "$new_head" 2>/dev/null)"
+      fi
+    else
+      git_summary="Already up to date ($(git -C "$df_dir" log -1 --oneline --color=always 2>/dev/null))."
+    fi
+    (
+      cd "$df_dir" || return 1
       git reflog expire --expire=now --all 2>/dev/null || true
       git prune --expire=now 2>/dev/null || true
       git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true
@@ -356,6 +373,9 @@ dotupdate() {
     else
       manualstow
     fi
+    echo ""
+    echo "==> Git changelog ($df_dir):"
+    printf '%s\n' "$git_summary"
   else
     echo "Error: Dotfiles directory not found: $df_dir" >&2
     return 1
