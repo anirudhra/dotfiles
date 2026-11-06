@@ -3,8 +3,8 @@
 # user@host  [13:04:56]
 # ~/dir (branch*) $
 # (On routers/embedded, LAN IP is shown as user@host:IP; on non-zero exit,
-# [✘ code] is appended to line 1; prompt symbol is green $ for user, red # for
-# root or after a failed command.)
+# [✘ code] is appended to line 1; prompt symbol is green $ for non-root,
+# red # for root.)
 # Source it from your shell rc; it detects the machine type and the shell
 # and installs the right prompt. Colours switch off when TERM is dumb/unset.
 
@@ -120,6 +120,11 @@ if [ "$_sp_install" = "1" ]; then
         _sp_yellow='%F{yellow}'
         _sp_cyan='%F{cyan}'
         _sp_reset='%b%f'
+        if [ "$_sp_uid" = "0" ]; then
+            _sp_sym_col="$_sp_err"
+        else
+            _sp_sym_col="$_sp_ok"
+        fi
         _sp_zsh_precmd() {
             _sp_code=$?
             _sp_git=$(_sp_git_branch)
@@ -127,14 +132,8 @@ if [ "$_sp_install" = "1" ]; then
             _sp_git=$(printf '%s' "$_sp_git" | sed 's/%/%%/g')
             if [ "$_sp_code" -eq 0 ]; then
                 _sp_status=""
-                if [ "$_sp_uid" = "0" ]; then
-                    _sp_sym_col="$_sp_err"
-                else
-                    _sp_sym_col="$_sp_ok"
-                fi
             else
                 _sp_status="  ${_sp_err}[✘ $_sp_code]${_sp_reset}"
-                _sp_sym_col="$_sp_err"
             fi
             PROMPT="${_sp_yellow}%n${_sp_white}@${_sp_cyan}%m${_sp_white}  [%D{%H:%M:%S}]${_sp_status}
 ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git} ${_sp_sym_col}%(!.#.\$)${_sp_reset} "
@@ -150,6 +149,11 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git} ${_sp_sym_col}%(!.#.\$)${_sp
         _sp_yellow=$(printf '\033[0;33m')
         _sp_cyan=$(printf '\033[0;96m')
         _sp_reset=$(printf '\033[0m')
+        if [ "$_sp_uid" = "0" ]; then
+            _sp_sym_col="\[${_sp_err}\]"
+        else
+            _sp_sym_col="\[${_sp_ok}\]"
+        fi
         _sp_bash_precmd() {
             _sp_code=$?
             _sp_git=$(_sp_git_branch)
@@ -158,14 +162,8 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git} ${_sp_sym_col}%(!.#.\$)${_sp
             _sp_git=$(printf '%s' "$_sp_git" | sed -e 's/\$/\\044/g' -e 's/`/\\140/g')
             if [ "$_sp_code" -eq 0 ]; then
                 _sp_status=""
-                if [ "$_sp_uid" = "0" ]; then
-                    _sp_sym_col="\[${_sp_err}\]"
-                else
-                    _sp_sym_col="\[${_sp_ok}\]"
-                fi
             else
                 _sp_status="  \[${_sp_err}\][✘ $_sp_code]\[${_sp_reset}\]"
-                _sp_sym_col="\[${_sp_err}\]"
             fi
             PS1="\[${_sp_yellow}\]\u\[${_sp_white}\]@\[${_sp_cyan}\]\h\[${_sp_white}\]  [\t]${_sp_status}
 \[${_sp_dir_col}\]\w\[${_sp_reset}\]\[${_sp_yellow}\]${_sp_git} ${_sp_sym_col}\\\$\[${_sp_reset}\] "
@@ -184,6 +182,11 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git} ${_sp_sym_col}%(!.#.\$)${_sp
         _sp_yellow=$(printf '\033[0;33m')
         _sp_cyan=$(printf '\033[0;96m')
         _sp_reset=$(printf '\033[0m')
+        if [ "$_sp_uid" = "0" ]; then
+            _sp_sym_col="$_sp_err"
+        else
+            _sp_sym_col="$_sp_ok"
+        fi
         _sp_ash_print() {
             _sp_code=$?
             _sp_user=${USER:-$(id -un 2>/dev/null || printf '?')}
@@ -198,14 +201,8 @@ ${_sp_dir_col}%~${_sp_reset}${_sp_yellow}${_sp_git} ${_sp_sym_col}%(!.#.\$)${_sp
             _sp_time=$(date +%H:%M:%S 2>/dev/null)
             if [ "$_sp_code" -eq 0 ]; then
                 _sp_status=""
-                if [ "$_sp_uid" = "0" ]; then
-                    _sp_sym_col="$_sp_err"
-                else
-                    _sp_sym_col="$_sp_ok"
-                fi
             else
                 _sp_status="  ${_sp_err}[✘ $_sp_code]${_sp_reset}"
-                _sp_sym_col="$_sp_err"
             fi
             if [ "$_sp_uid" = "0" ]; then _sp_mark='#'; else _sp_mark='$'; fi
             printf '%s%s%s@%s%s%s  [%s]%s\n%s%s%s%s%s %s%s%s ' \
@@ -222,5 +219,5 @@ fi # _sp_install
 
 # --- no colours on dumb terminals ---------------------------------------------
 if [ "$_sp_color_ok" = "0" ]; then
-    _sp_white=; _sp_dir_col=; _sp_ok=; _sp_err=; _sp_yellow=; _sp_cyan=; _sp_reset=
+    _sp_white=; _sp_dir_col=; _sp_ok=; _sp_err=; _sp_yellow=; _sp_cyan=; _sp_sym_col=; _sp_reset=
 fi
