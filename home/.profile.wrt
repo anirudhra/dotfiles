@@ -36,7 +36,7 @@ unset -f create_symlink_if_missing
 
 # Add USB tools, load the shared router prompt, and source the home profile.
 export PATH="/opt/bin:${PATH}"
-. "${DOTFILES_HOME}/dotfiles/home/.prompt.sh"
+. "${DOTFILES_HOME}/dotfiles/home/.prompt"
 . "${ALIASES_HOME}/.profile"
 
 #uname -a

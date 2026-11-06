@@ -1,4 +1,4 @@
-# ~/.prompt.sh -- universal prompt. Works in bash, zsh, ash/dash and ksh.
+# ~/.prompt -- universal prompt. Works in bash, zsh, ash/dash and ksh.
 # No Nerd Font needed. Same two-line layout everywhere.
 # ┌─ user@host ~/dir (branch) 13:04:56
 # └─ $

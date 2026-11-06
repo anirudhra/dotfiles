@@ -21,7 +21,7 @@ fi
 export ZSH="$HOME/.oh-my-zsh"
 
 # Load unified prompt detection and non-client prompt before setting ZSH_THEME.
-[ -f "$HOME/.prompt.sh" ] && . "$HOME/.prompt.sh"
+[ -f "$HOME/.prompt" ] && . "$HOME/.prompt"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time Oh My Zsh is loaded, in which case,

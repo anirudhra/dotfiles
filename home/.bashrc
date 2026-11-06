@@ -25,5 +25,5 @@ unset rc
 
 source "${HOME}/.profile"
 command -v zoxide &>/dev/null && eval "$(zoxide init bash)"
-[ -f ~/.prompt.sh ] && . ~/.prompt.sh
+[ -f ~/.prompt ] && . ~/.prompt
 
