@@ -164,7 +164,11 @@ if [ "$_sp_install" = "1" ]; then
             PS1="\[${_sp_white}\]┌─[${_sp_status}]─[\[${_sp_yellow}\]\u\[${_sp_white}\]@\[${_sp_cyan}\]\h\[${_sp_white}\]:\[${_sp_magenta}\]${_SP_LAN_IP}\[${_sp_white}\]] \t
 └─[\[${_sp_green}\]\w\[${_sp_white}\]]\[${_sp_yellow}\]${_sp_git}\[${_sp_white}\] \\\$ \[${_sp_reset}\]"
         }
-        PROMPT_COMMAND=${PROMPT_COMMAND:+$PROMPT_COMMAND;}_sp_bash_precmd
+        _sp_pc=${PROMPT_COMMAND:-}
+        while [ "${_sp_pc#;}" != "$_sp_pc" ]; do _sp_pc=${_sp_pc#;}; done
+        while [ "${_sp_pc%;}" != "$_sp_pc" ]; do _sp_pc=${_sp_pc%;}; done
+        PROMPT_COMMAND="_sp_bash_precmd${_sp_pc:+;$_sp_pc}"
+        unset _sp_pc
     # --- ash / dash / ksh / anything else POSIX (server) ----------------------
     else
         _sp_white=$(printf '\033[0;37m')
