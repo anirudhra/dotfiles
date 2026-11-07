@@ -9,7 +9,8 @@ Configuration files, deployment scripts, and reference documentation for custom 
 ```
 router/
 ├── merlin/               # Asuswrt-Merlin configurations and aliases
-│   └── profile.add       # Shell aliases and environment sourced from /jffs/configs/profile.add
+│   ├── profile.add       # Shell aliases and environment sourced from /jffs/configs/profile.add
+│   └── firewall-start    # Layer 2 (ebtables) + Layer 3 (iptables) IoT guest network isolation script
 ├── openwrt/              # OpenWrt (24.x+ / apk-based) scripts and docs
 │   ├── convertap.sh      # Script to convert OpenWrt router into a dumb Access Point
 │   ├── restore-packages.sh # Restores packages via apk from installed_packages.txt

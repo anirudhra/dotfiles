@@ -1,0 +1,40 @@
+#!/bin/sh
+# Asuswrt-Merlin / Gnuton (RT-AX82U) /jffs/scripts/firewall-start
+# Isolates Guest Network 1 (br1 / wl0.1, 192.168.101.0/24) while allowing
+# stateful access from OMV Home Assistant / govee2mqtt (10.100.100.10).
+
+sh /jffs/scripts/firewall start skynetloc=/tmp/mnt/USB/skynet # Skynet
+
+HA_IP="10.100.100.10"
+GOVEE_IP="192.168.101.82"
+
+# 1. Layer-2 (ebtables): Allow traffic from Guest Wi-Fi (wl0.1) addressed to OMV (10.100.100.10)
+#    to pass up to Layer-3 so stateful iptables FORWARD rules can inspect it.
+ebtables -t broute -D BROUTING -p IPv4 -i wl0.1 --ip-dst "$HA_IP" -j ACCEPT 2>/dev/null
+ebtables -t broute -I BROUTING 1 -p IPv4 -i wl0.1 --ip-dst "$HA_IP" -j ACCEPT
+
+# 2. Layer-3 (iptables): Clean up old rules to prevent duplicates
+iptables -D FORWARD -i br0 -o br1 -s "$HA_IP" -m state --state NEW -j ACCEPT 2>/dev/null
+iptables -D FORWARD -i br0 -o br1 -s "$HA_IP" -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT 2>/dev/null
+iptables -D FORWARD -i br1 -o br0 -d "$HA_IP" -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT 2>/dev/null
+iptables -D FORWARD -i br1 -o br0 -s "$GOVEE_IP" -d "$HA_IP" -p udp --dport 4002 -j ACCEPT 2>/dev/null
+iptables -D FORWARD -i br0 -o br1 -j DROP 2>/dev/null
+iptables -D FORWARD -i br1 -o br0 -j DROP 2>/dev/null
+
+# Insert FORWARD rules in reverse order so they land at positions 1..5:
+# Rule 5: Explicitly block any other IoT (br1) -> Main LAN (br0) traffic
+iptables -I FORWARD 1 -i br1 -o br0 -j DROP
+
+# Rule 4: Block all other Main LAN (br0) -> IoT (br1) traffic
+iptables -I FORWARD 1 -i br0 -o br1 -j DROP
+
+# Rule 3: Allow Govee device (.82) to send UDP 4002 responses back to govee2mqtt on OMV
+iptables -I FORWARD 1 -i br1 -o br0 -s "$GOVEE_IP" -d "$HA_IP" -p udp --dport 4002 -j ACCEPT
+
+# Rule 2: Allow IoT devices (br1) to reply ONLY to active sessions started by OMV
+iptables -I FORWARD 1 -i br1 -o br0 -d "$HA_IP" -m conntrack --ctstate ESTABLISHED,RELATED -j ACCEPT
+
+# Rule 1: Allow ONLY OMV (10.100.100.10) to initiate connections to the IoT Guest Network (br1)
+iptables -I FORWARD 1 -i br0 -o br1 -s "$HA_IP" -m conntrack --ctstate NEW,ESTABLISHED,RELATED -j ACCEPT
+
+[ -x /jffs/addons/AdGuardHome.d/AdGuardHome.sh ] && /jffs/addons/AdGuardHome.d/AdGuardHome.sh firewall "$1"
