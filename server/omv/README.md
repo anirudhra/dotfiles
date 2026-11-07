@@ -11,6 +11,7 @@ server/omv/
 ├── backup-omv-config.sh     # Daily/weekly configuration archiver with automated retention
 ├── restore-omv-config.sh    # Disaster recovery tool with safety rollback and selective restoration
 ├── clean-recycle-bins.sh    # Samba .recycle pruner for files older than 30 days
+├── omv-docker-firewall.sh   # OMV Docker bridge firewall & IoT subnet route installer (--install)
 ├── iot-docker-isolation.md  # Runbook for OMV + Asus Merlin IoT subnet routing & Docker firewall isolation
 └── README.md                # Documentation & cron scheduling guide
 ```
