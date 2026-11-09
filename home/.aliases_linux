@@ -85,7 +85,7 @@ cleanlocales() {
 }
 
 # wifi reset for ifc6410 dev board
-wifi-reset() {
+wifi_reset() {
   if [[ "${MACHINE_TYPE}" == "sbc" ]]; then
 
     local target_ssid="${1:-Tank}"
@@ -95,7 +95,7 @@ wifi-reset() {
     # Ensure root execution
     if [[ $EUID -ne 0 ]]; then
       echo "[!] wifi-reset requires root privileges. Escalating..." >&2
-      sudo -E "${SHELL:-/bin/bash}" -c "$(typeset -f wifi-reset); wifi-reset '$target_ssid'"
+      sudo -E "${SHELL:-/bin/bash}" -c "$(typeset -f wifi_reset); wifi_reset '$target_ssid'"
       return $?
     fi
 
@@ -133,6 +133,7 @@ wifi-reset() {
     echo "Only supported on IFC6410 SBC"
   fi
 }
+alias wifi-reset='wifi_reset'
 
 copyrockboxthemes() {
   # Usage:

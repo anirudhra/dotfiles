@@ -28,6 +28,21 @@ if [ -f /etc/openwrt_release ]; then
   if has_command ubus && has_command jsonfilter; then
     MODEL=$(ubus call system board 2>/dev/null | jsonfilter -e '@.model' 2>/dev/null)
   fi
+elif [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || [ -f /etc/merlin.version ] || [ -f /usr/sbin/helper.sh ] ||
+     { has_command nvram && [ -n "$(nvram get firmver 2>/dev/null)" ] && [ -n "$(nvram get buildno 2>/dev/null)" ]; }; then
+  FIRMWARE=asuswrt
+  OS_NAME=$(uname -o 2>/dev/null)
+  [ -z "$OS_NAME" ] || [ "$OS_NAME" = "GNU/Linux" ] && OS_NAME="Asuswrt-Merlin"
+  FIRMVER=$(nvram get firmver 2>/dev/null)
+  BUILDNO=$(nvram get buildno 2>/dev/null)
+  EXTENDNO=$(nvram get extendno 2>/dev/null)
+  if [ -n "$FIRMVER" ] && [ -n "$BUILDNO" ]; then
+    OS_VER="${FIRMVER}.${BUILDNO}"
+    [ -n "$EXTENDNO" ] && OS_VER="${OS_VER}_${EXTENDNO}"
+    OS_NAME="${OS_NAME} ${OS_VER}"
+  fi
+  MODEL=$(nvram get productid 2>/dev/null)
+  [ -z "$MODEL" ] && MODEL=$(nvram get wps_modelnum 2>/dev/null)
 elif [ -f /etc/nvram.txt ] || nvram get os_name >/dev/null 2>&1; then
   # DD-WRT detection
   FIRMWARE=ddwrt

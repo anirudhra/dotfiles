@@ -5,6 +5,8 @@
 [ -f /opt/etc/profile ] && . /opt/etc/profile
 
 # RAM login home (/tmp/home/root) is wiped on reboot; USB (/opt) and JFFS (/jffs) are persistent.
+export OS_TYPE="asuswrt"
+export MACHINE_TYPE="embedded"
 export TEMP_ROOT_HOME="/tmp/home/root"
 export ROOT_HOME="/opt/root"
 export JFFS_HOME="/jffs"

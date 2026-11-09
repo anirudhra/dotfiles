@@ -35,6 +35,7 @@ create_symlink_if_missing "${DOTFILES_HOME}/dotfiles/common/scripts/routerfastfe
 unset -f create_symlink_if_missing
 
 # Add USB tools, load the shared router prompt, and source the home profile.
+export MACHINE_TYPE="${MACHINE_TYPE:-embedded}"
 export PATH="/opt/bin:${PATH}"
 . "${DOTFILES_HOME}/dotfiles/home/.prompt"
 . "${ALIASES_HOME}/.profile"

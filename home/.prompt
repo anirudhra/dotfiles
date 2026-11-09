@@ -59,8 +59,9 @@ _sp_detect_machine() {
     elif [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] || \
          [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] || \
          [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || \
-         [ -f /etc/merlin.version ] || [ -f /etc/buildroot-version ] || \
-         [ -f /etc/embedded_device ] || [ -n "${EMBEDDED_DEVICE:-}" ]; then
+         [ -f /etc/merlin.version ] || [ -f /usr/sbin/helper.sh ] || \
+         [ -f /etc/buildroot-version ] || [ -f /etc/embedded_device ] || \
+         [ -n "${EMBEDDED_DEVICE:-}" ]; then
         _DOTFILES_MACHINE="embedded"
     elif [ -n "${SSH_CONNECTION:-}" ]; then
         _DOTFILES_MACHINE="server"
@@ -108,9 +109,17 @@ if [ "$_sp_install" = "1" ]; then
         else
             _sp_sym_col='\[\e[1;32m\]'
         fi
-        # Line 1: user@host:IP  [HH:MM:SS]  [✘ code] (on error)
-        # Line 2: ~/dir $ (green $ for user, red # for root)
-        PS1='\[\e]0;\u@\h: \w\a\]\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[0;37m\]  [\t]\[\e[1;31m\]$(_sp_rc=$?; [ "$_sp_rc" -ne 0 ] && printf "  [✘ %s]" "$_sp_rc")\[\e[0;37m\]\n\[\e[1;32m\]\w '"${_sp_sym_col}"'\$\[\e[0m\] '
+        # Asuswrt-Merlin compiles BusyBox ash without CONFIG_ASH_EXPAND_PRMT,
+        # so $(...) inside PS1 is printed literally instead of evaluated.
+        if [ "${OS_TYPE:-}" = "asuswrt" ] || [ -f /usr/sbin/helper.sh ] || \
+           [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || \
+           [ -f /etc/merlin.version ]; then
+            PS1='\[\e]0;\u@\h: \w\a\]\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[0;37m\]  [\t]\n\[\e[1;32m\]\w '"${_sp_sym_col}"'\$\[\e[0m\] '
+        else
+            # Line 1: user@host:IP  [HH:MM:SS]  [✘ code] (on error)
+            # Line 2: ~/dir $ (green $ for user, red # for root)
+            PS1='\[\e]0;\u@\h: \w\a\]\[\e[0;33m\]\u\[\e[0;37m\]@\[\e[0;96m\]\h\[\e[0;37m\]:\[\e[0;35m\]'"${_SP_LAN_IP}"'\[\e[0;37m\]  [\t]\[\e[1;31m\]$(_sp_rc=$?; [ "$_sp_rc" -ne 0 ] && printf "  [✘ %s]" "$_sp_rc")\[\e[0;37m\]\n\[\e[1;32m\]\w '"${_sp_sym_col}"'\$\[\e[0m\] '
+        fi
     # --- zsh (server) ---------------------------------------------------------
     elif [ -n "${ZSH_VERSION:-}" ]; then
         _sp_white='%F{white}'

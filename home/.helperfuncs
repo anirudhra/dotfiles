@@ -82,8 +82,8 @@ detect_os_type() {
          { [ -f /etc/version ] && grep -qi 'DD-WRT' /etc/version 2>/dev/null; } ||
          { command -v nvram >/dev/null 2>&1 && nvram get os_name 2>/dev/null | grep -qi 'dd-wrt'; }; then
       echo "ddwrt"
-    elif [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || [ -f /etc/merlin.version ] ||
-         { command -v nvram >/dev/null 2>&1 && [ -n "$(nvram get firmver 2>/dev/null)" ] && [ -n "$(nvram get buildinfo 2>/dev/null)" ]; }; then
+    elif [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || [ -f /etc/merlin.version ] || [ -f /usr/sbin/helper.sh ] ||
+         { command -v nvram >/dev/null 2>&1 && [ -n "$(nvram get firmver 2>/dev/null)" ] && { [ -n "$(nvram get buildinfo 2>/dev/null)" ] || [ -n "$(nvram get buildno 2>/dev/null)" ]; }; }; then
       echo "asuswrt"
     elif [ -f /etc/alpine-release ]; then
       echo "alpine"
@@ -426,7 +426,8 @@ detect_machine_type() {
   if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] ||
     [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] ||
     [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] ||
-    [ -f /etc/merlin.version ] || [ -f /etc/buildroot-version ] ||
+    [ -f /etc/merlin.version ] || [ -f /usr/sbin/helper.sh ] ||
+    [ -f /etc/buildroot-version ] ||
     [ -f /etc/embedded_device ] || [ -n "${EMBEDDED_DEVICE:-}" ]; then
     echo "embedded"
     return 0

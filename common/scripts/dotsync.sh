@@ -18,7 +18,7 @@ is_router=0
 if [ -f /etc/openwrt_release ] || [ -f /etc/openwrt_version ] || \
    [ -f /etc/defaults.bin ] || [ -d /etc/l7-protocols ] || \
    [ -f /etc/asus_build_info ] || [ -f /rom/etc/asus_build_info ] || \
-   [ -f /etc/merlin.version ]; then
+   [ -f /etc/merlin.version ] || [ -f /usr/sbin/helper.sh ]; then
   is_router=1
 fi
 
