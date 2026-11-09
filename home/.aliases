@@ -408,8 +408,6 @@ dotupdate() {
   fi
 }
 alias curldot='curl -L -o dotfiles.zip https://github.com/anirudhra/dotfiles/archive/refs/heads/main.zip'
-alias getdot='dotupdate'
-alias pulldot='dotupdate'
 
 alias u='upgrade'
 
