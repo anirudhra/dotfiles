@@ -321,17 +321,19 @@ alias clonedot="git clone --depth=1 --single-branch --branch main https://github
 alias gitclone="git clone --depth=1"
 alias gitpack="git reflog expire --expire=now --all 2>/dev/null && git prune --expire=now 2>/dev/null && git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true"
 
-# Update dotfiles repository with automatic recovery for diverged branches
+# Update dotfiles repository (uses git when available, falls back to zip/tar archive download)
 dotupdate() {
-  local df_dir="${DOTFILES_HOME:-${HOME}}/dotfiles"
-  if [ -d "$df_dir" ]; then
-    local git_summary=""
+  local df_base="${DOTFILES_HOME:-${HOME}}"
+  local df_dir="${df_base}/dotfiles"
+  local git_summary=""
+
+  if command -v git >/dev/null 2>&1 && [ -d "${df_dir}/.git" ]; then
     local old_head=""
     local new_head=""
     old_head="$(git -C "$df_dir" rev-parse --short HEAD 2>/dev/null || true)"
     (
       cd "$df_dir" || return 1
-      echo "==> Updating dotfiles in $df_dir..."
+      echo "==> Updating dotfiles via git in $df_dir..."
       local cur_branch
       cur_branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "main")"
       if [ "$cur_branch" = "HEAD" ] || [ -z "$cur_branch" ]; then
@@ -363,43 +365,51 @@ dotupdate() {
       git prune --expire=now 2>/dev/null || true
       git repack -a -d -f --depth=250 --window=250 2>/dev/null || git gc --prune=now 2>/dev/null || true
     )
-    if [ -x "${df_dir}/common/scripts/dotsync.sh" ] && { [ "${MACHINE_TYPE:-}" = "embedded" ] || [ "${MACHINE_TYPE:-}" = "router" ] || ! command -v stow >/dev/null 2>&1; }; then
-      "${df_dir}/common/scripts/dotsync.sh"
-    elif command -v stow >/dev/null 2>&1; then
-      if [ -f "${HOME}/.gitconfig" ] && [ ! -L "${HOME}/.gitconfig" ] && [ ! -f "${HOME}/.gitconfig.local" ]; then
-        cp -p "${HOME}/.gitconfig" "${HOME}/.gitconfig.local" 2>/dev/null || true
+  else
+    echo "==> git not available or $df_dir is not a git repo; downloading archive into $df_base..."
+    (
+      cd "$df_base" || return 1
+      if command -v curl >/dev/null 2>&1 && command -v unzip >/dev/null 2>&1; then
+        curl -L -o dotfiles.zip "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.zip" &&
+          rm -rf "${df_base}/dotfiles-bak" &&
+          { [ ! -d "${df_dir}" ] || mv "${df_dir}" "${df_base}/dotfiles-bak"; } &&
+          unzip -q dotfiles.zip &&
+          mv "${df_base}/dotfiles-main" "${df_dir}" &&
+          rm -f dotfiles.zip
+      else
+        (command -v curl >/dev/null 2>&1 && curl -L -o dotfiles.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" || wget -O dotfiles.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz") &&
+          rm -rf "${df_base}/dotfiles-bak" &&
+          { [ ! -d "${df_dir}" ] || mv "${df_dir}" "${df_base}/dotfiles-bak"; } &&
+          tar -xzf dotfiles.tar.gz &&
+          mv "${df_base}/dotfiles-main" "${df_dir}" &&
+          rm -f dotfiles.tar.gz
       fi
-      (cd "${df_dir}/home" && stow --verbose=1 --no-folding --target="${HOME}" --stow --adopt . && git restore . && stow --verbose=1 --no-folding --target="${HOME}" --restow .)
-    else
-      manualstow
+    ) || {
+      echo "Error: Failed to download and extract dotfiles archive in $df_base" >&2
+      return 1
+    }
+  fi
+
+  if [ -x "${df_dir}/common/scripts/dotsync.sh" ] && { [ "${MACHINE_TYPE:-}" = "embedded" ] || [ "${MACHINE_TYPE:-}" = "router" ] || ! command -v stow >/dev/null 2>&1; }; then
+    "${df_dir}/common/scripts/dotsync.sh"
+  elif command -v stow >/dev/null 2>&1; then
+    if [ -f "${HOME}/.gitconfig" ] && [ ! -L "${HOME}/.gitconfig" ] && [ ! -f "${HOME}/.gitconfig.local" ]; then
+      cp -p "${HOME}/.gitconfig" "${HOME}/.gitconfig.local" 2>/dev/null || true
     fi
+    (cd "${df_dir}/home" && stow --verbose=1 --no-folding --target="${HOME}" --stow --adopt . && git restore . && stow --verbose=1 --no-folding --target="${HOME}" --restow .)
+  else
+    manualstow
+  fi
+
+  if [ -n "$git_summary" ]; then
     echo ""
     echo "==> Git changelog ($df_dir):"
     printf '%s\n' "$git_summary"
-  else
-    echo "Error: Dotfiles directory not found: $df_dir" >&2
-    return 1
   fi
 }
-alias getdot='
-  cd "$DOTFILES_HOME" &&
-  (command -v curl >/dev/null 2>&1 && curl -L -o dotfiles.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" || wget -O dotfiles.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz") &&
-  rm -rf "$DOTFILES_HOME/dotfiles-bak" &&
-  [ ! -d "$DOTFILES_HOME/dotfiles" ] || mv "$DOTFILES_HOME/dotfiles" "$DOTFILES_HOME/dotfiles-bak" &&
-  tar -xzf dotfiles.tar.gz &&
-  mv "$DOTFILES_HOME/dotfiles-main" "$DOTFILES_HOME/dotfiles" &&
-  rm -f dotfiles.tar.gz
-'
 alias curldot='curl -L -o dotfiles.zip https://github.com/anirudhra/dotfiles/archive/refs/heads/main.zip'
-alias pulldot='
-  cd "$DOTFILES_HOME" &&
-  curl -L -o dotfiles.zip "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.zip" &&
-  rm -rf "$DOTFILES_HOME/dotfiles-bak" &&
-  [ ! -d "$DOTFILES_HOME/dotfiles" ] || mv "$DOTFILES_HOME/dotfiles" "$DOTFILES_HOME/dotfiles-bak" &&
-  unzip -q dotfiles.zip &&
-  mv "$DOTFILES_HOME/dotfiles-main" "$DOTFILES_HOME/dotfiles" &&
-  rm -f dotfiles.zip
-'
+alias getdot='dotupdate'
+alias pulldot='dotupdate'
 
 alias u='upgrade'
 
