@@ -83,7 +83,13 @@ fi
 if [ -d /jffs ]; then
   alias jffsusage='df -h /jffs'
   alias jffscd='cd /jffs'
-  alias jffsbackup='tar zcvf "/tmp/jffs_backup_$(date +%Y-%m-%d).tar.gz" /jffs'
+  if [ -d /tmp/mnt/USB/router ]; then
+    alias jffsbackup='cd /tmp/mnt/USB/router && tar zcvf "./jffs_backup_$(date +%Y-%m-%d).tar.gz" /jffs && cd - >/dev/null'
+  else
+    alias jffsbackup='tar zcvf "/tmp/jffs_backup_$(date +%Y-%m-%d).tar.gz" /jffs'
+  fi
+  [ -f /jffs/scripts/firewall ] && alias firewall='sh /jffs/scripts/firewall'
+  [ -f /jffs/scripts/backupmon.sh ] && alias backupmon='sh /jffs/scripts/backupmon.sh'
 fi
 
 # ==============================================================================

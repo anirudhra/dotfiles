@@ -1,0 +1,43 @@
+#!/bin/sh
+# Asuswrt-Merlin (RT-AX82U) setup; source before the router-specific hostname profile.
+
+# Load Entware first, when installed on persistent USB storage (/opt).
+[ -f /opt/etc/profile ] && . /opt/etc/profile
+
+# RAM login home (/tmp/home/root) is wiped on reboot; USB (/opt) and JFFS (/jffs) are persistent.
+export TEMP_ROOT_HOME="/tmp/home/root"
+export ROOT_HOME="/opt/root"
+export JFFS_HOME="/jffs"
+export JFFS_ROOT_HOME="${JFFS_HOME}/root"
+WRT_LINK_HOME="${TEMP_ROOT_HOME}"
+
+# Honor an override; otherwise prefer persistent USB (/opt/root), then JFFS storage.
+if [ -z "${DOTFILES_HOME:-}" ]; then
+  if [ -d "${ROOT_HOME}" ]; then
+    DOTFILES_HOME="${ROOT_HOME}"
+  else
+    DOTFILES_HOME="${JFFS_ROOT_HOME}"
+  fi
+fi
+export DOTFILES_HOME
+
+# Fail clearly rather than silently selecting another configuration tree.
+if [ ! -r "${DOTFILES_HOME}/dotfiles/home/.profile.wrt" ]; then
+  printf 'Common router profile not readable: %s\n' \
+    "${DOTFILES_HOME}/dotfiles/home/.profile.wrt" >&2
+  return 1
+fi
+
+# Fallback for Asuswrt-Merlin builds without a hostname binary.
+if ! command -v hostname >/dev/null 2>&1; then
+  hostname() {
+    cat /proc/sys/kernel/hostname 2>/dev/null ||
+      nvram get computer_name 2>/dev/null ||
+      echo "RT-AX82U"
+  }
+fi
+
+# Prevent defaults.vim not found warnings in volatile root home.
+[ ! -f "${TEMP_ROOT_HOME}/.exrc" ] && touch "${TEMP_ROOT_HOME}/.exrc" 2>/dev/null
+
+. "${DOTFILES_HOME}/dotfiles/home/.profile.wrt"
