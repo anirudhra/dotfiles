@@ -383,22 +383,22 @@ dotupdate() {
 }
 alias getdot='
   cd "$DOTFILES_HOME" &&
-  (command -v curl >/dev/null 2>&1 && curl -L -o main.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" || wget -O main.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz") &&
+  (command -v curl >/dev/null 2>&1 && curl -L -o dotfiles.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz" || wget -O dotfiles.tar.gz "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.tar.gz") &&
   rm -rf "$DOTFILES_HOME/dotfiles-bak" &&
   [ ! -d "$DOTFILES_HOME/dotfiles" ] || mv "$DOTFILES_HOME/dotfiles" "$DOTFILES_HOME/dotfiles-bak" &&
-  tar -xzf main.tar.gz &&
+  tar -xzf dotfiles.tar.gz &&
   mv "$DOTFILES_HOME/dotfiles-main" "$DOTFILES_HOME/dotfiles" &&
-  rm -f main.tar.gz
+  rm -f dotfiles.tar.gz
 '
-alias curldot='curl -L -o master.zip https://github.com/anirudhra/dotfiles/archive/refs/heads/master.zip'
+alias curldot='curl -L -o dotfiles.zip https://github.com/anirudhra/dotfiles/archive/refs/heads/main.zip'
 alias pulldot='
   cd "$DOTFILES_HOME" &&
-  curl -L -o master.zip "https://github.com/anirudhra/dotfiles/archive/refs/heads/master.zip" &&
+  curl -L -o dotfiles.zip "https://github.com/anirudhra/dotfiles/archive/refs/heads/main.zip" &&
   rm -rf "$DOTFILES_HOME/dotfiles-bak" &&
   [ ! -d "$DOTFILES_HOME/dotfiles" ] || mv "$DOTFILES_HOME/dotfiles" "$DOTFILES_HOME/dotfiles-bak" &&
-  unzip -q master.zip &&
+  unzip -q dotfiles.zip &&
   mv "$DOTFILES_HOME/dotfiles-main" "$DOTFILES_HOME/dotfiles" &&
-  rm -f master.zip
+  rm -f dotfiles.zip
 '
 
 alias u='upgrade'
