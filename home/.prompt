@@ -104,6 +104,7 @@ if [ "$_sp_install" = "1" ]; then
     # --- router variant (embedded / BusyBox ash) ------------------------------
     if [ "$_DOTFILES_MACHINE" = "embedded" ]; then
         _SP_LAN_IP=$(_sp_lan_ip)
+        export _SP_LAN_IP
         if [ "$_sp_uid" = "0" ]; then
             _sp_sym_col='\[\e[1;31m\]'
         else

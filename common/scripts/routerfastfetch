@@ -142,23 +142,17 @@ if [ -r /proc/meminfo ]; then
     }' /proc/meminfo 2>/dev/null)"
 fi
 
-# Assigned IPv4 addresses
+# Assigned IPv4 address (reuse exported prompt IP when available)
 IPV4=
-if has_command ip; then
-  IPV4=$(ip -4 addr show 2>/dev/null | awk '
-    /^[0-9]+:/ {iface=$2; sub(/:$/, "", iface); sub(/@.*/, "", iface)}
-    $1=="inet" && $2 !~ /^127\./ {printf "%s%s %s",sep,iface,$2; sep=", "}
-    END {if(sep!="") print ""}')
-fi
-if [ -z "$IPV4" ] && has_command ifconfig; then
-  IPV4=$(ifconfig 2>/dev/null | awk '
-    /^[^ \t]/ {iface=$1; sub(/:$/, "", iface)}
-    /inet / {
-      for(i=1;i<=NF;i++) if($i=="inet") {
-        addr=$(i+1); sub(/^addr:/, "", addr);
-        if(addr !~ /^127\./) {printf "%s%s %s",sep,iface,addr; sep=", "}
-      }
-    } END {if(sep!="") print ""}')
+if [ -n "${_SP_LAN_IP:-}" ] && [ "$_SP_LAN_IP" != "router" ]; then
+  IPV4="$_SP_LAN_IP"
+else
+  for _if in br-lan br0; do
+    IPV4=$(ip -4 addr show "$_if" 2>/dev/null | awk '/inet / {print $2}' | cut -d/ -f1)
+    [ -n "$IPV4" ] && break
+  done
+  [ -z "$IPV4" ] && IPV4=$(uci -q get network.lan.ipaddr 2>/dev/null)
+  [ -z "$IPV4" ] && IPV4=$(nvram get lan_ipaddr 2>/dev/null)
 fi
 
 # Suppress colors when redirected or NO_COLOR is set
