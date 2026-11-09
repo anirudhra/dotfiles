@@ -33,7 +33,7 @@ fi
 #if (( ${+commands[diskutil]} )); then
 if [[ "$OSTYPE" == "darwin"* ]]; then
   if [ -n "${ZSH_VERSION:-}" ] && command -v fzf >/dev/null 2>&1; then
-    source <(fzf --zsh)
+    eval "$(fzf --zsh 2>/dev/null)"
   elif [ -n "${BASH_VERSION:-}" ] && command -v fzf >/dev/null 2>&1; then
     eval "$(fzf --bash 2>/dev/null)"
   fi
