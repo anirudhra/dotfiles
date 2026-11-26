@@ -90,18 +90,25 @@ dockerupdateall() {
     ) || failed_stacks+=("$stack_name")
   done < <(find "$app_dir" -maxdepth 1 -mindepth 1 -type d ! -name '.*' ! -path '*disabled*' -print0 | sort -z)
 
-  # Prune dangling/unused images only.
-  # NEVER run 'docker system prune --volumes' here to protect persistent databases and named volumes!
-  echo "==> Pruning obsolete Docker images..."
-  docker image prune -f
-
   if [ "${#failed_stacks[@]}" -gt 0 ]; then
     echo "==> [WARNING] The following Docker stack(s) encountered errors during upgrade: ${failed_stacks[*]}" >&2
   fi
+}
+
+# Intended to be run on PVE guests / SBCs only
+dockerclean() {
+  # Ensure it is not the PVE hypervisor host, and docker is installed
+  if command -v pveversion >/dev/null 2>&1 || ! command -v docker >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "==> Pruning dangling Docker images, volumes, networks, and build cache..."
+  docker system prune --volumes -f
 }
 
 # Main execution
 fullupdate
 fullclean
 dockerupdateall
+dockerclean
 echo "==> Upgrade complete!"
